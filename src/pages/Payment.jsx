@@ -255,9 +255,10 @@ const Payments = () => {
     });
   };
 
-  const handlePaymentMethodSelect = async (student, event) => {
-    const paymentMethod = event.target.value;
-
+  const handlePaymentMethodSelect = async (
+    student,
+    paymentMethod
+  ) => {
     if (!paymentMethod || !student) {
       return;
     }
@@ -648,30 +649,30 @@ const Payments = () => {
                       <td>
                         {paymentMethodStudent?._id === payment._id &&
                         payment.paymentStatus !== "paid" ? (
-                          <div className="payment-method-picker">
-                            <select
-                              className="payment-method-select"
-                              defaultValue=""
-                              onChange={(event) =>
-                                handlePaymentMethodSelect(
-                                  payment,
-                                  event
-                                )
-                              }
-                              disabled={
-                                paymentUpdatingStudentId === payment._id
-                              }
-                              aria-label={`Select payment method for ${payment.studentName}`}
-                              autoFocus
-                            >
-                              <option value="" disabled>
-                                Select
-                              </option>
-                              <option value="cash">Cash</option>
-                              <option value="bank">Bank</option>
-                              <option value="upi">UPI</option>
-                              <option value="qr">QR</option>
-                            </select>
+                          <div className="inline-payment-methods">
+                            {[
+                              ["cash", "Cash"],
+                              ["bank", "Bank"],
+                              ["upi", "UPI"],
+                              ["qr", "QR"],
+                            ].map(([value, label]) => (
+                              <button
+                                key={value}
+                                type="button"
+                                className="inline-payment-method-btn"
+                                onClick={() =>
+                                  handlePaymentMethodSelect(
+                                    payment,
+                                    value
+                                  )
+                                }
+                                disabled={
+                                  paymentUpdatingStudentId === payment._id
+                                }
+                              >
+                                {label}
+                              </button>
+                            ))}
                           </div>
                         ) : (
                           <span className="payment-method">

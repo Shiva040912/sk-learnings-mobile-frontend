@@ -3458,85 +3458,44 @@
 
 
 .payment-row.selecting-method {
-  background: #fffdf6;
+  background: #fffdf7;
 }
 
-.payment-method-picker {
+.inline-payment-methods {
   width: 100%;
-  max-width: 112px;
+  max-width: 120px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
   margin: 0 auto;
-  overflow: hidden;
 }
 
-.payment-method-picker .payment-method-select {
-  display: block;
-  width: 100%;
-  max-width: 100%;
+.inline-payment-method-btn {
   min-width: 0;
-  box-sizing: border-box;
-  margin: 0;
+  height: 26px;
+  padding: 0 5px;
+  border: 1px solid #e4c15c;
+  border-radius: 6px;
+  background: #fffaf0;
+  color: #8d6800;
+  font-size: 7px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.inline-payment-method-btn:hover {
+  border-color: #ffb800;
+  background: #fff3cc;
+  color: #6f5100;
+}
+
+.inline-payment-method-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 @media (max-width: 600px) {
-  .payments-table th:nth-child(2),
-  .payments-table td:nth-child(2) {
-    width: 40% !important;
-  }
-
-  .payments-table th:nth-child(6),
-  .payments-table td:nth-child(6) {
-    width: 20% !important;
-  }
-
-  .payments-table th:nth-child(7),
-  .payments-table td:nth-child(7) {
-    width: 17% !important;
-  }
-
-  .payments-table th:nth-child(9),
-  .payments-table td:nth-child(9) {
-    width: 23% !important;
-  }
-
-  .payments-table td:nth-child(9) {
-    overflow: hidden !important;
-    padding-left: 4px !important;
-    padding-right: 4px !important;
-  }
-
-  .payment-method-picker {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    margin: 0 auto !important;
-    overflow: hidden !important;
-  }
-
-  .payment-method-picker .payment-method-select {
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    height: 32px !important;
-    margin: 0 !important;
-    padding: 0 18px 0 5px !important;
-    border: 1px solid #e0ad24 !important;
-    border-radius: 8px !important;
-    outline: none !important;
-    background-color: #fffaf0 !important;
-    color: #7d5a00 !important;
-    font-size: 7px !important;
-    font-weight: 700 !important;
-    line-height: 1 !important;
-    box-shadow: 0 0 0 2px rgba(255, 184, 0, 0.07) !important;
-  }
-
-  .payment-row.selecting-method td:nth-child(9) {
-    background: #fffaf0 !important;
-  }
-}
-
-@media (max-width: 380px) {
   .payments-table th:nth-child(2),
   .payments-table td:nth-child(2) {
     width: 39% !important;
@@ -3555,12 +3514,71 @@
   .payments-table th:nth-child(9),
   .payments-table td:nth-child(9) {
     width: 24% !important;
+    text-align: center !important;
   }
 
-  .payment-method-picker .payment-method-select {
-    height: 30px !important;
+  .payments-table td:nth-child(9) {
+    overflow: hidden !important;
     padding-left: 4px !important;
-    padding-right: 15px !important;
+    padding-right: 4px !important;
+  }
+
+  .payment-row.selecting-method td {
+    height: 96px !important;
+  }
+
+  .payment-row.selecting-method td:nth-child(9) {
+    overflow: visible !important;
+    background: #fffaf0 !important;
+  }
+
+  .inline-payment-methods {
+    width: 100% !important;
+    max-width: 100% !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 4px !important;
+    margin: 0 !important;
+  }
+
+  .inline-payment-method-btn {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 27px !important;
+    padding: 0 2px !important;
+    border-radius: 7px !important;
     font-size: 6.4px !important;
+    white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .payments-table th:nth-child(2),
+  .payments-table td:nth-child(2) {
+    width: 38% !important;
+  }
+
+  .payments-table th:nth-child(6),
+  .payments-table td:nth-child(6) {
+    width: 20% !important;
+  }
+
+  .payments-table th:nth-child(7),
+  .payments-table td:nth-child(7) {
+    width: 17% !important;
+  }
+
+  .payments-table th:nth-child(9),
+  .payments-table td:nth-child(9) {
+    width: 25% !important;
+  }
+
+  .payment-row.selecting-method td {
+    height: 92px !important;
+  }
+
+  .inline-payment-method-btn {
+    height: 25px !important;
+    font-size: 5.9px !important;
+    padding: 0 1px !important;
   }
 }

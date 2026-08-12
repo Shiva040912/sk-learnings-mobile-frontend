@@ -709,6 +709,11 @@ a {
   display: none;
 }
 
+
+.mobile-app-brand {
+  display: none;
+}
+
 @media (max-width: 900px) {
   .dashboard-main {
     margin-left: 0;
@@ -1386,5 +1391,122 @@ a {
 
   .sidebar-link.active::before {
     width: 24px;
+  }
+}
+
+@media (max-width: 600px) {
+  .topbar {
+    min-height: 70px;
+    padding:
+      env(safe-area-inset-top)
+      13px
+      0;
+  }
+
+  .topbar-left {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .topbar-page-info {
+    display: none;
+  }
+
+  .mobile-app-brand {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  .mobile-brand-logo {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-brand-logo img {
+    width: 39px;
+    height: 39px;
+    object-fit: contain;
+    filter:
+      drop-shadow(
+        0 4px 8px rgba(0, 0, 0, 0.22)
+      );
+  }
+
+  .mobile-brand-content {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mobile-brand-content h1 {
+    margin: 0;
+    max-width: 220px;
+    overflow: hidden;
+    color: #f5f6f7;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.15px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .mobile-brand-content h1 span {
+    color: #ffb800;
+  }
+
+  .mobile-brand-content p {
+    margin: 0;
+    color: #858c96;
+    font-size: 8px;
+    font-weight: 550;
+    line-height: 1;
+    letter-spacing: 0.2px;
+  }
+
+  .topbar-user {
+    width: 40px;
+    height: 40px;
+    min-height: 40px;
+    border-radius: 12px;
+  }
+
+  .topbar-user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 380px) {
+  .mobile-brand-logo {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+  }
+
+  .mobile-brand-logo img {
+    width: 35px;
+    height: 35px;
+  }
+
+  .mobile-brand-content h1 {
+    max-width: 190px;
+    font-size: 11px;
+  }
+
+  .mobile-brand-content p {
+    font-size: 7px;
   }
 }

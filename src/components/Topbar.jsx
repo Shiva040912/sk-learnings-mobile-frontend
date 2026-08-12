@@ -11,6 +11,8 @@ import {
   FiChevronDown,
 } from "react-icons/fi";
 
+import logo from "../assets/sk-logo.png";
+
 const Topbar = ({ onMenuClick }) => {
   const location = useLocation();
 
@@ -126,6 +128,23 @@ const Topbar = ({ onMenuClick }) => {
         >
           <FiMenu />
         </button>
+
+        <div className="mobile-app-brand">
+          <div className="mobile-brand-logo">
+            <img
+              src={logo}
+              alt="The SK Learnings"
+            />
+          </div>
+
+          <div className="mobile-brand-content">
+            <h1>
+              THE <span>SK</span> LEARNINGS
+            </h1>
+
+            <p>{page.title}</p>
+          </div>
+        </div>
 
         <div className="topbar-page-info">
           <div className="topbar-title-row">

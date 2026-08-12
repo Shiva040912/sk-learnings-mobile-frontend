@@ -248,9 +248,11 @@ const Payments = () => {
       return;
     }
 
-    setPaymentMethodStudent((current) =>
-      current?._id === student._id ? null : student
-    );
+    setPaymentMethodStudent(student);
+
+    toast("Select the payment method", {
+      icon: "💳",
+    });
   };
 
   const handlePaymentMethodSelect = async (student, event) => {
@@ -574,7 +576,14 @@ const Payments = () => {
 
                 <tbody>
                   {filteredPayments.map((payment, index) => (
-                    <tr key={payment._id}>
+                    <tr
+                      key={payment._id}
+                      className={
+                        paymentMethodStudent?._id === payment._id
+                          ? "payment-row selecting-method"
+                          : "payment-row"
+                      }
+                    >
                       <td>{index + 1}</td>
 
                       <td>
@@ -639,28 +648,31 @@ const Payments = () => {
                       <td>
                         {paymentMethodStudent?._id === payment._id &&
                         payment.paymentStatus !== "paid" ? (
-                          <select
-                            className="payment-method-select"
-                            defaultValue=""
-                            onChange={(event) =>
-                              handlePaymentMethodSelect(
-                                payment,
-                                event
-                              )
-                            }
-                            disabled={
-                              paymentUpdatingStudentId === payment._id
-                            }
-                            autoFocus
-                          >
-                            <option value="" disabled>
-                              Select method
-                            </option>
-                            <option value="cash">Cash</option>
-                            <option value="bank">Bank</option>
-                            <option value="upi">UPI</option>
-                            <option value="qr">QR</option>
-                          </select>
+                          <div className="payment-method-picker">
+                            <select
+                              className="payment-method-select"
+                              defaultValue=""
+                              onChange={(event) =>
+                                handlePaymentMethodSelect(
+                                  payment,
+                                  event
+                                )
+                              }
+                              disabled={
+                                paymentUpdatingStudentId === payment._id
+                              }
+                              aria-label={`Select payment method for ${payment.studentName}`}
+                              autoFocus
+                            >
+                              <option value="" disabled>
+                                Select
+                              </option>
+                              <option value="cash">Cash</option>
+                              <option value="bank">Bank</option>
+                              <option value="upi">UPI</option>
+                              <option value="qr">QR</option>
+                            </select>
+                          </div>
                         ) : (
                           <span className="payment-method">
                             {formatPaymentMethod(

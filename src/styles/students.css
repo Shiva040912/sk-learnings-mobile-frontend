@@ -5486,134 +5486,291 @@
   }
 }
 
-/* Desktop student directory: keep around 8 student rows visible at once */
+/* FINAL DESKTOP COMPACT OVERRIDE - fit about 8 student rows without inner scroll */
 @media (min-width: 769px) {
   .students-page {
-    padding-bottom: 8px;
+    width: 100% !important;
+    padding-top: 0 !important;
+    padding-bottom: 4px !important;
   }
 
   .students-header {
-    margin-bottom: 12px;
+    margin-bottom: 8px !important;
+    gap: 10px !important;
+    align-items: center !important;
+  }
+
+  .students-eyebrow {
+    margin-bottom: 2px !important;
+    font-size: 7px !important;
+    letter-spacing: 1px !important;
+  }
+
+  .students-header h1 {
+    font-size: 21px !important;
+    line-height: 1.1 !important;
+  }
+
+  .students-header p {
+    margin-top: 3px !important;
+    font-size: 8.5px !important;
   }
 
   .student-summary-grid {
-    gap: 10px;
-    margin-bottom: 12px;
+    gap: 7px !important;
+    margin-bottom: 8px !important;
   }
 
   .student-summary-card {
-    min-height: 82px;
-    padding: 11px 13px;
+    min-height: 62px !important;
+    height: 62px !important;
+    gap: 8px !important;
+    padding: 8px 10px !important;
+    border-radius: 9px !important;
   }
 
   .summary-icon {
-    width: 37px;
-    height: 37px;
-    font-size: 16px;
+    width: 31px !important;
+    height: 31px !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
+  }
+
+  .summary-content > span {
+    font-size: 6.5px !important;
+    letter-spacing: 0.35px !important;
   }
 
   .summary-content strong {
-    margin-top: 3px;
-    font-size: 17px;
+    margin-top: 1px !important;
+    font-size: 14px !important;
+    line-height: 1.05 !important;
   }
 
   .summary-content small {
-    margin-top: 2px;
+    margin-top: 1px !important;
+    font-size: 6.4px !important;
+    line-height: 1.05 !important;
+  }
+
+  .students-list-section {
+    margin-top: 0 !important;
   }
 
   .students-list-actions {
-    min-height: 52px;
-    padding: 8px 14px;
+    min-height: 38px !important;
+    height: 38px !important;
+    gap: 6px !important;
+    padding: 4px 10px !important;
+  }
+
+  .students-list-actions .student-result-count {
+    padding: 4px 7px !important;
+    font-size: 7px !important;
+  }
+
+  .students-header-actions {
+    gap: 5px !important;
+  }
+
+  .student-setup-btn,
+  .add-student-btn {
+    min-height: 30px !important;
+    height: 30px !important;
+    gap: 5px !important;
+    padding: 0 9px !important;
+    border-radius: 7px !important;
+    font-size: 8px !important;
+    box-shadow: none !important;
+  }
+
+  .student-setup-btn svg,
+  .add-student-btn svg {
+    font-size: 11px !important;
   }
 
   .students-toolbar {
-    padding: 8px 14px;
+    min-height: 38px !important;
+    gap: 6px !important;
+    padding: 4px 10px !important;
+  }
+
+  .student-search {
+    max-width: 360px !important;
   }
 
   .student-search input,
   .course-filter,
   .batch-filter,
   .student-filter-button {
-    height: 36px;
+    height: 30px !important;
+    min-height: 30px !important;
+    border-radius: 7px !important;
+    font-size: 8px !important;
+  }
+
+  .student-search input {
+    padding: 0 9px 0 30px !important;
+  }
+
+  .student-search svg {
+    left: 10px !important;
+    font-size: 11px !important;
+  }
+
+  .course-filter {
+    min-width: 115px !important;
+    padding: 0 7px !important;
+  }
+
+  .batch-filter {
+    min-width: 135px !important;
+    padding: 0 7px !important;
+  }
+
+  .student-filter-button {
+    min-width: 66px !important;
+    gap: 4px !important;
+    padding: 0 8px !important;
+  }
+
+  .student-filter-button svg {
+    font-size: 11px !important;
   }
 
   .students-table-wrapper {
-    max-height: 438px;
-    overflow-x: auto;
-    overflow-y: auto;
-    scrollbar-gutter: stable;
+    width: 100% !important;
+    max-height: none !important;
+    height: auto !important;
+    overflow-y: visible !important;
+    overflow-x: auto !important;
+    padding: 0 !important;
   }
 
   .students-table {
-    margin: 0;
+    width: 100% !important;
+    margin: 0 !important;
   }
 
   .students-table thead {
-    position: sticky;
-    top: 0;
-    z-index: 8;
+    position: static !important;
   }
 
   .students-table th {
-    height: 38px;
-    padding: 0 11px;
-    background: #f6f8fa;
+    height: 30px !important;
+    padding: 0 8px !important;
+    font-size: 6.4px !important;
+    letter-spacing: 0.35px !important;
+    line-height: 1 !important;
   }
 
   .students-table td {
-    height: 50px;
-    padding: 6px 11px;
-  }
-
-  .student-avatar {
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
-    font-size: 11px;
+    height: 39px !important;
+    min-height: 39px !important;
+    padding: 4px 8px !important;
+    font-size: 8.2px !important;
+    line-height: 1.1 !important;
   }
 
   .student-profile-cell {
-    gap: 7px;
+    gap: 6px !important;
+  }
+
+  .student-avatar {
+    width: 25px !important;
+    height: 25px !important;
+    flex: 0 0 25px !important;
+    border-radius: 6px !important;
+    font-size: 9px !important;
+  }
+
+  .student-name-cell {
+    gap: 1px !important;
   }
 
   .student-name-cell strong {
-    font-size: 10px;
+    max-width: 145px !important;
+    font-size: 8.5px !important;
+    line-height: 1.05 !important;
   }
 
   .student-name-cell span {
-    font-size: 7.5px;
+    max-width: 145px !important;
+    font-size: 6.5px !important;
+    line-height: 1 !important;
   }
 
   .serial-number {
-    min-width: 23px;
-    height: 23px;
-    font-size: 7.5px;
+    min-width: 19px !important;
+    height: 19px !important;
+    padding: 0 3px !important;
+    border-radius: 5px !important;
+    font-size: 6.5px !important;
   }
 
   .roll-number-badge,
   .course-badge {
-    padding: 4px 6px;
-    font-size: 7.5px;
+    padding: 3px 5px !important;
+    border-radius: 5px !important;
+    font-size: 6.8px !important;
+    line-height: 1 !important;
+  }
+
+  .paid-amount,
+  .pending-amount {
+    font-size: 7.7px !important;
+  }
+
+  .payment-status-switch-wrap {
+    gap: 4px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .payment-switch {
+    gap: 4px !important;
+  }
+
+  .payment-switch-track {
+    width: 27px !important;
+    height: 15px !important;
+  }
+
+  .payment-switch-thumb {
+    top: 3px !important;
+    left: 3px !important;
+    width: 9px !important;
+    height: 9px !important;
+  }
+
+  .payment-switch.is-paid .payment-switch-thumb {
+    left: 15px !important;
+  }
+
+  .payment-switch-label {
+    min-width: 28px !important;
+    font-size: 7px !important;
+  }
+
+  .payment-method-select {
+    min-width: 105px !important;
+    height: 27px !important;
+    padding: 0 22px 0 7px !important;
+    font-size: 7px !important;
+  }
+
+  .student-actions {
+    gap: 3px !important;
   }
 
   .student-actions button {
-    width: 27px;
-    height: 27px;
-    font-size: 11px;
+    width: 22px !important;
+    min-width: 22px !important;
+    height: 22px !important;
+    border-radius: 5px !important;
+    font-size: 8.5px !important;
   }
 
-  .students-table-wrapper::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-
-  .students-table-wrapper::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    background: #cfd5db;
-  }
-
-  .students-table-wrapper::-webkit-scrollbar-track {
-    background: #f5f6f8;
+  .students-message {
+    min-height: 160px !important;
   }
 }
-

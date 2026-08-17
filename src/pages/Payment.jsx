@@ -47,8 +47,7 @@ const Payments = () => {
       setPaymentRecords(paymentsResponse.data || []);
     } catch (error) {
       toast.error(
-        error.response?.data?.message ||
-          "Failed to load payment details"
+        error.response?.data?.message || "Failed to load payment details",
       );
     } finally {
       setIsLoading(false);
@@ -61,17 +60,14 @@ const Payments = () => {
       const date = response.data?.feeDueDate || "";
 
       if (date) {
-        const formattedDate = new Date(date)
-          .toISOString()
-          .split("T")[0];
+        const formattedDate = new Date(date).toISOString().split("T")[0];
 
         setFeeDueDate(formattedDate);
         setSelectedDueDate(formattedDate);
       }
     } catch (error) {
       toast.error(
-        error.response?.data?.message ||
-          "Failed to load fee due date"
+        error.response?.data?.message || "Failed to load fee due date",
       );
     }
   };
@@ -79,6 +75,27 @@ const Payments = () => {
   useEffect(() => {
     fetchPaymentPageData();
     fetchFeeDueDate();
+
+    const handleWindowFocus = () => {
+      fetchPaymentPageData();
+      fetchFeeDueDate();
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        fetchPaymentPageData();
+        fetchFeeDueDate();
+      }
+    };
+
+    window.addEventListener("focus", handleWindowFocus);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener("focus", handleWindowFocus);
+
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, []);
 
   const paymentRows = useMemo(() => {
@@ -86,13 +103,13 @@ const Payments = () => {
       const studentPaymentRecords = paymentRecords.filter(
         (payment) =>
           String(payment.studentId) === String(student._id) ||
-          String(payment.student?._id) === String(student._id)
+          String(payment.student?._id) === String(student._id),
       );
 
       const latestPayment = studentPaymentRecords.sort(
         (firstPayment, secondPayment) =>
           new Date(secondPayment.paymentDate || 0) -
-          new Date(firstPayment.paymentDate || 0)
+          new Date(firstPayment.paymentDate || 0),
       )[0];
 
       const isPaid = student.paymentStatus === "paid";
@@ -118,16 +135,18 @@ const Payments = () => {
 
   const courseOptions = useMemo(
     () =>
-      [...new Set(paymentRows.map((payment) => payment.course))]
-        .filter((course) => course && course !== "-"),
-    [paymentRows]
+      [...new Set(paymentRows.map((payment) => payment.course))].filter(
+        (course) => course && course !== "-",
+      ),
+    [paymentRows],
   );
 
   const batchOptions = useMemo(
     () =>
-      [...new Set(paymentRows.map((payment) => payment.batch))]
-        .filter((batch) => batch && batch !== "-"),
-    [paymentRows]
+      [...new Set(paymentRows.map((payment) => payment.batch))].filter(
+        (batch) => batch && batch !== "-",
+      ),
+    [paymentRows],
   );
 
   const activeFilterCount = [
@@ -152,20 +171,16 @@ const Payments = () => {
           payment.phone.replace(/\s/g, "").includes(phoneKeyword);
 
         const matchesStatus =
-          statusFilter === "all" ||
-          payment.paymentStatus === statusFilter;
+          statusFilter === "all" || payment.paymentStatus === statusFilter;
 
         const matchesMethod =
-          methodFilter === "all" ||
-          payment.paymentMethod === methodFilter;
+          methodFilter === "all" || payment.paymentMethod === methodFilter;
 
         const matchesCourse =
-          courseFilter === "all" ||
-          payment.course === courseFilter;
+          courseFilter === "all" || payment.course === courseFilter;
 
         const matchesBatch =
-          batchFilter === "all" ||
-          payment.batch === batchFilter;
+          batchFilter === "all" || payment.batch === batchFilter;
 
         return (
           matchesSearch &&
@@ -182,8 +197,8 @@ const Payments = () => {
           {
             numeric: true,
             sensitivity: "base",
-          }
-        )
+          },
+        ),
       );
   }, [
     paymentRows,
@@ -218,7 +233,7 @@ const Payments = () => {
         totalCollected: 0,
         cashPayments: 0,
         onlinePayments: 0,
-      }
+      },
     );
   }, [paymentRows]);
 
@@ -237,20 +252,26 @@ const Payments = () => {
 
       setFeeDueDate(selectedDueDate);
 
-      toast.success(
-        response.data?.message ||
-          "Fee due date updated successfully"
-      );
+      await fetchPaymentPageData();
+
+      if (response.data?.studentsReset) {
+        toast.success(
+          response.data?.message ||
+            "New month started. All students reset to unpaid.",
+        );
+      } else {
+        toast.success(
+          response.data?.message || "Fee due date updated successfully",
+        );
+      }
     } catch (error) {
       toast.error(
-        error.response?.data?.message ||
-          "Failed to update fee due date"
+        error.response?.data?.message || "Failed to update fee due date",
       );
     } finally {
       setIsSavingDueDate(false);
     }
   };
-
   const handleSendReminders = async () => {
     if (!feeDueDate) {
       toast.error("Please set the common fee due date first");
@@ -264,67 +285,47 @@ const Payments = () => {
     try {
       setIsSendingReminders(true);
 
-      const response = await api.post(
-        "/payments/send-reminders"
-      );
+      const response = await api.post("/payments/send-reminders");
 
       const result = response.data || {};
       const sent = Number(result.sent || 0);
       const failed = Number(result.failed || 0);
-      const totalEligible = Number(
-        result.totalEligible || 0
-      );
+      const totalEligible = Number(result.totalEligible || 0);
 
       if (sent > 0 && failed === 0) {
         toast.success(
-          `${sent} fee reminder${
-            sent > 1 ? "s" : ""
-          } sent successfully`
+          `${sent} fee reminder${sent > 1 ? "s" : ""} sent successfully`,
         );
         return;
       }
 
       if (sent > 0 && failed > 0) {
-        toast(
-          `${sent} sent successfully, ${failed} failed`,
-          {
-            icon: "⚠️",
-          }
-        );
+        toast(`${sent} sent successfully, ${failed} failed`, {
+          icon: "⚠️",
+        });
         return;
       }
 
       if (totalEligible === 0) {
-        toast(
-          result.message ||
-            "No unpaid students found for reminder",
-          {
-            icon: "ℹ️",
-          }
-        );
+        toast(result.message || "No unpaid students found for reminder", {
+          icon: "ℹ️",
+        });
         return;
       }
 
       if (failed > 0) {
         toast.error(
-          `Failed to send ${failed} fee reminder${
-            failed > 1 ? "s" : ""
-          }`
+          `Failed to send ${failed} fee reminder${failed > 1 ? "s" : ""}`,
         );
         return;
       }
 
-      toast(
-        result.message ||
-          "No fee reminders were sent",
-        {
-          icon: "ℹ️",
-        }
-      );
+      toast(result.message || "No fee reminders were sent", {
+        icon: "ℹ️",
+      });
     } catch (error) {
       toast.error(
-        error.response?.data?.message ||
-          "Failed to send fee reminders"
+        error.response?.data?.message || "Failed to send fee reminders",
       );
     } finally {
       setIsSendingReminders(false);
@@ -346,10 +347,7 @@ const Payments = () => {
     });
   };
 
-  const handlePaymentMethodSelect = async (
-    student,
-    paymentMethod
-  ) => {
+  const handlePaymentMethodSelect = async (student, paymentMethod) => {
     if (!paymentMethod || !student) {
       return;
     }
@@ -373,23 +371,19 @@ const Payments = () => {
 
       setPaymentMethodStudent(null);
 
-      toast.success(
-        `${student.studentName} payment marked as paid`
-      );
+      toast.success(`${student.studentName} payment marked as paid`);
 
       await fetchPaymentPageData();
     } catch (error) {
       toast.error(
-        error.response?.data?.message ||
-          "Failed to update payment status"
+        error.response?.data?.message || "Failed to update payment status",
       );
     } finally {
       setPaymentUpdatingStudentId(null);
     }
   };
 
-  const formatMoney = (value) =>
-    Number(value || 0).toLocaleString("en-IN");
+  const formatMoney = (value) => Number(value || 0).toLocaleString("en-IN");
 
   const formatDate = (value) => {
     if (!value) return "-";
@@ -417,21 +411,11 @@ const Payments = () => {
 
     const now = new Date();
 
-    const today = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate()
-    );
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-    const [year, month, day] = feeDueDate
-      .split("-")
-      .map(Number);
+    const [year, month, day] = feeDueDate.split("-").map(Number);
 
-    const dueDate = new Date(
-      year,
-      month - 1,
-      day
-    );
+    const dueDate = new Date(year, month - 1, day);
 
     return today >= dueDate;
   }, [feeDueDate]);
@@ -446,9 +430,7 @@ const Payments = () => {
 
           <div>
             <span>Total Collected</span>
-            <strong>
-              ₹{formatMoney(summary.totalCollected)}
-            </strong>
+            <strong>₹{formatMoney(summary.totalCollected)}</strong>
             <small>Successfully collected fees</small>
           </div>
         </div>
@@ -495,22 +477,14 @@ const Payments = () => {
                   }
                 >
                   <FiClock />
-                  {isDueDateReached
-                    ? "Due"
-                    : "Active"}
+                  {isDueDateReached ? "Due" : "Active"}
                 </small>
               )}
             </div>
 
-            <strong>
-              {feeDueDate
-                ? formatDate(feeDueDate)
-                : "Not Set"}
-            </strong>
+            <strong>{feeDueDate ? formatDate(feeDueDate) : "Not Set"}</strong>
 
-            <small>
-              Monthly common fee due date
-            </small>
+            <small>Monthly common fee due date</small>
           </div>
         </div>
       </div>
@@ -524,23 +498,15 @@ const Payments = () => {
               type="text"
               placeholder="Search student, roll no, phone, course or batch..."
               value={search}
-              onChange={(event) =>
-                setSearch(event.target.value)
-              }
+              onChange={(event) => setSearch(event.target.value)}
             />
           </div>
 
           <div className="payment-filter-wrapper">
             <button
               type="button"
-              className={`payment-filter-button ${
-                showFilters ? "active" : ""
-              }`}
-              onClick={() =>
-                setShowFilters(
-                  (current) => !current
-                )
-              }
+              className={`payment-filter-button ${showFilters ? "active" : ""}`}
+              onClick={() => setShowFilters((current) => !current)}
             >
               <FiFilter />
               <span>Filter</span>
@@ -555,9 +521,7 @@ const Payments = () => {
             {showFilters && (
               <div className="payment-filter-dropdown">
                 <div className="payment-filter-header">
-                  <strong>
-                    Filter Payments
-                  </strong>
+                  <strong>Filter Payments</strong>
 
                   <div className="payment-filter-header-actions">
                     {activeFilterCount > 0 && (
@@ -578,9 +542,7 @@ const Payments = () => {
                     <button
                       type="button"
                       className="payment-filter-close-btn"
-                      onClick={() =>
-                        setShowFilters(false)
-                      }
+                      onClick={() => setShowFilters(false)}
                       aria-label="Close filters"
                       title="Close filters"
                     >
@@ -594,82 +556,43 @@ const Payments = () => {
 
                   <select
                     value={courseFilter}
-                    onChange={(event) =>
-                      setCourseFilter(
-                        event.target.value
-                      )
-                    }
+                    onChange={(event) => setCourseFilter(event.target.value)}
                   >
-                    <option value="all">
-                      All Courses
-                    </option>
+                    <option value="all">All Courses</option>
 
-                    {courseOptions.map(
-                      (course) => (
-                        <option
-                          key={course}
-                          value={course}
-                        >
-                          {course}
-                        </option>
-                      )
-                    )}
+                    {courseOptions.map((course) => (
+                      <option key={course} value={course}>
+                        {course}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
                 <div className="payment-filter-field">
-                  <label>
-                    Payment Status
-                  </label>
+                  <label>Payment Status</label>
 
                   <select
                     value={statusFilter}
-                    onChange={(event) =>
-                      setStatusFilter(
-                        event.target.value
-                      )
-                    }
+                    onChange={(event) => setStatusFilter(event.target.value)}
                   >
-                    <option value="all">
-                      All Status
-                    </option>
-                    <option value="paid">
-                      Paid
-                    </option>
-                    <option value="unpaid">
-                      Unpaid
-                    </option>
+                    <option value="all">All Status</option>
+                    <option value="paid">Paid</option>
+                    <option value="unpaid">Unpaid</option>
                   </select>
                 </div>
 
                 <div className="payment-filter-field">
-                  <label>
-                    Payment Method
-                  </label>
+                  <label>Payment Method</label>
 
                   <select
                     value={methodFilter}
-                    onChange={(event) =>
-                      setMethodFilter(
-                        event.target.value
-                      )
-                    }
+                    onChange={(event) => setMethodFilter(event.target.value)}
                   >
-                    <option value="all">
-                      All Methods
-                    </option>
-                    <option value="cash">
-                      Cash
-                    </option>
-                    <option value="bank">
-                      Bank
-                    </option>
-                    <option value="upi">
-                      UPI
-                    </option>
-                    <option value="qr">
-                      QR
-                    </option>
+                    <option value="all">All Methods</option>
+                    <option value="cash">Cash</option>
+                    <option value="bank">Bank</option>
+                    <option value="upi">UPI</option>
+                    <option value="qr">QR</option>
                   </select>
                 </div>
 
@@ -678,26 +601,15 @@ const Payments = () => {
 
                   <select
                     value={batchFilter}
-                    onChange={(event) =>
-                      setBatchFilter(
-                        event.target.value
-                      )
-                    }
+                    onChange={(event) => setBatchFilter(event.target.value)}
                   >
-                    <option value="all">
-                      All Batches
-                    </option>
+                    <option value="all">All Batches</option>
 
-                    {batchOptions.map(
-                      (batch) => (
-                        <option
-                          key={batch}
-                          value={batch}
-                        >
-                          {batch}
-                        </option>
-                      )
-                    )}
+                    {batchOptions.map((batch) => (
+                      <option key={batch} value={batch}>
+                        {batch}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -710,11 +622,7 @@ const Payments = () => {
             <input
               type="date"
               value={selectedDueDate}
-              onChange={(event) =>
-                setSelectedDueDate(
-                  event.target.value
-                )
-              }
+              onChange={(event) => setSelectedDueDate(event.target.value)}
             />
 
             <button
@@ -722,28 +630,19 @@ const Payments = () => {
               onClick={handleSaveDueDate}
               disabled={isSavingDueDate}
             >
-              {isSavingDueDate
-                ? "Saving..."
-                : "Set Date"}
+              {isSavingDueDate ? "Saving..." : "Set Date"}
             </button>
 
             <button
               type="button"
               className="send-fee-reminder-btn"
               onClick={handleSendReminders}
-              disabled={
-                isSendingReminders ||
-                !feeDueDate
-              }
+              disabled={isSendingReminders || !feeDueDate}
               title="Send WhatsApp reminder to unpaid students"
             >
               <FiBell />
 
-              <span>
-                {isSendingReminders
-                  ? "Sending..."
-                  : "Send Reminder"}
-              </span>
+              <span>{isSendingReminders ? "Sending..." : "Send Reminder"}</span>
             </button>
           </div>
         </div>
@@ -752,20 +651,13 @@ const Payments = () => {
           {isLoading ? (
             <div className="payment-message">
               <div className="payment-loader" />
-              <span>
-                Loading students...
-              </span>
+              <span>Loading students...</span>
             </div>
-          ) : filteredPayments.length ===
-            0 ? (
+          ) : filteredPayments.length === 0 ? (
             <div className="payment-message">
               <FiCreditCard />
-              <strong>
-                No students found
-              </strong>
-              <span>
-                Try changing your search or filter
-              </span>
+              <strong>No students found</strong>
+              <span>Try changing your search or filter</span>
             </div>
           ) : (
             <div className="payment-table-wrapper">
@@ -785,177 +677,113 @@ const Payments = () => {
                 </thead>
 
                 <tbody>
-                  {filteredPayments.map(
-                    (payment, index) => (
-                      <tr
-                        key={payment._id}
-                        className={
-                          paymentMethodStudent?._id ===
-                          payment._id
-                            ? "payment-row selecting-method"
-                            : "payment-row"
-                        }
-                        onClick={() =>
-                          setSelectedPayment(
-                            payment
-                          )
-                        }
-                      >
-                        <td>{index + 1}</td>
+                  {filteredPayments.map((payment, index) => (
+                    <tr
+                      key={payment._id}
+                      className={
+                        paymentMethodStudent?._id === payment._id
+                          ? "payment-row selecting-method"
+                          : "payment-row"
+                      }
+                      onClick={() => setSelectedPayment(payment)}
+                    >
+                      <td>{index + 1}</td>
 
-                        <td>
-                          <div className="payment-student">
-                            <div className="payment-avatar">
-                              {payment.studentName
-                                ?.charAt(0)
-                                ?.toUpperCase() ||
-                                "S"}
-                            </div>
-
-                            <div>
-                              <strong>
-                                {
-                                  payment.studentName
-                                }
-                              </strong>
-                              <span>
-                                Fee Payment
-                              </span>
-                            </div>
+                      <td>
+                        <div className="payment-student">
+                          <div className="payment-avatar">
+                            {payment.studentName?.charAt(0)?.toUpperCase() ||
+                              "S"}
                           </div>
-                        </td>
 
-                        <td>
-                          {payment.rollNo}
-                        </td>
+                          <div>
+                            <strong>{payment.studentName}</strong>
+                            <span>Fee Payment</span>
+                          </div>
+                        </div>
+                      </td>
 
-                        <td>
-                          <span className="payment-course">
-                            {payment.course}
+                      <td>{payment.rollNo}</td>
+
+                      <td>
+                        <span className="payment-course">{payment.course}</span>
+                      </td>
+
+                      <td>{payment.phone}</td>
+
+                      <td>
+                        <strong className="payment-amount">
+                          ₹{formatMoney(payment.totalFee)}
+                        </strong>
+                      </td>
+
+                      <td>
+                        <button
+                          type="button"
+                          className={`payment-switch ${
+                            payment.paymentStatus === "paid"
+                              ? "is-paid"
+                              : "is-unpaid"
+                          }`}
+                          onClick={(event) => {
+                            event.stopPropagation();
+
+                            handlePaymentToggle(payment);
+                          }}
+                          disabled={
+                            payment.paymentStatus === "paid" ||
+                            paymentUpdatingStudentId === payment._id
+                          }
+                        >
+                          <span className="payment-switch-track">
+                            <span className="payment-switch-thumb" />
                           </span>
-                        </td>
 
-                        <td>
-                          {payment.phone}
-                        </td>
+                          <span className="payment-switch-label">
+                            {payment.paymentStatus === "paid"
+                              ? "Paid"
+                              : "Unpaid"}
+                          </span>
+                        </button>
+                      </td>
 
-                        <td>
-                          <strong className="payment-amount">
-                            ₹
-                            {formatMoney(
-                              payment.totalFee
-                            )}
-                          </strong>
-                        </td>
+                      <td>{formatDate(payment.paymentDate)}</td>
 
-                        <td>
-                          <button
-                            type="button"
-                            className={`payment-switch ${
-                              payment.paymentStatus ===
-                              "paid"
-                                ? "is-paid"
-                                : "is-unpaid"
-                            }`}
-                            onClick={(
-                              event
-                            ) => {
-                              event.stopPropagation();
+                      <td>
+                        {paymentMethodStudent?._id === payment._id &&
+                        payment.paymentStatus !== "paid" ? (
+                          <div className="inline-payment-methods">
+                            {[
+                              ["cash", "Cash"],
+                              ["bank", "Bank"],
+                              ["upi", "UPI"],
+                              ["qr", "QR"],
+                            ].map(([value, label]) => (
+                              <button
+                                key={value}
+                                type="button"
+                                className="inline-payment-method-btn"
+                                onClick={(event) => {
+                                  event.stopPropagation();
 
-                              handlePaymentToggle(
-                                payment
-                              );
-                            }}
-                            disabled={
-                              payment.paymentStatus ===
-                                "paid" ||
-                              paymentUpdatingStudentId ===
-                                payment._id
-                            }
-                          >
-                            <span className="payment-switch-track">
-                              <span className="payment-switch-thumb" />
-                            </span>
-
-                            <span className="payment-switch-label">
-                              {payment.paymentStatus ===
-                              "paid"
-                                ? "Paid"
-                                : "Unpaid"}
-                            </span>
-                          </button>
-                        </td>
-
-                        <td>
-                          {formatDate(
-                            payment.paymentDate
-                          )}
-                        </td>
-
-                        <td>
-                          {paymentMethodStudent?._id ===
-                            payment._id &&
-                          payment.paymentStatus !==
-                            "paid" ? (
-                            <div className="inline-payment-methods">
-                              {[
-                                [
-                                  "cash",
-                                  "Cash",
-                                ],
-                                [
-                                  "bank",
-                                  "Bank",
-                                ],
-                                [
-                                  "upi",
-                                  "UPI",
-                                ],
-                                ["qr", "QR"],
-                              ].map(
-                                ([
-                                  value,
-                                  label,
-                                ]) => (
-                                  <button
-                                    key={
-                                      value
-                                    }
-                                    type="button"
-                                    className="inline-payment-method-btn"
-                                    onClick={(
-                                      event
-                                    ) => {
-                                      event.stopPropagation();
-
-                                      handlePaymentMethodSelect(
-                                        payment,
-                                        value
-                                      );
-                                    }}
-                                    disabled={
-                                      paymentUpdatingStudentId ===
-                                      payment._id
-                                    }
-                                  >
-                                    {
-                                      label
-                                    }
-                                  </button>
-                                )
-                              )}
-                            </div>
-                          ) : (
-                            <span className="payment-method">
-                              {formatPaymentMethod(
-                                payment.paymentMethod
-                              )}
-                            </span>
-                          )}
-                        </td>
-                      </tr>
-                    )
-                  )}
+                                  handlePaymentMethodSelect(payment, value);
+                                }}
+                                disabled={
+                                  paymentUpdatingStudentId === payment._id
+                                }
+                              >
+                                {label}
+                              </button>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="payment-method">
+                            {formatPaymentMethod(payment.paymentMethod)}
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -966,33 +794,21 @@ const Payments = () => {
       {selectedPayment && (
         <div
           className="payment-details-overlay"
-          onClick={() =>
-            setSelectedPayment(null)
-          }
+          onClick={() => setSelectedPayment(null)}
         >
           <div
             className="payment-details-modal"
-            onClick={(event) =>
-              event.stopPropagation()
-            }
+            onClick={(event) => event.stopPropagation()}
           >
             <div className="payment-details-header">
               <div>
-                <span>
-                  STUDENT PAYMENT DETAILS
-                </span>
-                <h2>
-                  {
-                    selectedPayment.studentName
-                  }
-                </h2>
+                <span>STUDENT PAYMENT DETAILS</span>
+                <h2>{selectedPayment.studentName}</h2>
               </div>
 
               <button
                 type="button"
-                onClick={() =>
-                  setSelectedPayment(null)
-                }
+                onClick={() => setSelectedPayment(null)}
                 aria-label="Close payment details"
                 title="Close"
               >
@@ -1003,40 +819,27 @@ const Payments = () => {
             <div className="payment-details-grid">
               <div>
                 <span>Roll No</span>
-                <strong>
-                  {selectedPayment.rollNo}
-                </strong>
+                <strong>{selectedPayment.rollNo}</strong>
               </div>
 
               <div>
                 <span>Course</span>
-                <strong>
-                  {selectedPayment.course}
-                </strong>
+                <strong>{selectedPayment.course}</strong>
               </div>
 
               <div>
                 <span>Batch</span>
-                <strong>
-                  {selectedPayment.batch}
-                </strong>
+                <strong>{selectedPayment.batch}</strong>
               </div>
 
               <div>
                 <span>Phone</span>
-                <strong>
-                  {selectedPayment.phone}
-                </strong>
+                <strong>{selectedPayment.phone}</strong>
               </div>
 
               <div>
                 <span>Total Fee</span>
-                <strong>
-                  ₹
-                  {formatMoney(
-                    selectedPayment.totalFee
-                  )}
-                </strong>
+                <strong>₹{formatMoney(selectedPayment.totalFee)}</strong>
               </div>
 
               <div>
@@ -1044,31 +847,19 @@ const Payments = () => {
                 <strong
                   className={`detail-status ${selectedPayment.paymentStatus}`}
                 >
-                  {
-                    selectedPayment.paymentStatus
-                  }
+                  {selectedPayment.paymentStatus}
                 </strong>
               </div>
 
               <div>
-                <span>
-                  Payment Date
-                </span>
-                <strong>
-                  {formatDate(
-                    selectedPayment.paymentDate
-                  )}
-                </strong>
+                <span>Payment Date</span>
+                <strong>{formatDate(selectedPayment.paymentDate)}</strong>
               </div>
 
               <div>
-                <span>
-                  Payment Method
-                </span>
+                <span>Payment Method</span>
                 <strong>
-                  {formatPaymentMethod(
-                    selectedPayment.paymentMethod
-                  )}
+                  {formatPaymentMethod(selectedPayment.paymentMethod)}
                 </strong>
               </div>
             </div>

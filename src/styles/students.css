@@ -63,12 +63,7 @@
 
   border-radius: 9px;
 
-  background:
-    linear-gradient(
-      135deg,
-      #ffc630,
-      #ffb400
-    );
+  background: linear-gradient(135deg, #ffc630, #ffb400);
 
   color: #181818;
 
@@ -77,25 +72,21 @@
 
   cursor: pointer;
 
-  box-shadow:
-    0 7px 18px rgba(255, 184, 0, 0.16);
+  box-shadow: 0 7px 18px rgba(255, 184, 0, 0.16);
 
-  transition:
-    0.2s ease;
+  transition: 0.2s ease;
 }
 
 .add-student-btn:hover {
   transform: translateY(-1px);
 
-  box-shadow:
-    0 9px 22px rgba(255, 184, 0, 0.22);
+  box-shadow: 0 9px 22px rgba(255, 184, 0, 0.22);
 }
 
 .student-summary-grid {
   display: grid;
 
-  grid-template-columns:
-    repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 
   gap: 13px;
 
@@ -119,21 +110,17 @@
 
   background: #ffffff;
 
-  box-shadow:
-    0 5px 20px rgba(27, 38, 53, 0.055);
+  box-shadow: 0 5px 20px rgba(27, 38, 53, 0.055);
 
-  transition:
-    0.2s ease;
+  transition: 0.2s ease;
 }
 
 .student-summary-card:hover {
   transform: translateY(-2px);
 
-  border-color:
-    rgba(255, 184, 0, 0.35);
+  border-color: rgba(255, 184, 0, 0.35);
 
-  box-shadow:
-    0 8px 25px rgba(27, 38, 53, 0.08);
+  box-shadow: 0 8px 25px rgba(27, 38, 53, 0.08);
 }
 
 .summary-icon {
@@ -215,8 +202,7 @@
 
   background: #ffffff;
 
-  box-shadow:
-    0 8px 26px rgba(25, 35, 48, 0.055);
+  box-shadow: 0 8px 26px rgba(25, 35, 48, 0.055);
 }
 
 .students-list-header {
@@ -317,8 +303,7 @@
 
   font-size: 11px;
 
-  transition:
-    0.2s ease;
+  transition: 0.2s ease;
 }
 
 .student-search input {
@@ -343,8 +328,7 @@
 .course-filter:focus {
   border-color: #d8a400;
 
-  box-shadow:
-    0 0 0 3px rgba(255, 184, 0, 0.08);
+  box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.08);
 }
 
 .students-table-wrapper {
@@ -395,8 +379,7 @@
 }
 
 .students-table tbody tr {
-  transition:
-    background 0.18s ease;
+  transition: background 0.18s ease;
 }
 
 .students-table tbody tr:hover {
@@ -560,8 +543,7 @@
 
   cursor: pointer;
 
-  transition:
-    0.2s ease;
+  transition: 0.2s ease;
 }
 
 .student-actions button:hover {
@@ -623,8 +605,7 @@
 
   border-radius: 50%;
 
-  animation:
-    student-loading 0.8s linear infinite;
+  animation: student-loading 0.8s linear infinite;
 }
 
 @keyframes student-loading {
@@ -647,8 +628,7 @@
 
   padding: 18px;
 
-  background:
-    rgba(14, 19, 25, 0.62);
+  background: rgba(14, 19, 25, 0.62);
 
   backdrop-filter: blur(5px);
 }
@@ -666,8 +646,7 @@
 
   background: #ffffff;
 
-  box-shadow:
-    0 24px 70px rgba(18, 26, 35, 0.25);
+  box-shadow: 0 24px 70px rgba(18, 26, 35, 0.25);
 }
 
 .form-modal {
@@ -785,8 +764,7 @@
 .form-grid {
   display: grid;
 
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 
   gap: 12px;
 }
@@ -844,8 +822,7 @@
 .student-form-group textarea:focus {
   border-color: #d5a000;
 
-  box-shadow:
-    0 0 0 3px rgba(255, 184, 0, 0.07);
+  box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.07);
 }
 
 .student-form-group .input-error {
@@ -969,8 +946,7 @@
 
   width: min(720px, 96vw);
 
-  max-height:
-    calc(100vh - 20px);
+  max-height: calc(100vh - 20px);
 
   overflow: hidden;
 }
@@ -986,8 +962,7 @@
 
   background: #ffffff;
 
-  box-shadow:
-    0 28px 85px rgba(11, 18, 27, 0.3);
+  box-shadow: 0 28px 85px rgba(11, 18, 27, 0.3);
 }
 
 .student-id-card::before {
@@ -997,14 +972,13 @@
 
   height: 3px;
 
-  background:
-    linear-gradient(
-      90deg,
-      #11151a 0%,
-      #ffb800 40%,
-      #ffd453 60%,
-      #11151a 100%
-    );
+  background: linear-gradient(
+    90deg,
+    #11151a 0%,
+    #ffb800 40%,
+    #ffd453 60%,
+    #11151a 100%
+  );
 }
 
 .student-id-close {
@@ -1050,12 +1024,7 @@
 
   padding: 10px 56px 10px 18px;
 
-  background:
-    linear-gradient(
-      110deg,
-      #14181e 0%,
-      #1b2027 100%
-    );
+  background: linear-gradient(110deg, #14181e 0%, #1b2027 100%);
 }
 
 .student-id-brand {
@@ -1102,8 +1071,7 @@
 
   padding: 5px 8px;
 
-  border: 1px solid
-    rgba(255, 184, 0, 0.25);
+  border: 1px solid rgba(255, 184, 0, 0.25);
 
   border-radius: 20px;
 
@@ -1124,12 +1092,7 @@
 
   padding: 16px 20px 14px;
 
-  background:
-    linear-gradient(
-      90deg,
-      #fffdf7,
-      #ffffff
-    );
+  background: linear-gradient(90deg, #fffdf7, #ffffff);
 }
 
 .student-id-photo-wrap {
@@ -1159,12 +1122,7 @@
 
   border-radius: 17px;
 
-  background:
-    linear-gradient(
-      145deg,
-      #fff6d9,
-      #fffdf7
-    );
+  background: linear-gradient(145deg, #fff6d9, #fffdf7);
 
   color: #a67600;
 
@@ -1286,8 +1244,7 @@
 .student-id-details-grid {
   display: grid;
 
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 
   gap: 7px;
 
@@ -1366,8 +1323,7 @@
 .student-id-fees {
   display: grid;
 
-  grid-template-columns:
-    repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 
   gap: 1px;
 
@@ -1518,10 +1474,7 @@
   }
 
   .student-id-profile-row {
-    padding:
-      10px
-      18px
-      9px;
+    padding: 10px 18px 9px;
   }
 
   .student-id-photo {
@@ -1540,10 +1493,7 @@
   }
 
   .student-id-details-grid {
-    padding:
-      0
-      18px
-      8px;
+    padding: 0 18px 8px;
   }
 
   .student-id-detail {
@@ -1553,17 +1503,11 @@
   }
 
   .student-id-fees {
-    margin:
-      0
-      18px
-      7px;
+    margin: 0 18px 7px;
   }
 
   .student-id-address {
-    margin:
-      0
-      18px
-      7px;
+    margin: 0 18px 7px;
 
     padding: 5px 8px;
   }
@@ -1575,8 +1519,7 @@
 
 @media (max-width: 1050px) {
   .student-summary-grid {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -1602,8 +1545,6 @@
   .course-filter {
     width: 100%;
   }
-
-  
 
   .students-table-wrapper {
     overflow: visible;
@@ -1639,8 +1580,7 @@
 
     background: #ffffff;
 
-    box-shadow:
-      0 4px 13px rgba(27, 38, 53, 0.04);
+    box-shadow: 0 4px 13px rgba(27, 38, 53, 0.04);
   }
 
   .students-table td {
@@ -1729,8 +1669,7 @@
   }
 
   .student-summary-grid {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .student-summary-card {
@@ -1768,8 +1707,6 @@
     grid-column: auto;
   }
 
-  
-
   .student-id-overlay {
     padding: 5px;
   }
@@ -1777,8 +1714,7 @@
   .student-id-modal {
     width: 100%;
 
-    max-height:
-      calc(100dvh - 10px);
+    max-height: calc(100dvh - 10px);
 
     overflow: hidden;
   }
@@ -1798,11 +1734,7 @@
   .student-id-top {
     min-height: 53px;
 
-    padding:
-      6px
-      44px
-      6px
-      11px;
+    padding: 6px 44px 6px 11px;
   }
 
   .student-id-brand img {
@@ -1825,10 +1757,7 @@
   .student-id-profile-row {
     gap: 10px;
 
-    padding:
-      8px
-      11px
-      7px;
+    padding: 8px 11px 7px;
   }
 
   .student-id-photo-wrap {
@@ -1871,15 +1800,11 @@
   }
 
   .student-id-details-grid {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 
     gap: 4px;
 
-    padding:
-      0
-      11px
-      6px;
+    padding: 0 11px 6px;
   }
 
   .student-id-detail {
@@ -1906,10 +1831,7 @@
   }
 
   .student-id-fees {
-    margin:
-      0
-      11px
-      5px;
+    margin: 0 11px 5px;
   }
 
   .student-id-fees > div {
@@ -1925,10 +1847,7 @@
   }
 
   .student-id-address {
-    margin:
-      0
-      11px
-      5px;
+    margin: 0 11px 5px;
 
     padding: 4px 6px;
   }
@@ -1956,8 +1875,7 @@
   }
 
   .student-form-actions {
-    flex-direction:
-      column-reverse;
+    flex-direction: column-reverse;
   }
 
   .student-form-actions button {
@@ -1965,8 +1883,7 @@
   }
 
   .delete-actions {
-    flex-direction:
-      column-reverse;
+    flex-direction: column-reverse;
   }
 
   .delete-actions button {
@@ -2152,8 +2069,7 @@
 
 .setup-batch-grid {
   display: grid;
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 7px;
 }
 
@@ -3505,19 +3421,33 @@
   }
 
   .students-table th:nth-child(1),
-  .students-table td:nth-child(1) { width: 6%; }
+  .students-table td:nth-child(1) {
+    width: 6%;
+  }
   .students-table th:nth-child(2),
-  .students-table td:nth-child(2) { width: 25%; }
+  .students-table td:nth-child(2) {
+    width: 25%;
+  }
   .students-table th:nth-child(3),
-  .students-table td:nth-child(3) { width: 13%; }
+  .students-table td:nth-child(3) {
+    width: 13%;
+  }
   .students-table th:nth-child(4),
-  .students-table td:nth-child(4) { width: 15%; }
+  .students-table td:nth-child(4) {
+    width: 15%;
+  }
   .students-table th:nth-child(5),
-  .students-table td:nth-child(5) { width: 15%; }
+  .students-table td:nth-child(5) {
+    width: 15%;
+  }
   .students-table th:nth-child(6),
-  .students-table td:nth-child(6) { width: 13%; }
+  .students-table td:nth-child(6) {
+    width: 13%;
+  }
   .students-table th:nth-child(7),
-  .students-table td:nth-child(7) { width: 13%; }
+  .students-table td:nth-child(7) {
+    width: 13%;
+  }
 
   .student-avatar {
     width: 29px;
@@ -4260,25 +4190,39 @@
   }
 
   .students-table th:nth-child(1),
-  .students-table td:nth-child(1) { width: 6%; }
+  .students-table td:nth-child(1) {
+    width: 6%;
+  }
 
   .students-table th:nth-child(2),
-  .students-table td:nth-child(2) { width: 24%; }
+  .students-table td:nth-child(2) {
+    width: 24%;
+  }
 
   .students-table th:nth-child(3),
-  .students-table td:nth-child(3) { width: 15%; }
+  .students-table td:nth-child(3) {
+    width: 15%;
+  }
 
   .students-table th:nth-child(4),
-  .students-table td:nth-child(4) { width: 12%; }
+  .students-table td:nth-child(4) {
+    width: 12%;
+  }
 
   .students-table th:nth-child(5),
-  .students-table td:nth-child(5) { width: 18%; }
+  .students-table td:nth-child(5) {
+    width: 18%;
+  }
 
   .students-table th:nth-child(6),
-  .students-table td:nth-child(6) { width: 14%; }
+  .students-table td:nth-child(6) {
+    width: 14%;
+  }
 
   .students-table th:nth-child(7),
-  .students-table td:nth-child(7) { width: 11%; }
+  .students-table td:nth-child(7) {
+    width: 11%;
+  }
 
   .student-avatar {
     display: flex;
@@ -5273,7 +5217,6 @@
   }
 }
 
-
 @media (min-width: 901px) {
   .students-page {
     width: 100%;
@@ -5772,5 +5715,25 @@
 
   .students-message {
     min-height: 160px !important;
+  }
+}
+
+/* FINAL GAP-ONLY OVERRIDE */
+@media (min-width: 769px) {
+  .students-toolbar {
+    gap: 0 !important;
+  }
+
+  .students-header-actions {
+    gap: 0 !important;
+  }
+
+  .students-toolbar .student-search,
+  .students-toolbar .student-filter-wrapper,
+  .students-toolbar .students-header-actions,
+  .students-toolbar .student-setup-btn,
+  .students-toolbar .add-student-btn {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
   }
 }

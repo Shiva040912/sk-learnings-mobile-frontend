@@ -13,7 +13,7 @@ import api from "../services/axios";
 import logo from "../assets/sk-logo.png";
 import gpayLogo from "../assets/Gpay.png";
 import phonePeLogo from "../assets/phonepay.png";
-import paytmLogo from "../assets/paytm.png";
+import paytmLogo from "../assets/paytm.PNG";
 
 import "../styles/studentpayment.css";
 

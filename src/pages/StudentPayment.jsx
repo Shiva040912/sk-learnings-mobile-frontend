@@ -21,9 +21,14 @@ import "../styles/studentpayment.css";
 const StudentPayment = () => {
   const { studentId } = useParams();
 
-  const [paymentData, setPaymentData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [paymentData, setPaymentData] =
+    useState(null);
+
+  const [isLoading, setIsLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
 
   useEffect(() => {
     const fetchPaymentDetails = async () => {
@@ -35,7 +40,9 @@ const StudentPayment = () => {
           `/payments/public/student/${studentId}`
         );
 
-        setPaymentData(response.data || null);
+        setPaymentData(
+          response.data || null
+        );
       } catch (err) {
         setError(
           err.response?.data?.message ||
@@ -51,44 +58,76 @@ const StudentPayment = () => {
     }
   }, [studentId]);
 
-  const student = paymentData?.student;
-  const payment = paymentData?.payment;
+  const student =
+    paymentData?.student;
 
-  const transactionReference = useMemo(() => {
-    const id = student?.id || student?._id;
+  const payment =
+    paymentData?.payment;
 
-    if (!id) {
-      return "";
-    }
+  const transactionReference =
+    useMemo(() => {
+      const id =
+        student?.id ||
+        student?._id;
 
-    return `SK-${id}-${Date.now()}`;
-  }, [student]);
+      if (!id) {
+        return "";
+      }
+
+      return `SK-${id}-${Date.now()}`;
+    }, [student]);
 
   const formatDate = (value) => {
     if (!value) {
       return "-";
     }
 
-    return new Date(value).toLocaleDateString("en-IN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+    return new Date(
+      value
+    ).toLocaleDateString(
+      "en-IN",
+      {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }
+    );
   };
 
   const buildUpiQuery = () => {
-    if (!payment?.upiId || !payment?.receiverName) {
+    if (
+      !payment?.upiId ||
+      !payment?.receiverName
+    ) {
       return "";
     }
 
-    const params = new URLSearchParams({
-      pa: payment.upiId,
-      pn: payment.receiverName,
-      tr: transactionReference,
-      tn: `Fee Payment - ${student?.rollNo || "Student"}`,
-      am: String(student?.paymentAmount || 0),
-      cu: "INR",
-    });
+    const params =
+      new URLSearchParams({
+        pa:
+          payment.upiId,
+
+        pn:
+          payment.receiverName,
+
+        tr:
+          transactionReference,
+
+        tn:
+          `Fee Payment - ${
+            student?.rollNo ||
+            "Student"
+          }`,
+
+        am:
+          String(
+            student?.paymentAmount ||
+              0
+          ),
+
+        cu:
+          "INR",
+      });
 
     return params.toString();
   };
@@ -100,36 +139,42 @@ const StudentPayment = () => {
   };
 
   const openGooglePay = () => {
-    const query = buildUpiQuery();
+    const query =
+      buildUpiQuery();
 
     if (!query) {
       showPaymentError();
       return;
     }
 
-    window.location.href = `gpay://upi/pay?${query}`;
+    window.location.href =
+      `gpay://upi/pay?${query}`;
   };
 
   const openPhonePe = () => {
-    const query = buildUpiQuery();
+    const query =
+      buildUpiQuery();
 
     if (!query) {
       showPaymentError();
       return;
     }
 
-    window.location.href = `upi://pay?${query}`;
+    window.location.href =
+      `upi://pay?${query}`;
   };
 
   const openPaytm = () => {
-    const query = buildUpiQuery();
+    const query =
+      buildUpiQuery();
 
     if (!query) {
       showPaymentError();
       return;
     }
 
-    window.location.href = `upi://pay?${query}`;
+    window.location.href =
+      `upi://pay?${query}`;
   };
 
   if (isLoading) {
@@ -150,7 +195,11 @@ const StudentPayment = () => {
     );
   }
 
-  if (error || !student || !payment) {
+  if (
+    error ||
+    !student ||
+    !payment
+  ) {
     return (
       <div className="student-payment-page">
         <div className="payment-state-card payment-error-state">
@@ -170,7 +219,8 @@ const StudentPayment = () => {
   }
 
   const isPaid =
-    student.paymentStatus === "paid";
+    student.paymentStatus ===
+    "paid";
 
   const isConfigured =
     payment.isConfigured;
@@ -213,7 +263,8 @@ const StudentPayment = () => {
 
           <p>
             Verify the student details and
-            continue using your preferred UPI app.
+            continue using your preferred UPI app
+            or scan the payment QR.
           </p>
         </section>
 
@@ -272,6 +323,7 @@ const StudentPayment = () => {
 
               <strong>
                 <FiCalendar />
+
                 {formatDate(
                   payment.feeDueDate
                 )}
@@ -318,57 +370,80 @@ const StudentPayment = () => {
                 institute.
               </div>
             ) : (
-              <div className="upi-buttons-row">
-                <button
-                  type="button"
-                  className="mini-upi-btn"
-                  onClick={openGooglePay}
-                >
-                  <img
-                    src={gpayLogo}
-                    alt="Google Pay"
-                  />
+              <>
+                <div className="upi-buttons-row">
+                  <button
+                    type="button"
+                    className="mini-upi-btn"
+                    onClick={openGooglePay}
+                  >
+                    <img
+                      src={gpayLogo}
+                      alt="Google Pay"
+                    />
 
-                  <span>
-                    GPay
-                  </span>
-                </button>
+                    <span>
+                      GPay
+                    </span>
+                  </button>
 
-                <button
-                  type="button"
-                  className="mini-upi-btn"
-                  onClick={openPhonePe}
-                >
-                  <img
-                    src={phonePeLogo}
-                    alt="PhonePe"
-                  />
+                  <button
+                    type="button"
+                    className="mini-upi-btn"
+                    onClick={openPhonePe}
+                  >
+                    <img
+                      src={phonePeLogo}
+                      alt="PhonePe"
+                    />
 
-                  <span>
-                    PhonePe
-                  </span>
-                </button>
+                    <span>
+                      PhonePe
+                    </span>
+                  </button>
 
-                <button
-                  type="button"
-                  className="mini-upi-btn"
-                  onClick={openPaytm}
-                >
-                  <img
-                    src={paytmLogo}
-                    alt="Paytm"
-                  />
+                  <button
+                    type="button"
+                    className="mini-upi-btn"
+                    onClick={openPaytm}
+                  >
+                    <img
+                      src={paytmLogo}
+                      alt="Paytm"
+                    />
 
-                  <span>
-                    Paytm
-                  </span>
-                </button>
-              </div>
+                    <span>
+                      Paytm
+                    </span>
+                  </button>
+                </div>
+
+                {payment.upiQrImage && (
+                  <div className="student-payment-qr-section">
+                    <div className="student-payment-qr-heading">
+                      <span>
+                        OR SCAN & PAY
+                      </span>
+
+                      <strong>
+                        Scan the QR using any UPI app
+                      </strong>
+                    </div>
+
+                    <div className="student-payment-qr-box">
+                      <img
+                        src={payment.upiQrImage}
+                        alt="The SK Learnings payment QR"
+                      />
+                    </div>
+
+                    <span className="student-payment-qr-caption">
+                      Open any UPI app and scan this QR to complete the payment.
+                    </span>
+                  </div>
+                )}
+              </>
             )}
-
-            <div className="payment-method-note">
-              Tap a payment app to continue securely.
-            </div>
           </section>
         )}
 
@@ -407,5 +482,3 @@ const StudentPayment = () => {
 };
 
 export default StudentPayment;
-
-////git pushing

@@ -10,6 +10,9 @@ import {
   FiSearch,
   FiSettings,
   FiSave,
+  FiImage,
+  FiUpload,
+  FiTrash2,
   FiX,
 } from "react-icons/fi";
 import toast from "react-hot-toast";
@@ -43,6 +46,7 @@ const Payments = () => {
     upiId: "",
     receiverName: "",
     paymentPhone: "",
+    upiQrImage: "",
   });
 
   const fetchPaymentPageData = async () => {
@@ -91,6 +95,7 @@ const Payments = () => {
         upiId: response.data?.upiId || "",
         receiverName: response.data?.receiverName || "",
         paymentPhone: response.data?.paymentPhone || "",
+        upiQrImage: response.data?.upiQrImage || "",
       });
     } catch (error) {
       toast.error(
@@ -311,6 +316,84 @@ const Payments = () => {
     }));
   };
 
+  const handleQrUpload = (event) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select a valid QR image");
+      event.target.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const image = new Image();
+
+      image.onload = () => {
+        const maxSize = 320;
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+
+        canvas.width = maxSize;
+        canvas.height = maxSize;
+
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, maxSize, maxSize);
+
+        const scale = Math.min(
+          maxSize / image.width,
+          maxSize / image.height,
+        );
+
+        const drawWidth = image.width * scale;
+        const drawHeight = image.height * scale;
+        const x = (maxSize - drawWidth) / 2;
+        const y = (maxSize - drawHeight) / 2;
+
+        context.drawImage(
+          image,
+          x,
+          y,
+          drawWidth,
+          drawHeight,
+        );
+
+        const compressedQr = canvas.toDataURL(
+          "image/jpeg",
+          0.82,
+        );
+
+        setPaymentSettings((current) => ({
+          ...current,
+          upiQrImage: compressedQr,
+        }));
+
+        toast.success("QR image selected");
+      };
+
+      image.onerror = () => {
+        toast.error("Unable to read the QR image");
+      };
+
+      image.src = String(reader.result || "");
+    };
+
+    reader.readAsDataURL(file);
+    event.target.value = "";
+  };
+
+  const handleRemoveQr = () => {
+    setPaymentSettings((current) => ({
+      ...current,
+      upiQrImage: "",
+    }));
+  };
+
   const handleSavePaymentSettings = async () => {
     const upiId = paymentSettings.upiId.trim();
     const receiverName = paymentSettings.receiverName.trim();
@@ -340,6 +423,7 @@ const Payments = () => {
         upiId,
         receiverName,
         paymentPhone,
+        upiQrImage: paymentSettings.upiQrImage || "",
       });
 
       setPaymentSettings({
@@ -348,6 +432,9 @@ const Payments = () => {
           response.data?.paymentSettings?.receiverName || receiverName,
         paymentPhone:
           response.data?.paymentSettings?.paymentPhone || paymentPhone,
+        upiQrImage:
+          response.data?.paymentSettings?.upiQrImage ??
+          paymentSettings.upiQrImage,
       });
 
       toast.success(
@@ -718,6 +805,17 @@ const Payments = () => {
             <span>UPI Settings</span>
           </button>
 
+          <button
+            type="button"
+            className="send-fee-reminder-btn payment-toolbar-reminder-btn"
+            onClick={handleSendReminders}
+            disabled={isSendingReminders || !feeDueDate}
+            title="Send WhatsApp reminder to unpaid students"
+          >
+            <FiBell />
+            <span>{isSendingReminders ? "Sending..." : "Send Reminder"}</span>
+          </button>
+
           <div className="toolbar-fee-date">
             <FiCalendar />
 
@@ -733,18 +831,6 @@ const Payments = () => {
               disabled={isSavingDueDate}
             >
               {isSavingDueDate ? "Saving..." : "Set Date"}
-            </button>
-
-            <button
-              type="button"
-              className="send-fee-reminder-btn"
-              onClick={handleSendReminders}
-              disabled={isSendingReminders || !feeDueDate}
-              title="Send WhatsApp reminder to unpaid students"
-            >
-              <FiBell />
-
-              <span>{isSendingReminders ? "Sending..." : "Send Reminder"}</span>
             </button>
           </div>
         </div>
@@ -973,9 +1059,70 @@ const Payments = () => {
                 />
               </div>
 
+              <div className="payment-settings-qr-section">
+                <div className="payment-settings-qr-heading">
+                  <div>
+                    <label>Payment QR Code</label>
+                    <span>
+                      Upload the QR that students can scan on the payment page.
+                    </span>
+                  </div>
+
+                  <FiImage />
+                </div>
+
+                <div className="payment-settings-qr-content">
+                  <div className="payment-settings-qr-preview">
+                    {paymentSettings.upiQrImage ? (
+                      <img
+                        src={paymentSettings.upiQrImage}
+                        alt="Payment QR preview"
+                      />
+                    ) : (
+                      <div className="payment-settings-qr-empty">
+                        <FiImage />
+                        <span>No QR uploaded</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="payment-settings-qr-actions">
+                    <label
+                      className="payment-settings-upload-btn"
+                      htmlFor="payment-qr-upload"
+                    >
+                      <FiUpload />
+                      <span>
+                        {paymentSettings.upiQrImage
+                          ? "Change QR"
+                          : "Upload QR"}
+                      </span>
+                    </label>
+
+                    <input
+                      id="payment-qr-upload"
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      onChange={handleQrUpload}
+                    />
+
+                    {paymentSettings.upiQrImage && (
+                      <button
+                        type="button"
+                        className="payment-settings-remove-qr-btn"
+                        onClick={handleRemoveQr}
+                      >
+                        <FiTrash2 />
+                        <span>Remove</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               <div className="payment-settings-note">
-                These details are used dynamically on the student payment page.
-                No UPI ID or receiving phone number is hardcoded.
+                UPI details and QR are loaded dynamically on the student
+                payment page. Nothing is hardcoded.
               </div>
             </div>
 

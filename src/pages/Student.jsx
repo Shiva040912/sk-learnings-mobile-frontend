@@ -142,6 +142,11 @@ const Students = () => {
     return [...new Set(courseList)];
   }, [students]);
 
+  const activeFilterCount = [
+    courseFilter !== "all",
+    batchFilter !== "all",
+  ].filter(Boolean).length;
+
   const filteredStudents = useMemo(() => {
     const keyword =
       search.trim().toLowerCase();
@@ -891,9 +896,10 @@ const Students = () => {
               <FiFilter />
               <span>Filter</span>
 
-              {(courseFilter !== "all" ||
-                batchFilter !== "all") && (
-                <span className="student-filter-active-dot" />
+              {activeFilterCount > 0 && (
+                <span className="student-filter-count">
+                  {activeFilterCount}
+                </span>
               )}
             </button>
 
@@ -902,15 +908,30 @@ const Students = () => {
                 <div className="student-filter-header">
                   <strong>Filter Students</strong>
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setCourseFilter("all");
-                      setBatchFilter("all");
-                    }}
-                  >
-                    Clear
-                  </button>
+                  <div className="student-filter-header-actions">
+                    {activeFilterCount > 0 && (
+                      <button
+                        type="button"
+                        className="student-filter-clear-btn"
+                        onClick={() => {
+                          setCourseFilter("all");
+                          setBatchFilter("all");
+                        }}
+                      >
+                        Clear
+                      </button>
+                    )}
+
+                    <button
+                      type="button"
+                      className="student-filter-close-btn"
+                      onClick={() => setShowFilters(false)}
+                      aria-label="Close filters"
+                      title="Close filters"
+                    >
+                      <FiX />
+                    </button>
+                  </div>
                 </div>
 
                 <div className="student-filter-field">

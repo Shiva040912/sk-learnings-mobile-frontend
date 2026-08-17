@@ -5272,3 +5272,217 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+@media (min-width: 901px) {
+  .students-page {
+    width: 100%;
+  }
+
+  .student-summary-grid {
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 14px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .student-summary-card {
+    width: 100%;
+    min-width: 0;
+    min-height: 96px;
+    padding: 14px 16px;
+  }
+
+  .students-list-section {
+    width: 100%;
+  }
+
+  .students-toolbar {
+    width: 100%;
+    display: grid !important;
+    grid-template-columns:
+      minmax(360px, 1fr)
+      104px
+      96px
+      128px !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 11px 14px !important;
+  }
+
+  .student-search {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+  }
+
+  .student-search input {
+    width: 100% !important;
+    height: 42px !important;
+  }
+
+  .student-filter-wrapper {
+    width: 104px;
+    min-width: 104px;
+    position: relative;
+  }
+
+  .student-filter-button,
+  .student-setup-btn,
+  .add-student-btn {
+    height: 42px !important;
+    min-height: 42px !important;
+    border-radius: 9px !important;
+  }
+
+  .student-filter-button {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 0 11px !important;
+    gap: 7px !important;
+  }
+
+  .students-header-actions {
+    display: contents !important;
+  }
+
+  .student-setup-btn {
+    width: 96px !important;
+    min-width: 96px !important;
+    justify-content: center !important;
+  }
+
+  .add-student-btn {
+    width: 128px !important;
+    min-width: 128px !important;
+    justify-content: center !important;
+    padding: 0 13px !important;
+  }
+
+  .student-filter-dropdown {
+    top: calc(100% + 9px) !important;
+    right: 0 !important;
+    width: 300px !important;
+  }
+}
+
+.student-filter-count {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 99px;
+  background: #ffb800;
+  color: #171717;
+  font-size: 8px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.student-filter-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.student-filter-clear-btn {
+  min-height: 30px;
+  padding: 0 9px !important;
+  border: 1px solid #ead596 !important;
+  border-radius: 7px !important;
+  background: #fffaf0 !important;
+  color: #9d7100 !important;
+  font-size: 8px !important;
+  font-weight: 700 !important;
+}
+
+.student-filter-close-btn {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  border: 1px solid #dce1e7 !important;
+  border-radius: 7px !important;
+  background: #ffffff !important;
+  color: #68727d !important;
+  font-size: 14px !important;
+}
+
+.student-filter-close-btn:hover {
+  border-color: #e4be56 !important;
+  background: #fffaf0 !important;
+  color: #a97800 !important;
+}
+
+@media (min-width: 601px) and (max-width: 900px) {
+  .student-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .student-search {
+    max-width: none !important;
+  }
+
+  .student-filter-button,
+  .student-setup-btn,
+  .add-student-btn {
+    min-height: 40px !important;
+    height: 40px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .student-filter-count {
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    font-size: 7px;
+  }
+
+  .student-filter-header-actions {
+    gap: 6px;
+  }
+
+  .student-filter-clear-btn {
+    min-height: 32px !important;
+    padding: 0 9px !important;
+    border-radius: 9px !important;
+    font-size: 8px !important;
+  }
+
+  .student-filter-close-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* Desktop full-width students table */
+@media (min-width: 769px) {
+  .students-list-section {
+    width: calc(100% + 48px);
+    max-width: none;
+    margin-left: -24px;
+    margin-right: -24px;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+  }
+
+  .students-table-card,
+  .students-table-wrapper,
+  .students-table {
+    width: 100%;
+    max-width: none;
+  }
+
+  .students-table-wrapper {
+    overflow-x: auto;
+  }
+}
+

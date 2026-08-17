@@ -3582,3 +3582,254 @@
     padding: 0 1px !important;
   }
 }
+
+
+/* Payment requested updates */
+@media (min-width: 769px) {
+  .payment-history-section {
+    width: calc(100% + 48px);
+    max-width: none;
+    margin-left: -24px;
+    margin-right: -24px;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+  }
+
+  .payment-table-card,
+  .payment-table-wrapper,
+  .payments-table {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.payment-filter-count {
+  min-width: 17px;
+  height: 17px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #ffb800;
+  color: #171717;
+  font-size: 7px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.payment-filter-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.payment-filter-header .payment-filter-clear-btn {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #b27c00;
+  font-size: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.payment-filter-header .payment-filter-close-btn {
+  width: 25px;
+  height: 25px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid #e0e4e8;
+  border-radius: 6px;
+  background: #f8f9fa;
+  color: #66717d;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.payment-row {
+  cursor: pointer;
+}
+
+.payment-details-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(14, 19, 25, 0.62);
+  backdrop-filter: blur(5px);
+}
+
+.payment-details-modal {
+  width: min(620px, 96vw);
+  overflow: hidden;
+  border: 1px solid #e0e4e8;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(18, 26, 35, 0.25);
+}
+
+.payment-details-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 16px 18px;
+  border-bottom: 1px solid #e9ecf0;
+  background: #fafbfc;
+}
+
+.payment-details-header span {
+  color: #a67500;
+  font-size: 7px;
+  font-weight: 750;
+  letter-spacing: 1px;
+}
+
+.payment-details-header h2 {
+  margin: 4px 0 0;
+  color: #202b36;
+  font-size: 17px;
+}
+
+.payment-details-header button {
+  width: 31px;
+  height: 31px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid #dde2e7;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #66717d;
+  cursor: pointer;
+}
+
+.payment-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  padding: 16px 18px 18px;
+}
+
+.payment-details-grid > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 11px 12px;
+  border: 1px solid #e7eaee;
+  border-radius: 8px;
+  background: #fafbfc;
+}
+
+.payment-details-grid span {
+  color: #929aa4;
+  font-size: 7px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.payment-details-grid strong {
+  overflow: hidden;
+  color: #35404c;
+  font-size: 10px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.detail-status.paid {
+  color: #2c8a4c;
+  text-transform: capitalize;
+}
+
+.detail-status.unpaid {
+  color: #b77d00;
+  text-transform: capitalize;
+}
+
+@media (max-width: 560px) {
+  .payment-details-overlay {
+    padding: 10px;
+  }
+
+  .payment-details-grid {
+    grid-template-columns: 1fr;
+    padding: 12px;
+  }
+
+  .payment-details-header {
+    padding: 13px;
+  }
+}
+
+.send-fee-reminder-btn {
+  min-width: 110px !important;
+  height: 32px !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 10px !important;
+  border: 1px solid #dce1e7 !important;
+  border-radius: 6px !important;
+  background: #ffffff !important;
+  color: #4d5864 !important;
+  font-size: 8px !important;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.2s ease;
+}
+
+.send-fee-reminder-btn svg {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: #b27c00;
+}
+
+.send-fee-reminder-btn:hover:not(:disabled) {
+  border-color: #e0ad24 !important;
+  background: #fffaf0 !important;
+  color: #9b720b !important;
+}
+
+.send-fee-reminder-btn:disabled {
+  opacity: 0.55 !important;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .toolbar-fee-date {
+    height: auto;
+    flex-wrap: wrap;
+  }
+
+  .send-fee-reminder-btn {
+    min-width: 105px !important;
+    height: 34px !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .toolbar-fee-date {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr) auto;
+    gap: 5px;
+  }
+
+  .send-fee-reminder-btn {
+    grid-column: 2 / -1;
+    width: 100%;
+    min-width: 0 !important;
+    height: 32px !important;
+  }
+}

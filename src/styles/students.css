@@ -5486,3 +5486,134 @@
   }
 }
 
+/* Desktop student directory: keep around 8 student rows visible at once */
+@media (min-width: 769px) {
+  .students-page {
+    padding-bottom: 8px;
+  }
+
+  .students-header {
+    margin-bottom: 12px;
+  }
+
+  .student-summary-grid {
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .student-summary-card {
+    min-height: 82px;
+    padding: 11px 13px;
+  }
+
+  .summary-icon {
+    width: 37px;
+    height: 37px;
+    font-size: 16px;
+  }
+
+  .summary-content strong {
+    margin-top: 3px;
+    font-size: 17px;
+  }
+
+  .summary-content small {
+    margin-top: 2px;
+  }
+
+  .students-list-actions {
+    min-height: 52px;
+    padding: 8px 14px;
+  }
+
+  .students-toolbar {
+    padding: 8px 14px;
+  }
+
+  .student-search input,
+  .course-filter,
+  .batch-filter,
+  .student-filter-button {
+    height: 36px;
+  }
+
+  .students-table-wrapper {
+    max-height: 438px;
+    overflow-x: auto;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+  }
+
+  .students-table {
+    margin: 0;
+  }
+
+  .students-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 8;
+  }
+
+  .students-table th {
+    height: 38px;
+    padding: 0 11px;
+    background: #f6f8fa;
+  }
+
+  .students-table td {
+    height: 50px;
+    padding: 6px 11px;
+  }
+
+  .student-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    font-size: 11px;
+  }
+
+  .student-profile-cell {
+    gap: 7px;
+  }
+
+  .student-name-cell strong {
+    font-size: 10px;
+  }
+
+  .student-name-cell span {
+    font-size: 7.5px;
+  }
+
+  .serial-number {
+    min-width: 23px;
+    height: 23px;
+    font-size: 7.5px;
+  }
+
+  .roll-number-badge,
+  .course-badge {
+    padding: 4px 6px;
+    font-size: 7.5px;
+  }
+
+  .student-actions button {
+    width: 27px;
+    height: 27px;
+    font-size: 11px;
+  }
+
+  .students-table-wrapper::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .students-table-wrapper::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: #cfd5db;
+  }
+
+  .students-table-wrapper::-webkit-scrollbar-track {
+    background: #f5f6f8;
+  }
+}
+

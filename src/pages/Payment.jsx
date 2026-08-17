@@ -8,6 +8,8 @@ import {
   FiDollarSign,
   FiFilter,
   FiSearch,
+  FiSettings,
+  FiSave,
   FiX,
 } from "react-icons/fi";
 import toast from "react-hot-toast";
@@ -33,6 +35,15 @@ const Payments = () => {
   const [paymentMethodStudent, setPaymentMethodStudent] = useState(null);
   const [paymentUpdatingStudentId, setPaymentUpdatingStudentId] =
     useState(null);
+
+  const [showPaymentSettings, setShowPaymentSettings] = useState(false);
+  const [isSavingPaymentSettings, setIsSavingPaymentSettings] =
+    useState(false);
+  const [paymentSettings, setPaymentSettings] = useState({
+    upiId: "",
+    receiverName: "",
+    paymentPhone: "",
+  });
 
   const fetchPaymentPageData = async () => {
     try {
@@ -72,19 +83,38 @@ const Payments = () => {
     }
   };
 
+  const fetchPaymentSettings = async () => {
+    try {
+      const response = await api.get("/payments/settings");
+
+      setPaymentSettings({
+        upiId: response.data?.upiId || "",
+        receiverName: response.data?.receiverName || "",
+        paymentPhone: response.data?.paymentPhone || "",
+      });
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to load UPI settings",
+      );
+    }
+  };
+
   useEffect(() => {
     fetchPaymentPageData();
     fetchFeeDueDate();
+    fetchPaymentSettings();
 
     const handleWindowFocus = () => {
       fetchPaymentPageData();
       fetchFeeDueDate();
+      fetchPaymentSettings();
     };
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
         fetchPaymentPageData();
         fetchFeeDueDate();
+        fetchPaymentSettings();
       }
     };
 
@@ -272,6 +302,68 @@ const Payments = () => {
       setIsSavingDueDate(false);
     }
   };
+  const handlePaymentSettingChange = (event) => {
+    const { name, value } = event.target;
+
+    setPaymentSettings((current) => ({
+      ...current,
+      [name]: value,
+    }));
+  };
+
+  const handleSavePaymentSettings = async () => {
+    const upiId = paymentSettings.upiId.trim();
+    const receiverName = paymentSettings.receiverName.trim();
+    const paymentPhone = paymentSettings.paymentPhone
+      .replace(/\s+/g, "")
+      .trim();
+
+    if (!upiId) {
+      toast.error("Please enter the UPI ID");
+      return;
+    }
+
+    if (!receiverName) {
+      toast.error("Please enter the receiver name");
+      return;
+    }
+
+    if (!paymentPhone) {
+      toast.error("Please enter the payment phone number");
+      return;
+    }
+
+    try {
+      setIsSavingPaymentSettings(true);
+
+      const response = await api.put("/payments/settings", {
+        upiId,
+        receiverName,
+        paymentPhone,
+      });
+
+      setPaymentSettings({
+        upiId: response.data?.paymentSettings?.upiId || upiId,
+        receiverName:
+          response.data?.paymentSettings?.receiverName || receiverName,
+        paymentPhone:
+          response.data?.paymentSettings?.paymentPhone || paymentPhone,
+      });
+
+      toast.success(
+        response.data?.message || "UPI settings updated successfully",
+      );
+
+      setShowPaymentSettings(false);
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to update UPI settings",
+      );
+    } finally {
+      setIsSavingPaymentSettings(false);
+    }
+  };
+
   const handleSendReminders = async () => {
     if (!feeDueDate) {
       toast.error("Please set the common fee due date first");
@@ -616,6 +708,16 @@ const Payments = () => {
             )}
           </div>
 
+          <button
+            type="button"
+            className="payment-upi-settings-btn"
+            onClick={() => setShowPaymentSettings(true)}
+            title="UPI payment settings"
+          >
+            <FiSettings />
+            <span>UPI Settings</span>
+          </button>
+
           <div className="toolbar-fee-date">
             <FiCalendar />
 
@@ -790,6 +892,118 @@ const Payments = () => {
           )}
         </div>
       </section>
+
+      {showPaymentSettings && (
+        <div
+          className="payment-settings-overlay"
+          onClick={() => {
+            if (!isSavingPaymentSettings) {
+              setShowPaymentSettings(false);
+            }
+          }}
+        >
+          <div
+            className="payment-settings-modal"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="payment-settings-header">
+              <div>
+                <span>ONLINE PAYMENT</span>
+                <h2>UPI Settings</h2>
+                <p>
+                  Update the account details used to receive student fee
+                  payments.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="payment-settings-close"
+                onClick={() => setShowPaymentSettings(false)}
+                disabled={isSavingPaymentSettings}
+                aria-label="Close UPI settings"
+                title="Close"
+              >
+                <FiX />
+              </button>
+            </div>
+
+            <div className="payment-settings-body">
+              <div className="payment-settings-field">
+                <label htmlFor="payment-upi-id">UPI ID</label>
+
+                <input
+                  id="payment-upi-id"
+                  type="text"
+                  name="upiId"
+                  value={paymentSettings.upiId}
+                  onChange={handlePaymentSettingChange}
+                  placeholder="example@upi"
+                  autoComplete="off"
+                />
+              </div>
+
+              <div className="payment-settings-field">
+                <label htmlFor="payment-receiver-name">Receiver Name</label>
+
+                <input
+                  id="payment-receiver-name"
+                  type="text"
+                  name="receiverName"
+                  value={paymentSettings.receiverName}
+                  onChange={handlePaymentSettingChange}
+                  placeholder="The SK Learnings"
+                  autoComplete="off"
+                />
+              </div>
+
+              <div className="payment-settings-field">
+                <label htmlFor="payment-phone">Payment Phone Number</label>
+
+                <input
+                  id="payment-phone"
+                  type="tel"
+                  name="paymentPhone"
+                  value={paymentSettings.paymentPhone}
+                  onChange={handlePaymentSettingChange}
+                  placeholder="10 digit mobile number"
+                  maxLength={10}
+                  inputMode="numeric"
+                  autoComplete="tel"
+                />
+              </div>
+
+              <div className="payment-settings-note">
+                These details are used dynamically on the student payment page.
+                No UPI ID or receiving phone number is hardcoded.
+              </div>
+            </div>
+
+            <div className="payment-settings-actions">
+              <button
+                type="button"
+                className="payment-settings-cancel-btn"
+                onClick={() => setShowPaymentSettings(false)}
+                disabled={isSavingPaymentSettings}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="payment-settings-save-btn"
+                onClick={handleSavePaymentSettings}
+                disabled={isSavingPaymentSettings}
+              >
+                <FiSave />
+                <span>
+                  {isSavingPaymentSettings ? "Saving..." : "Save Settings"}
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {selectedPayment && (
         <div

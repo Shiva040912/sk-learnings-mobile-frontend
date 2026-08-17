@@ -3833,3 +3833,274 @@
     height: 32px !important;
   }
 }
+
+/* UPI payment settings */
+.payment-upi-settings-btn {
+  min-width: 92px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 9px;
+  border: 1px solid #dce1e7;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #4d5864;
+  font-size: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.2s ease;
+}
+
+.payment-upi-settings-btn:hover {
+  border-color: #e0ad24;
+  background: #fffaf0;
+  color: #9b720b;
+}
+
+.payment-upi-settings-btn svg {
+  font-size: 12px;
+}
+
+.payment-settings-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(14, 20, 27, 0.54);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.payment-settings-modal {
+  width: 100%;
+  max-width: 440px;
+  overflow: hidden;
+  border: 1px solid #e3e7ec;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(16, 24, 40, 0.24);
+}
+
+.payment-settings-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 17px 18px 14px;
+  border-bottom: 1px solid #eceff2;
+  background: #fafbfc;
+}
+
+.payment-settings-header > div {
+  min-width: 0;
+}
+
+.payment-settings-header span {
+  display: block;
+  color: #ad7a00;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.payment-settings-header h2 {
+  margin: 4px 0 0;
+  color: #26313d;
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+.payment-settings-header p {
+  margin: 5px 0 0;
+  color: #89929d;
+  font-size: 8.5px;
+  line-height: 1.45;
+}
+
+.payment-settings-close {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid #dfe4e9;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #68727d;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.payment-settings-close:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.payment-settings-body {
+  padding: 16px 18px;
+}
+
+.payment-settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.payment-settings-field + .payment-settings-field {
+  margin-top: 12px;
+}
+
+.payment-settings-field label {
+  color: #66717d;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.45px;
+  text-transform: uppercase;
+}
+
+.payment-settings-field input {
+  width: 100%;
+  height: 39px;
+  padding: 0 11px;
+  border: 1px solid #dce1e7;
+  border-radius: 8px;
+  outline: none;
+  background: #ffffff;
+  color: #29343f;
+  font-size: 10px;
+}
+
+.payment-settings-field input:focus {
+  border-color: #d7a000;
+  box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.08);
+}
+
+.payment-settings-field input::placeholder {
+  color: #adb4bc;
+}
+
+.payment-settings-note {
+  margin-top: 14px;
+  padding: 10px 11px;
+  border: 1px solid #f0dda4;
+  border-radius: 8px;
+  background: #fffaf0;
+  color: #92700f;
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+.payment-settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 18px 16px;
+  border-top: 1px solid #edf0f2;
+}
+
+.payment-settings-actions button {
+  height: 34px;
+  padding: 0 13px;
+  border-radius: 7px;
+  font-size: 8.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.payment-settings-cancel-btn {
+  border: 1px solid #dce1e7;
+  background: #ffffff;
+  color: #596572;
+}
+
+.payment-settings-save-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 0;
+  background: #ffb800;
+  color: #171717;
+}
+
+.payment-settings-save-btn svg {
+  font-size: 11px;
+}
+
+.payment-settings-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 1000px) {
+  .payment-toolbar {
+    grid-template-columns: minmax(220px, 1fr) auto auto;
+  }
+
+  .toolbar-fee-date {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .payment-toolbar {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+
+  .payment-upi-settings-btn {
+    min-width: 34px;
+    width: 34px;
+    padding: 0;
+    border-radius: 7px;
+  }
+
+  .payment-upi-settings-btn span {
+    display: none;
+  }
+
+  .payment-upi-settings-btn svg {
+    font-size: 13px;
+  }
+
+  .toolbar-fee-date {
+    grid-column: 1 / -1;
+  }
+
+  .payment-settings-overlay {
+    align-items: flex-end;
+    padding: 8px;
+  }
+
+  .payment-settings-modal {
+    max-width: 100%;
+    max-height: calc(100dvh - 16px);
+    border-radius: 15px;
+  }
+}
+
+@media (max-width: 420px) {
+  .payment-settings-header {
+    padding: 14px;
+  }
+
+  .payment-settings-body {
+    padding: 14px;
+  }
+
+  .payment-settings-actions {
+    padding: 11px 14px 14px;
+  }
+
+  .payment-settings-actions button {
+    flex: 1;
+  }
+}
+

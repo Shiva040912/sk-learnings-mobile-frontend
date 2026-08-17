@@ -1,0 +1,387 @@
+.student-payment-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 0;
+  background: #f4f5f7;
+  color: #1f2933;
+}
+
+.student-payment-shell {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+.student-payment-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 18px;
+  background: #14171b;
+}
+
+.student-payment-brand img {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.student-payment-brand h1 {
+  margin: 0;
+  color: #ffbf1f;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+}
+
+.student-payment-brand p {
+  margin: 3px 0 0;
+  color: #a8adb4;
+  font-size: 8px;
+  letter-spacing: 0.6px;
+}
+
+.student-payment-heading {
+  padding: 20px 18px 14px;
+  text-align: center;
+}
+
+.student-payment-heading > span {
+  color: #b78300;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+}
+
+.student-payment-heading h2 {
+  margin: 5px 0 0;
+  color: #202933;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.student-payment-heading p {
+  margin: 6px auto 0;
+  max-width: 280px;
+  color: #89919b;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.student-payment-student-card {
+  margin: 0 16px;
+  overflow: hidden;
+  border: 1px solid #e4e7eb;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 7px 24px rgba(30, 39, 50, 0.07);
+}
+
+.student-payment-card-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 13px;
+  border-bottom: 1px solid #eceef1;
+  background: #fafbfc;
+}
+
+.student-payment-card-title span {
+  color: #a67600;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.student-payment-card-title svg {
+  color: #c69000;
+  font-size: 14px;
+}
+
+.student-payment-detail-row {
+  min-height: 43px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 8px 13px;
+  border-bottom: 1px solid #f0f1f3;
+}
+
+.student-payment-detail-row:last-child {
+  border-bottom: 0;
+}
+
+.student-payment-detail-row > span {
+  color: #8b939c;
+  font-size: 9px;
+}
+
+.student-payment-detail-row > strong {
+  max-width: 60%;
+  color: #303a45;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.student-payment-due-date {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  color: #a87700 !important;
+}
+
+.student-payment-due-date svg {
+  font-size: 11px;
+}
+
+.student-payment-method-section {
+  margin: 18px 16px 0;
+}
+
+.student-payment-method-heading {
+  text-align: center;
+}
+
+.student-payment-method-heading > span {
+  color: #b68100;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+.student-payment-method-heading h3 {
+  margin: 4px 0 0;
+  color: #222c37;
+  font-size: 16px;
+  font-weight: 750;
+}
+
+.student-payment-method-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 13px;
+}
+
+.upi-app-button {
+  min-width: 0;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 8px;
+  border: 1px solid #e1e5e9;
+  border-radius: 11px;
+  background: #ffffff;
+  color: #323d48;
+  font-size: 9px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(27, 38, 53, 0.05);
+  transition: 0.2s ease;
+}
+
+.upi-app-button:active {
+  transform: scale(0.98);
+  border-color: #d9af3e;
+  background: #fffaf0;
+}
+
+.upi-app-icon {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.gpay-icon {
+  background: #f1f5ff;
+  color: #3774e8;
+}
+
+.phonepe-icon {
+  background: #f3efff;
+  color: #6d45b8;
+}
+
+.paytm-icon {
+  background: #eef8ff;
+  color: #1594c9;
+}
+
+.student-payment-config-error {
+  margin-top: 13px;
+  padding: 12px;
+  border: 1px solid #f0d593;
+  border-radius: 10px;
+  background: #fffaf0;
+  color: #9b7100;
+  font-size: 9px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.student-payment-paid-card {
+  margin: 18px 16px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 15px;
+  border: 1px solid #cfe9d7;
+  border-radius: 13px;
+  background: #f3fbf6;
+  text-align: center;
+}
+
+.student-payment-paid-card svg {
+  color: #3d9a5f;
+  font-size: 28px;
+}
+
+.student-payment-paid-card strong {
+  margin-top: 8px;
+  color: #2f7e4b;
+  font-size: 13px;
+}
+
+.student-payment-paid-card span {
+  margin-top: 5px;
+  color: #7d8a82;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.student-payment-footer {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 18px 16px 24px;
+  padding: 11px 12px;
+  border: 1px solid #e5e8ec;
+  border-radius: 10px;
+  background: #fafbfc;
+}
+
+.student-payment-footer > svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #3d995d;
+  font-size: 14px;
+}
+
+.student-payment-footer > div {
+  min-width: 0;
+}
+
+.student-payment-footer strong {
+  display: block;
+  color: #39444f;
+  font-size: 9px;
+}
+
+.student-payment-footer span {
+  display: block;
+  margin-top: 3px;
+  color: #8a929b;
+  font-size: 7.5px;
+  line-height: 1.4;
+}
+
+.student-payment-loader,
+.student-payment-error {
+  width: calc(100% - 32px);
+  max-width: 398px;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin: 60px auto 0;
+  padding: 20px;
+  border: 1px solid #e3e7eb;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #7e8791;
+  text-align: center;
+  box-shadow: 0 7px 24px rgba(30, 39, 50, 0.06);
+}
+
+.student-payment-loader svg {
+  color: #d39a00;
+  font-size: 24px;
+  animation: student-payment-spin 0.9s linear infinite;
+}
+
+.student-payment-loader span {
+  font-size: 10px;
+}
+
+.student-payment-error strong {
+  color: #a65f00;
+  font-size: 13px;
+}
+
+.student-payment-error span {
+  max-width: 280px;
+  color: #858e98;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+@keyframes student-payment-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 360px) {
+  .student-payment-brand {
+    padding: 13px 14px;
+  }
+
+  .student-payment-brand img {
+    width: 43px;
+    height: 43px;
+  }
+
+  .student-payment-brand h1 {
+    font-size: 13px;
+  }
+
+  .student-payment-heading {
+    padding: 17px 14px 12px;
+  }
+
+  .student-payment-student-card,
+  .student-payment-method-section,
+  .student-payment-footer {
+    margin-left: 12px;
+    margin-right: 12px;
+  }
+
+  .upi-app-button {
+    height: 50px;
+    gap: 4px;
+    padding: 0 5px;
+    font-size: 8px;
+  }
+
+  .upi-app-icon {
+    width: 23px;
+    height: 23px;
+    font-size: 9px;
+  }
+}

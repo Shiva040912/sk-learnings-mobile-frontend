@@ -13,6 +13,7 @@ import Login from "./pages/Login";
 import Students from "./pages/Student";
 import Users from "./pages/Users";
 import Payments from "./pages/Payment";
+import StudentPayment from "./pages/StudentPayment";
 
 const App = () => {
   return (
@@ -25,10 +26,24 @@ const App = () => {
       />
 
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route
+          path="/"
+          element={<Login />}
+        />
 
-        <Route element={<ProtectedRoute />}>
-          <Route element={<DashboardLayout />}>
+        {/* Public student payment page */}
+        <Route
+          path="/pay-fees/:studentId"
+          element={<StudentPayment />}
+        />
+
+        {/* Protected admin routes */}
+        <Route
+          element={<ProtectedRoute />}
+        >
+          <Route
+            element={<DashboardLayout />}
+          >
             <Route
               path="/students"
               element={<Students />}

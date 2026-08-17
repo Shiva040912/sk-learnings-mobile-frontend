@@ -3,10 +3,14 @@
   min-height: 100dvh;
   display: flex;
   justify-content: center;
-  margin: 0;
   padding: 0;
-  background: #eef1f4;
-  color: #252d36;
+  background:
+    linear-gradient(
+      180deg,
+      #eef1f4 0%,
+      #f8f9fa 100%
+    );
+  color: #202934;
   font-family:
     Inter,
     -apple-system,
@@ -22,278 +26,294 @@
   width: 100%;
   max-width: 430px;
   min-height: 100dvh;
-  margin: 0 auto;
-  overflow: hidden;
-  background: #ffffff;
+  background: #f7f8fa;
   box-shadow:
-    0 0 30px
-    rgba(20, 28, 38, 0.08);
+    0 0 35px
+    rgba(18, 26, 36, 0.09);
 }
 
-/* =========================
-   BRAND
-========================= */
+/* TOP BAR */
 
-.student-payment-brand {
-  min-height: 84px;
+.payment-topbar {
+  min-height: 80px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
-  padding: 14px 18px;
+  padding: 13px 16px;
   background: #15181c;
 }
 
-.student-payment-logo-box {
-  width: 55px;
-  height: 55px;
-  flex: 0 0 55px;
+.payment-brand {
+  min-width: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 10px;
 }
 
-.student-payment-logo-box img {
-  width: 100%;
-  height: 100%;
+.payment-brand img {
+  width: 47px;
+  height: 47px;
+  flex: 0 0 47px;
   object-fit: contain;
 }
 
-.student-payment-brand-content {
+.payment-brand > div {
   min-width: 0;
 }
 
-.student-payment-brand-content h1 {
+.payment-brand h1 {
   margin: 0;
-  color: #ffbf1f;
-  font-size: 17px;
+  color: #ffbd17;
+  font-size: 15px;
   font-weight: 800;
   line-height: 1.2;
-  letter-spacing: 0.45px;
+  letter-spacing: 0.35px;
 }
 
-.student-payment-brand-content p {
-  margin: 4px 0 0;
-  color: #b2b7bd;
-  font-size: 9px;
-  font-weight: 500;
-  line-height: 1.3;
-  letter-spacing: 0.45px;
-}
-
-/* =========================
-   PAGE HEADING
-========================= */
-
-.student-payment-heading {
-  padding: 23px 20px 17px;
-  text-align: center;
-}
-
-.payment-page-eyebrow {
+.payment-brand span {
   display: block;
-  color: #a97700;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-}
-
-.student-payment-heading h2 {
-  margin: 5px 0 0;
-  color: #202934;
-  font-size: 27px;
-  font-weight: 800;
-  line-height: 1.15;
-}
-
-.student-payment-heading p {
-  max-width: 325px;
-  margin: 8px auto 0;
-  color: #7d8792;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.55;
-}
-
-/* =========================
-   STUDENT CARD
-========================= */
-
-.student-payment-student-card {
-  margin: 0 16px;
-  overflow: hidden;
-  border: 1px solid #dfe4e9;
-  border-radius: 15px;
-  background: #ffffff;
-  box-shadow:
-    0 7px 24px
-    rgba(25, 36, 50, 0.07);
-}
-
-.student-payment-card-title {
-  min-height: 63px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 11px 14px;
-  border-bottom: 1px solid #e8ebef;
-  background:
-    linear-gradient(
-      135deg,
-      #fffaf0,
-      #ffffff
-    );
-}
-
-.student-payment-card-title > div:first-child {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.student-payment-card-title span {
-  color: #9f7307;
+  margin-top: 3px;
+  color: #aab0b7;
   font-size: 8px;
-  font-weight: 800;
-  letter-spacing: 1.15px;
+  line-height: 1.3;
 }
 
-.student-payment-card-title strong {
-  margin-top: 4px;
-  color: #313b46;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.student-detail-card-icon {
-  width: 37px;
-  height: 37px;
-  flex: 0 0 37px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  background: #fff0bf;
-  color: #a87500;
-  font-size: 17px;
-}
-
-.student-payment-details {
-  padding: 2px 14px;
-}
-
-.student-payment-detail-row {
-  min-height: 49px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 8px 0;
-  border-bottom: 1px solid #edf0f2;
-}
-
-.student-payment-detail-row:last-child {
-  border-bottom: 0;
-}
-
-.student-payment-detail-row > span {
+.payment-secure-badge {
   flex-shrink: 0;
-  color: #7f8994;
-  font-size: 11px;
-  font-weight: 500;
-}
-
-.student-payment-detail-row > strong {
-  max-width: 65%;
-  color: #27313c;
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1.4;
-  text-align: right;
-  word-break: break-word;
-}
-
-.student-payment-due-date {
   display: inline-flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 6px;
-  color: #9e7000 !important;
+  gap: 4px;
+  padding: 6px 8px;
+  border: 1px solid
+    rgba(255, 190, 24, 0.28);
+  border-radius: 20px;
+  background:
+    rgba(255, 184, 0, 0.08);
+  color: #ffbf25;
+  font-size: 7px;
+  font-weight: 700;
 }
 
-.student-payment-due-date svg {
-  flex-shrink: 0;
-  font-size: 13px;
+.payment-secure-badge svg {
+  font-size: 9px;
 }
 
-/* =========================
-   PAYMENT SECTION
-========================= */
+/* HERO */
 
-.student-payment-method-section {
-  margin: 24px 16px 0;
+.payment-hero {
+  padding: 21px 18px 14px;
 }
 
-.student-payment-method-heading {
-  text-align: center;
-}
-
-.student-payment-method-heading > span {
-  display: block;
-  color: #a97700;
-  font-size: 8px;
+.payment-eyebrow {
+  color: #a87700;
+  font-size: 7px;
   font-weight: 800;
   letter-spacing: 1.4px;
 }
 
-.student-payment-method-heading h3 {
-  margin: 5px 0 0;
-  color: #222c37;
-  font-size: 19px;
+.payment-hero h2 {
+  margin: 4px 0 0;
+  color: #202934;
+  font-size: 23px;
   font-weight: 800;
-  line-height: 1.25;
+  line-height: 1.15;
 }
 
-.student-payment-method-heading p {
-  margin: 5px 0 0;
-  color: #89929c;
+.payment-hero p {
+  max-width: 350px;
+  margin: 7px 0 0;
+  color: #77818d;
   font-size: 10px;
-  line-height: 1.45;
+  line-height: 1.5;
 }
 
-/* =========================
-   UPI BUTTONS
-========================= */
+/* CHECKOUT CARD */
 
-.student-payment-method-buttons {
-  display: grid;
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
-  gap: 9px;
-  margin-top: 16px;
+.payment-checkout-card {
+  margin: 0 14px;
+  overflow: hidden;
+  border: 1px solid #dde2e7;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow:
+    0 7px 24px
+    rgba(26, 36, 50, 0.06);
 }
 
-.upi-app-button {
-  min-width: 0;
-  height: 82px;
+.payment-card-header {
+  min-height: 61px;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 13px;
+  border-bottom: 1px solid #e9ecef;
+  background:
+    linear-gradient(
+      135deg,
+      #fff9e8,
+      #ffffff
+    );
+}
+
+.payment-card-header > div:first-child {
+  min-width: 0;
+}
+
+.payment-card-header span {
+  display: block;
+  color: #a57800;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.payment-card-header strong {
+  display: block;
+  margin-top: 4px;
+  overflow: hidden;
+  color: #29343f;
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.payment-card-icon {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 9px;
+  background: #fff0bd;
+  color: #a87300;
+  font-size: 16px;
+}
+
+.payment-detail-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  padding: 5px 13px 9px;
+}
+
+.payment-detail-item {
+  min-width: 0;
+  padding: 11px 7px;
+  border-bottom: 1px solid #edf0f2;
+}
+
+.payment-detail-item:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.payment-detail-item:nth-child(odd) {
+  border-right: 1px solid #edf0f2;
+}
+
+.payment-detail-item span {
+  display: block;
+  color: #8a939d;
+  font-size: 8px;
+  font-weight: 500;
+}
+
+.payment-detail-item strong {
+  display: block;
+  margin-top: 4px;
+  overflow: hidden;
+  color: #2a3540;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.35;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.due-date-item strong {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #986d00;
+}
+
+.due-date-item svg {
+  flex-shrink: 0;
+  font-size: 11px;
+}
+
+/* PAYMENT METHOD */
+
+.payment-method-card {
+  margin: 14px 14px 0;
+  padding: 14px;
+  border: 1px solid #dde2e7;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow:
+    0 7px 24px
+    rgba(26, 36, 50, 0.05);
+}
+
+.payment-method-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.payment-method-title span {
+  color: #a57800;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.payment-method-title h3 {
+  margin: 3px 0 0;
+  color: #28333e;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.payment-method-title > svg {
+  color: #3c9259;
+  font-size: 17px;
+}
+
+/* SMALL PAYMENT BUTTONS */
+
+.upi-buttons-row {
+  display: flex;
+  align-items: center;
   gap: 7px;
-  padding: 8px 5px;
+  margin-top: 12px;
+}
+
+.mini-upi-btn {
+  min-width: 0;
+  flex: 1;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 7px;
   border: 1px solid #dfe4e8;
-  border-radius: 13px;
+  border-radius: 9px;
   outline: none;
   background: #ffffff;
   color: #303a45;
   font-family: inherit;
-  font-size: 10px;
+  font-size: 8px;
   font-weight: 700;
   cursor: pointer;
   box-shadow:
-    0 4px 14px
-    rgba(30, 40, 52, 0.055);
+    0 3px 9px
+    rgba(30, 40, 52, 0.045);
   transition:
     transform 0.15s ease,
     border-color 0.15s ease,
@@ -302,299 +322,270 @@
     transparent;
 }
 
-.upi-app-button:active {
+.mini-upi-btn:active {
   transform: scale(0.97);
-  border-color: #e1b443;
+  border-color: #d8ad38;
   background: #fffaf0;
 }
 
-.upi-app-logo-box {
-  width: 42px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.upi-app-logo {
-  display: block;
-  max-width: 100%;
-  max-height: 100%;
+.mini-upi-btn img {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
   object-fit: contain;
 }
 
-.gpay-logo {
-  width: 38px;
-  height: 32px;
+.mini-upi-btn:last-child img {
+  width: 30px;
 }
 
-.phonepe-logo {
-  width: 36px;
-  height: 32px;
-}
-
-.paytm-logo {
-  width: 47px;
-  height: 30px;
-}
-
-/* =========================
-   CONFIG ERROR
-========================= */
-
-.student-payment-config-error {
-  margin-top: 15px;
-  padding: 13px 14px;
-  border: 1px solid #efd48c;
-  border-radius: 10px;
-  background: #fff9e9;
-  color: #896600;
-  font-size: 11px;
-  font-weight: 500;
-  line-height: 1.5;
-  text-align: center;
-}
-
-/* =========================
-   ALREADY PAID
-========================= */
-
-.student-payment-paid-card {
-  margin: 22px 16px 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 22px 16px;
-  border: 1px solid #c8e7d2;
-  border-radius: 14px;
-  background: #f2faf5;
-  text-align: center;
-}
-
-.payment-success-icon {
-  width: 46px;
-  height: 46px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: #dff4e6;
-  color: #38975a;
-  font-size: 25px;
-}
-
-.student-payment-paid-card strong {
+.payment-method-note {
   margin-top: 10px;
-  color: #287846;
-  font-size: 15px;
-  font-weight: 800;
+  color: #929aa3;
+  font-size: 7px;
+  line-height: 1.4;
+  text-align: center;
 }
 
-.student-payment-paid-card span {
-  max-width: 280px;
-  margin-top: 6px;
-  color: #74827a;
-  font-size: 11px;
-  line-height: 1.5;
-}
+/* CONFIG ERROR */
 
-/* =========================
-   FOOTER
-========================= */
-
-.student-payment-footer {
-  display: flex;
-  align-items: flex-start;
-  gap: 11px;
-  margin: 22px 16px 28px;
-  padding: 13px;
-  border: 1px solid #e2e6ea;
-  border-radius: 11px;
-  background: #f8fafb;
-}
-
-.payment-secure-icon {
-  width: 32px;
-  height: 32px;
-  flex: 0 0 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9px;
-  background: #e8f6ed;
-  color: #398b55;
-  font-size: 15px;
-}
-
-.student-payment-footer > div:last-child {
-  min-width: 0;
-}
-
-.student-payment-footer strong {
-  display: block;
-  color: #34404b;
-  font-size: 11px;
-  font-weight: 750;
-}
-
-.student-payment-footer span {
-  display: block;
-  margin-top: 4px;
-  color: #7f8993;
+.payment-config-error {
+  margin-top: 12px;
+  padding: 10px 11px;
+  border: 1px solid #efd995;
+  border-radius: 8px;
+  background: #fff9e9;
+  color: #896400;
   font-size: 9px;
   line-height: 1.5;
 }
 
-/* =========================
-   LOADING
-========================= */
+/* PAID */
 
-.student-payment-loader-card,
-.student-payment-error-card {
-  width: calc(100% - 32px);
-  max-width: 398px;
-  min-height: 210px;
+.payment-paid-box {
+  margin: 14px 14px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid #c8e4d0;
+  border-radius: 12px;
+  background: #f2faf4;
+}
+
+.payment-paid-box > svg {
+  flex-shrink: 0;
+  color: #3a9658;
+  font-size: 26px;
+}
+
+.payment-paid-box > div {
+  min-width: 0;
+}
+
+.payment-paid-box strong {
+  display: block;
+  color: #2d7746;
+  font-size: 12px;
+}
+
+.payment-paid-box span {
+  display: block;
+  margin-top: 3px;
+  color: #718078;
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+/* TRUST */
+
+.payment-trust-strip {
+  min-height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  margin: 13px 14px 0;
+  padding: 8px 10px;
+  border: 1px solid #e1e5e9;
+  border-radius: 10px;
+  background: #f4f6f8;
+}
+
+.payment-trust-strip > div:not(
+    .trust-divider
+  ) {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #64707c;
+  font-size: 7px;
+  font-weight: 650;
+}
+
+.payment-trust-strip svg {
+  color: #418f5b;
+  font-size: 11px;
+}
+
+.trust-divider {
+  width: 1px;
+  height: 16px;
+  background: #d8dde2;
+}
+
+/* FOOTER */
+
+.payment-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 17px 14px 22px;
+  text-align: center;
+}
+
+.payment-footer strong {
+  color: #a87800;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+}
+
+.payment-footer span {
+  margin-top: 3px;
+  color: #a0a7af;
+  font-size: 7px;
+}
+
+/* STATES */
+
+.payment-state-card {
+  width: calc(100% - 30px);
+  max-width: 400px;
+  min-height: 185px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 9px;
+  gap: 8px;
   margin: 60px auto 0;
-  padding: 22px;
-  border: 1px solid #e0e5e9;
-  border-radius: 15px;
+  padding: 20px;
+  border: 1px solid #e0e4e8;
+  border-radius: 14px;
   background: #ffffff;
   text-align: center;
   box-shadow:
-    0 10px 30px
-    rgba(25, 35, 48, 0.08);
+    0 10px 28px
+    rgba(25, 35, 48, 0.07);
 }
 
-.student-payment-loader-card > svg {
-  color: #c99100;
-  font-size: 27px;
+.payment-state-card strong {
+  color: #39444f;
+  font-size: 12px;
+}
+
+.payment-state-card span {
+  color: #8d959e;
+  font-size: 9px;
+}
+
+.payment-loading-icon {
+  color: #c88f00;
+  font-size: 24px;
   animation:
-    student-payment-spin
-    0.85s linear infinite;
+    payment-page-spin
+    0.8s linear infinite;
 }
 
-.student-payment-loader-card strong {
-  color: #394550;
-  font-size: 13px;
+.payment-error-state > svg {
+  color: #b98200;
+  font-size: 27px;
 }
 
-.student-payment-loader-card span {
-  color: #929aa3;
-  font-size: 10px;
-}
-
-/* =========================
-   ERROR
-========================= */
-
-.student-payment-error-card > svg {
-  color: #c68a00;
-  font-size: 30px;
-}
-
-.student-payment-error-card strong {
-  color: #8e6400;
-  font-size: 14px;
-  font-weight: 800;
-}
-
-.student-payment-error-card span {
-  max-width: 280px;
-  color: #7e8791;
-  font-size: 10px;
-  line-height: 1.55;
-}
-
-@keyframes student-payment-spin {
+@keyframes payment-page-spin {
   to {
     transform: rotate(360deg);
   }
 }
 
-/* =========================
-   SMALL MOBILE
-========================= */
+/* SMALL MOBILE */
 
 @media (max-width: 360px) {
-  .student-payment-brand {
-    min-height: 75px;
-    gap: 9px;
-    padding: 12px 14px;
+  .payment-topbar {
+    min-height: 74px;
+    padding: 11px 13px;
   }
 
-  .student-payment-logo-box {
-    width: 48px;
-    height: 48px;
-    flex-basis: 48px;
+  .payment-brand img {
+    width: 42px;
+    height: 42px;
+    flex-basis: 42px;
   }
 
-  .student-payment-brand-content h1 {
-    font-size: 15px;
+  .payment-brand h1 {
+    font-size: 13px;
   }
 
-  .student-payment-brand-content p {
-    font-size: 8px;
+  .payment-secure-badge {
+    padding: 5px 6px;
+    font-size: 6px;
   }
 
-  .student-payment-heading {
+  .payment-hero {
     padding:
-      19px 14px 14px;
+      18px 14px 12px;
   }
 
-  .student-payment-heading h2 {
-    font-size: 24px;
+  .payment-hero h2 {
+    font-size: 21px;
   }
 
-  .student-payment-heading p {
-    font-size: 10.5px;
+  .payment-checkout-card,
+  .payment-method-card,
+  .payment-paid-box,
+  .payment-trust-strip {
+    margin-left: 10px;
+    margin-right: 10px;
   }
 
-  .student-payment-student-card,
-  .student-payment-method-section,
-  .student-payment-footer,
-  .student-payment-paid-card {
-    margin-left: 12px;
-    margin-right: 12px;
+  .payment-card-header {
+    padding: 10px 11px;
   }
 
-  .student-payment-details {
-    padding: 2px 12px;
+  .payment-detail-grid {
+    padding: 4px 10px 8px;
   }
 
-  .student-payment-detail-row {
-    min-height: 46px;
+  .payment-detail-item {
+    padding: 9px 6px;
   }
 
-  .student-payment-detail-row > span {
+  .payment-detail-item strong {
     font-size: 10px;
   }
 
-  .student-payment-detail-row > strong {
-    font-size: 11px;
+  .payment-method-card {
+    padding: 12px;
   }
 
-  .student-payment-method-buttons {
-    gap: 6px;
+  .upi-buttons-row {
+    gap: 5px;
   }
 
-  .upi-app-button {
-    height: 76px;
-    gap: 6px;
-    padding: 6px 3px;
-    font-size: 9px;
+  .mini-upi-btn {
+    height: 41px;
+    gap: 4px;
+    padding: 0 4px;
+    font-size: 7px;
   }
 
-  .upi-app-logo-box {
-    width: 37px;
-    height: 31px;
+  .mini-upi-btn img {
+    width: 21px;
+    height: 21px;
+    flex-basis: 21px;
   }
 
-  .paytm-logo {
-    width: 42px;
+  .mini-upi-btn:last-child img {
+    width: 26px;
   }
 }

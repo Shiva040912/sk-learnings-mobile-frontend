@@ -5,6 +5,7 @@ import {
   FiCheckCircle,
   FiCreditCard,
   FiLoader,
+  FiLock,
   FiShield,
 } from "react-icons/fi";
 
@@ -20,14 +21,9 @@ import "../styles/studentpayment.css";
 const StudentPayment = () => {
   const { studentId } = useParams();
 
-  const [paymentData, setPaymentData] =
-    useState(null);
-
-  const [isLoading, setIsLoading] =
-    useState(true);
-
-  const [error, setError] =
-    useState("");
+  const [paymentData, setPaymentData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchPaymentDetails = async () => {
@@ -39,9 +35,7 @@ const StudentPayment = () => {
           `/payments/public/student/${studentId}`
         );
 
-        setPaymentData(
-          response.data || null
-        );
+        setPaymentData(response.data || null);
       } catch (err) {
         setError(
           err.response?.data?.message ||
@@ -57,143 +51,113 @@ const StudentPayment = () => {
     }
   }, [studentId]);
 
-  const student =
-    paymentData?.student;
+  const student = paymentData?.student;
+  const payment = paymentData?.payment;
 
-  const payment =
-    paymentData?.payment;
+  const transactionReference = useMemo(() => {
+    const id = student?.id || student?._id;
 
-  const transactionReference =
-    useMemo(() => {
-      const id =
-        student?.id ||
-        student?._id;
+    if (!id) {
+      return "";
+    }
 
-      if (!id) {
-        return "";
-      }
-
-      return `SK-${id}-${Date.now()}`;
-    }, [student]);
+    return `SK-${id}-${Date.now()}`;
+  }, [student]);
 
   const formatDate = (value) => {
     if (!value) {
       return "-";
     }
 
-    return new Date(
-      value
-    ).toLocaleDateString(
-      "en-IN",
-      {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      }
-    );
+    return new Date(value).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
   };
 
   const buildUpiQuery = () => {
-    if (
-      !payment?.upiId ||
-      !payment?.receiverName
-    ) {
+    if (!payment?.upiId || !payment?.receiverName) {
       return "";
     }
 
-    const params =
-      new URLSearchParams({
-        pa: payment.upiId,
-        pn: payment.receiverName,
-        tr: transactionReference,
-        tn: `Fee Payment - ${
-          student?.rollNo ||
-          "Student"
-        }`,
-        am: String(
-          student?.paymentAmount || 0
-        ),
-        cu: "INR",
-      });
+    const params = new URLSearchParams({
+      pa: payment.upiId,
+      pn: payment.receiverName,
+      tr: transactionReference,
+      tn: `Fee Payment - ${student?.rollNo || "Student"}`,
+      am: String(student?.paymentAmount || 0),
+      cu: "INR",
+    });
 
     return params.toString();
   };
 
-  const handleUpiError = () => {
+  const showPaymentError = () => {
     setError(
       "UPI payment configuration is not available"
     );
   };
 
   const openGooglePay = () => {
-    const query =
-      buildUpiQuery();
+    const query = buildUpiQuery();
 
     if (!query) {
-      handleUpiError();
+      showPaymentError();
       return;
     }
 
-    window.location.href =
-      `gpay://upi/pay?${query}`;
+    window.location.href = `gpay://upi/pay?${query}`;
   };
 
   const openPhonePe = () => {
-    const query =
-      buildUpiQuery();
+    const query = buildUpiQuery();
 
     if (!query) {
-      handleUpiError();
+      showPaymentError();
       return;
     }
 
-    window.location.href =
-      `upi://pay?${query}`;
+    window.location.href = `upi://pay?${query}`;
   };
 
   const openPaytm = () => {
-    const query =
-      buildUpiQuery();
+    const query = buildUpiQuery();
 
     if (!query) {
-      handleUpiError();
+      showPaymentError();
       return;
     }
 
-    window.location.href =
-      `upi://pay?${query}`;
+    window.location.href = `upi://pay?${query}`;
   };
 
   if (isLoading) {
     return (
       <div className="student-payment-page">
-        <div className="student-payment-loader-card">
-          <FiLoader />
+        <div className="payment-state-card">
+          <FiLoader className="payment-loading-icon" />
 
           <strong>
-            Loading Payment Details
+            Loading payment page
           </strong>
 
           <span>
-            Please wait for a moment
+            Please wait...
           </span>
         </div>
       </div>
     );
   }
 
-  if (
-    error ||
-    !student ||
-    !payment
-  ) {
+  if (error || !student || !payment) {
     return (
       <div className="student-payment-page">
-        <div className="student-payment-error-card">
+        <div className="payment-state-card payment-error-state">
           <FiCreditCard />
 
           <strong>
-            Payment Page Unavailable
+            Payment page unavailable
           </strong>
 
           <span>
@@ -206,8 +170,7 @@ const StudentPayment = () => {
   }
 
   const isPaid =
-    student.paymentStatus ===
-    "paid";
+    student.paymentStatus === "paid";
 
   const isConfigured =
     payment.isConfigured;
@@ -215,69 +178,50 @@ const StudentPayment = () => {
   return (
     <div className="student-payment-page">
       <main className="student-payment-shell">
-        {/* Brand */}
-
-        <header className="student-payment-brand">
-          <div className="student-payment-logo-box">
+        <header className="payment-topbar">
+          <div className="payment-brand">
             <img
               src={logo}
               alt="The SK Learnings"
             />
+
+            <div>
+              <h1>
+                THE SK LEARNINGS
+              </h1>
+
+              <span>
+                Private Educational Services
+              </span>
+            </div>
           </div>
 
-          <div className="student-payment-brand-content">
-            <h1>
-              THE SK LEARNINGS
-            </h1>
-
-            <p>
-              Private Educational
-              Services
-            </p>
+          <div className="payment-secure-badge">
+            <FiLock />
+            Secure
           </div>
         </header>
 
-        {/* Heading */}
-
-        <section className="student-payment-heading">
-          <span className="payment-page-eyebrow">
-            SECURE FEE PAYMENT
+        <section className="payment-hero">
+          <span className="payment-eyebrow">
+            FEE PAYMENT
           </span>
 
           <h2>
-            Pay Now
+            Complete Payment
           </h2>
 
           <p>
-            Verify the student details
-            below and choose your
-            preferred UPI app.
+            Verify the student details and
+            continue using your preferred UPI app.
           </p>
         </section>
 
-        {/* Student details */}
-
-        <section className="student-payment-student-card">
-          <div className="student-payment-card-title">
+        <section className="payment-checkout-card">
+          <div className="payment-card-header">
             <div>
               <span>
-                STUDENT DETAILS
-              </span>
-
-              <strong>
-                Fee Payment Information
-              </strong>
-            </div>
-
-            <div className="student-detail-card-icon">
-              <FiCreditCard />
-            </div>
-          </div>
-
-          <div className="student-payment-details">
-            <div className="student-payment-detail-row">
-              <span>
-                Student Name
+                PAYMENT FOR
               </span>
 
               <strong>
@@ -285,7 +229,13 @@ const StudentPayment = () => {
               </strong>
             </div>
 
-            <div className="student-payment-detail-row">
+            <div className="payment-card-icon">
+              <FiCreditCard />
+            </div>
+          </div>
+
+          <div className="payment-detail-grid">
+            <div className="payment-detail-item">
               <span>
                 Roll Number
               </span>
@@ -295,7 +245,7 @@ const StudentPayment = () => {
               </strong>
             </div>
 
-            <div className="student-payment-detail-row">
+            <div className="payment-detail-item">
               <span>
                 Course
               </span>
@@ -305,7 +255,7 @@ const StudentPayment = () => {
               </strong>
             </div>
 
-            <div className="student-payment-detail-row">
+            <div className="payment-detail-item">
               <span>
                 Batch
               </span>
@@ -315,14 +265,13 @@ const StudentPayment = () => {
               </strong>
             </div>
 
-            <div className="student-payment-detail-row">
+            <div className="payment-detail-item due-date-item">
               <span>
                 Due Date
               </span>
 
-              <strong className="student-payment-due-date">
+              <strong>
                 <FiCalendar />
-
                 {formatDate(
                   payment.feeDueDate
                 )}
@@ -331,84 +280,69 @@ const StudentPayment = () => {
           </div>
         </section>
 
-        {/* Paid */}
-
         {isPaid ? (
-          <section className="student-payment-paid-card">
-            <div className="payment-success-icon">
-              <FiCheckCircle />
+          <section className="payment-paid-box">
+            <FiCheckCircle />
+
+            <div>
+              <strong>
+                Payment Completed
+              </strong>
+
+              <span>
+                This student's fee has already
+                been marked as paid.
+              </span>
             </div>
-
-            <strong>
-              Payment Completed
-            </strong>
-
-            <span>
-              This student's fee has
-              already been marked as
-              paid.
-            </span>
           </section>
         ) : (
-          <section className="student-payment-method-section">
-            <div className="student-payment-method-heading">
-              <span>
-                PAY NOW
-              </span>
+          <section className="payment-method-card">
+            <div className="payment-method-title">
+              <div>
+                <span>
+                  PAYMENT METHOD
+                </span>
 
-              <h3>
-                Choose UPI App
-              </h3>
+                <h3>
+                  Pay using UPI
+                </h3>
+              </div>
 
-              <p>
-                Select an app below to
-                continue your payment.
-              </p>
+              <FiShield />
             </div>
 
             {!isConfigured ? (
-              <div className="student-payment-config-error">
-                Payment configuration
-                is not available.
-                Please contact The SK
-                Learnings.
+              <div className="payment-config-error">
+                Payment configuration is not
+                available. Please contact the
+                institute.
               </div>
             ) : (
-              <div className="student-payment-method-buttons">
+              <div className="upi-buttons-row">
                 <button
                   type="button"
-                  className="upi-app-button"
-                  onClick={
-                    openGooglePay
-                  }
+                  className="mini-upi-btn"
+                  onClick={openGooglePay}
                 >
-                  <div className="upi-app-logo-box">
-                    <img
-                      src={gpayLogo}
-                      alt="Google Pay"
-                      className="upi-app-logo gpay-logo"
-                    />
-                  </div>
+                  <img
+                    src={gpayLogo}
+                    alt="Google Pay"
+                  />
 
                   <span>
-                    Google Pay
+                    GPay
                   </span>
                 </button>
 
                 <button
                   type="button"
-                  className="upi-app-button"
-                  onClick={
-                    openPhonePe
-                  }
+                  className="mini-upi-btn"
+                  onClick={openPhonePe}
                 >
-                  <div className="upi-app-logo-box">
-                    <img
-                      src={phonePeLogo}
-                      alt="PhonePe"
-                      className="upi-app-logo phonepe-logo"
-                    />
-                  </div>
+                  <img
+                    src={phonePeLogo}
+                    alt="PhonePe"
+                  />
 
                   <span>
                     PhonePe
@@ -417,18 +351,13 @@ const StudentPayment = () => {
 
                 <button
                   type="button"
-                  className="upi-app-button"
-                  onClick={
-                    openPaytm
-                  }
+                  className="mini-upi-btn"
+                  onClick={openPaytm}
                 >
-                  <div className="upi-app-logo-box">
-                    <img
-                      src={paytmLogo}
-                      alt="Paytm"
-                      className="upi-app-logo paytm-logo"
-                    />
-                  </div>
+                  <img
+                    src={paytmLogo}
+                    alt="Paytm"
+                  />
 
                   <span>
                     Paytm
@@ -436,28 +365,41 @@ const StudentPayment = () => {
                 </button>
               </div>
             )}
+
+            <div className="payment-method-note">
+              Tap a payment app to continue securely.
+            </div>
           </section>
         )}
 
-        {/* Security */}
-
-        <footer className="student-payment-footer">
-          <div className="payment-secure-icon">
-            <FiShield />
-          </div>
-
+        <section className="payment-trust-strip">
           <div>
-            <strong>
-              Secure UPI Payment
-            </strong>
+            <FiShield />
 
             <span>
-              You will be redirected
-              securely to your selected
-              UPI application to
-              complete the payment.
+              Secure UPI
             </span>
           </div>
+
+          <div className="trust-divider" />
+
+          <div>
+            <FiLock />
+
+            <span>
+              Protected Payment
+            </span>
+          </div>
+        </section>
+
+        <footer className="payment-footer">
+          <strong>
+            THE SK LEARNINGS
+          </strong>
+
+          <span>
+            Secure fee payment portal
+          </span>
         </footer>
       </main>
     </div>

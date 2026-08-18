@@ -6117,3 +6117,71 @@
     gap: 4px !important;
   }
 }
+
+
+@media (max-width: 600px) {
+  .students-table th:nth-child(2),
+  .students-table td:nth-child(2) {
+    width: 48% !important;
+  }
+
+  .students-table th:nth-child(3),
+  .students-table td:nth-child(3) {
+    width: 21% !important;
+  }
+
+  .students-table th:nth-child(7),
+  .students-table td:nth-child(7) {
+    width: 31% !important;
+    padding-left: 0 !important;
+    padding-right: 8px !important;
+    text-align: right !important;
+  }
+
+  .student-actions {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    gap: 5px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .student-actions button {
+    flex: 0 0 30px !important;
+    width: 30px !important;
+    min-width: 30px !important;
+    height: 30px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .students-table th:nth-child(2),
+  .students-table td:nth-child(2) {
+    width: 47% !important;
+  }
+
+  .students-table th:nth-child(3),
+  .students-table td:nth-child(3) {
+    width: 21% !important;
+  }
+
+  .students-table th:nth-child(7),
+  .students-table td:nth-child(7) {
+    width: 32% !important;
+    padding-right: 6px !important;
+  }
+
+  .student-actions {
+    justify-content: flex-end !important;
+    gap: 4px !important;
+  }
+
+  .student-actions button {
+    flex: 0 0 28px !important;
+    width: 28px !important;
+    min-width: 28px !important;
+    height: 29px !important;
+  }
+}

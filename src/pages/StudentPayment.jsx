@@ -104,23 +104,18 @@ const StudentPayment = () => {
 
     const params =
       new URLSearchParams({
-        pa:
-          payment.upiId,
+        pa: payment.upiId,
 
-        pn:
-          payment.receiverName,
+        pn: payment.receiverName,
 
-        tr:
-          transactionReference,
+        tr: transactionReference,
 
-        tn:
-          `Fee Payment - ${
-            student?.rollNo ||
-            "Student"
-          }`,
+        tn: `Fee Payment - ${
+          student?.rollNo ||
+          "Student"
+        }`,
 
-        cu:
-          "INR",
+        cu: "INR",
       });
 
     return params.toString();
@@ -155,7 +150,7 @@ const StudentPayment = () => {
     }
 
     window.location.href =
-      `upi://pay?${query}`;
+      `phonepe://pay?${query}`;
   };
 
   const openPaytm = () => {
@@ -168,7 +163,7 @@ const StudentPayment = () => {
     }
 
     window.location.href =
-      `upi://pay?${query}`;
+      `paytmmp://pay?${query}`;
   };
 
   if (isLoading) {
@@ -222,6 +217,7 @@ const StudentPayment = () => {
   return (
     <div className="student-payment-page">
       <main className="student-payment-shell">
+
         <header className="payment-topbar">
           <div className="payment-brand">
             <img
@@ -343,6 +339,7 @@ const StudentPayment = () => {
           </section>
         ) : (
           <section className="payment-method-card">
+
             <div className="payment-method-title">
               <div>
                 <span>
@@ -365,7 +362,9 @@ const StudentPayment = () => {
               </div>
             ) : (
               <>
+
                 <div className="upi-buttons-row">
+
                   <button
                     type="button"
                     className="mini-upi-btn"
@@ -410,38 +409,46 @@ const StudentPayment = () => {
                       Paytm
                     </span>
                   </button>
+
                 </div>
 
                 {payment.upiQrImage && (
                   <div className="student-payment-qr-section">
+
                     <div className="student-payment-qr-heading">
                       <span>
                         OR SCAN & PAY
                       </span>
 
                       <strong>
-                        Scan the QR using any UPI app
+                        Scan using any UPI app
                       </strong>
                     </div>
 
                     <div className="student-payment-qr-box">
                       <img
                         src={payment.upiQrImage}
-                        alt="The SK Learnings payment QR"
+                        alt="The SK Learnings Payment QR"
                       />
                     </div>
 
                     <span className="student-payment-qr-caption">
-                      Open any UPI app and scan this QR to complete the payment.
+                      Scan the QR and enter the
+                      payment amount manually in
+                      your UPI app.
                     </span>
+
                   </div>
                 )}
+
               </>
             )}
+
           </section>
         )}
 
         <section className="payment-trust-strip">
+
           <div>
             <FiShield />
 
@@ -459,9 +466,11 @@ const StudentPayment = () => {
               Protected Payment
             </span>
           </div>
+
         </section>
 
         <footer className="payment-footer">
+
           <strong>
             THE SK LEARNINGS
           </strong>
@@ -469,7 +478,9 @@ const StudentPayment = () => {
           <span>
             Secure fee payment portal
           </span>
+
         </footer>
+
       </main>
     </div>
   );

@@ -6188,26 +6188,58 @@
 
 
 @media (max-width: 600px) {
+  .students-page,
   .students-list-section,
   .students-table-card,
-  .students-table-wrapper {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    overflow-x: hidden !important;
-  }
-
+  .students-table-wrapper,
   .students-table {
     width: 100% !important;
     max-width: 100% !important;
     min-width: 0 !important;
-    margin: 0 !important;
+  }
+
+  .students-list-section,
+  .students-table-card,
+  .students-table-wrapper {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .students-table-wrapper {
+    overflow-x: hidden !important;
+  }
+
+  .students-table {
     table-layout: fixed !important;
     border-collapse: collapse !important;
+    margin: 0 !important;
+  }
+
+  .students-table thead {
+    display: table-header-group !important;
+  }
+
+  .students-table tbody {
+    display: table-row-group !important;
+  }
+
+  .students-table tr {
+    display: table-row !important;
+    width: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .students-table th,
+  .students-table td {
+    display: table-cell !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
   }
 
   .students-table th:nth-child(1),
@@ -6223,7 +6255,7 @@
 
   .students-table th:nth-child(2),
   .students-table td:nth-child(2) {
-    width: auto !important;
+    width: 50% !important;
     min-width: 0 !important;
     max-width: none !important;
     padding-left: 14px !important;
@@ -6233,9 +6265,9 @@
 
   .students-table th:nth-child(3),
   .students-table td:nth-child(3) {
-    width: 90px !important;
-    min-width: 90px !important;
-    max-width: 90px !important;
+    width: 22% !important;
+    min-width: 0 !important;
+    max-width: none !important;
     padding-left: 2px !important;
     padding-right: 2px !important;
     text-align: center !important;
@@ -6243,12 +6275,11 @@
 
   .students-table th:nth-child(7),
   .students-table td:nth-child(7) {
-    width: 100px !important;
-    min-width: 100px !important;
-    max-width: 100px !important;
+    width: 28% !important;
+    min-width: 0 !important;
+    max-width: none !important;
     padding-left: 2px !important;
-    padding-right: 4px !important;
-    text-align: right !important;
+    padding-right: 10px !important;
   }
 
   .students-table th:nth-child(7) {
@@ -6256,27 +6287,43 @@
   }
 
   .students-table td:nth-child(7) {
-    overflow: visible !important;
+    text-align: right !important;
   }
 
-  .students-table td:nth-child(7) .student-actions {
-    width: 94px !important;
-    max-width: 94px !important;
-    min-width: 94px !important;
+  .student-profile-cell {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .student-name-cell {
+    min-width: 0 !important;
+    width: calc(100% - 40px) !important;
+  }
+
+  .roll-number-badge {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .student-actions {
+    width: 100% !important;
+    max-width: 100% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: flex-end !important;
-    gap: 4px !important;
-    margin: 0 0 0 auto !important;
+    gap: 5px !important;
+    margin: 0 !important;
     padding: 0 !important;
   }
 
-  .students-table td:nth-child(7) .student-actions button {
-    flex: 0 0 28px !important;
-    width: 28px !important;
-    min-width: 28px !important;
-    max-width: 28px !important;
-    height: 29px !important;
+  .student-actions button {
+    flex: 0 0 30px !important;
+    width: 30px !important;
+    min-width: 30px !important;
+    max-width: 30px !important;
+    height: 30px !important;
     margin: 0 !important;
     padding: 0 !important;
   }
@@ -6285,34 +6332,28 @@
 @media (max-width: 420px) {
   .students-table th:nth-child(2),
   .students-table td:nth-child(2) {
+    width: 49% !important;
     padding-left: 10px !important;
     padding-right: 4px !important;
   }
 
   .students-table th:nth-child(3),
   .students-table td:nth-child(3) {
-    width: 84px !important;
-    min-width: 84px !important;
-    max-width: 84px !important;
+    width: 22% !important;
   }
 
   .students-table th:nth-child(7),
   .students-table td:nth-child(7) {
-    width: 96px !important;
-    min-width: 96px !important;
-    max-width: 96px !important;
+    width: 29% !important;
     padding-left: 1px !important;
-    padding-right: 3px !important;
+    padding-right: 6px !important;
   }
 
-  .students-table td:nth-child(7) .student-actions {
-    width: 91px !important;
-    min-width: 91px !important;
-    max-width: 91px !important;
-    gap: 3px !important;
+  .student-actions {
+    gap: 4px !important;
   }
 
-  .students-table td:nth-child(7) .student-actions button {
+  .student-actions button {
     flex-basis: 28px !important;
     width: 28px !important;
     min-width: 28px !important;

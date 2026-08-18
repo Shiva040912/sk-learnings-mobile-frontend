@@ -5987,3 +5987,50 @@
     font-size: 7.5px !important;
   }
 }
+
+
+.serial-number {
+  min-width: auto !important;
+  width: auto !important;
+  height: auto !important;
+  display: inline !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: #4c5865 !important;
+  font-size: inherit !important;
+  font-weight: 600 !important;
+  line-height: normal !important;
+  box-shadow: none !important;
+}
+
+.roll-number-badge {
+  min-width: auto !important;
+  width: auto !important;
+  height: auto !important;
+  display: inline !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: #4c5865 !important;
+  font-size: inherit !important;
+  font-weight: 600 !important;
+  line-height: normal !important;
+  box-shadow: none !important;
+}
+
+@media (max-width: 768px) {
+  .serial-number,
+  .roll-number-badge {
+    min-width: auto !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+}

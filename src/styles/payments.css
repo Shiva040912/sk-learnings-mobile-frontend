@@ -3,6 +3,72 @@
   color: #1d2733;
 }
 
+/* Final desktop readability and six-row layout */
+@media (min-width: 901px) {
+  .payments-page {
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif !important;
+  }
+
+  .payments-table th {
+    padding-top: 11px !important;
+    padding-bottom: 11px !important;
+    color: #303c49 !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+  }
+
+  .payments-table td {
+    height: 62px !important;
+    padding-top: 7px !important;
+    padding-bottom: 7px !important;
+    color: #263340 !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+  }
+
+  .payments-table td:nth-child(2),
+  .payments-table td:nth-child(3),
+  .payments-table td:nth-child(5),
+  .payments-table td:nth-child(6) {
+    font-weight: 800 !important;
+  }
+
+  .payment-student strong,
+  .payment-amount {
+    color: #1f2b37 !important;
+    font-weight: 850 !important;
+  }
+
+  .payment-course {
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: #b7860b !important;
+    font-weight: 800 !important;
+  }
+
+  .payment-details-modal {
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif !important;
+  }
+
+  .payment-details-header h2,
+  .payment-details-student-info h3,
+  .payment-details-highlight strong,
+  .payment-details-grid strong {
+    font-weight: 800 !important;
+  }
+
+  .payment-details-header span,
+  .payment-details-header p,
+  .payment-details-student-info small,
+  .payment-details-highlight span,
+  .payment-details-grid span {
+    font-weight: 750 !important;
+  }
+}
+
 .payments-top-grid {
   display: grid;
   grid-template-columns:
@@ -801,6 +867,18 @@
   .payment-paid-badge {
     min-width: 44px;
   }
+}
+
+/* Authoritative desktop table and details overrides */
+@media (min-width: 901px) {
+  .payments-page { font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif !important; }
+  .payments-table th { padding-top: 11px !important; padding-bottom: 11px !important; color: #303c49 !important; font-size: 11px !important; font-weight: 800 !important; }
+  .payments-table td { height: 62px !important; padding-top: 7px !important; padding-bottom: 7px !important; color: #263340 !important; font-size: 12px !important; font-weight: 700 !important; }
+  .payments-table td:nth-child(2), .payments-table td:nth-child(3), .payments-table td:nth-child(5), .payments-table td:nth-child(6), .payment-student strong, .payment-amount { color: #1f2b37 !important; font-weight: 800 !important; }
+  .payment-course { padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; color: #b7860b !important; font-weight: 800 !important; }
+  .payment-details-modal { font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif !important; }
+  .payment-details-header h2, .payment-details-student-info h3, .payment-details-highlight strong, .payment-details-grid strong { font-weight: 800 !important; }
+  .payment-details-header span, .payment-details-header p, .payment-details-student-info small, .payment-details-highlight span, .payment-details-grid span { font-weight: 750 !important; }
 }
 
 @media (max-width: 380px) {
@@ -5183,4 +5261,18 @@
   .payments-page .payment-details-footer {
     margin: 0 14px calc(14px + env(safe-area-inset-bottom)) !important;
   }
+}
+
+@media (min-width: 901px) {
+  .payments-page { font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif !important; }
+  .payments-table th { height: 42px !important; padding-block: 8px !important; color: #3d4956 !important; font-size: 10.5px !important; font-weight: 700 !important; }
+  .payments-table td { height: 50px !important; padding-block: 5px !important; color: #35414d !important; font-size: 11.5px !important; font-weight: 500 !important; }
+  .payments-table tbody tr { height: 50px !important; }
+  .payments-table td:nth-child(2), .payments-table td:nth-child(3), .payments-table td:nth-child(5), .payments-table td:nth-child(6), .payment-student strong, .payment-amount { color: #263340 !important; font-weight: 650 !important; }
+  .payment-student span { font-weight: 500 !important; }
+  .payment-avatar { width: 36px !important; height: 36px !important; min-width: 36px !important; border-radius: 9px !important; font-size: 12px !important; font-weight: 650 !important; }
+  .payment-course { padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; color: #a87808 !important; font-weight: 650 !important; }
+  .payment-details-modal { font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif !important; }
+  .payment-details-header h2, .payment-details-student-info h3, .payment-details-highlight strong, .payment-details-grid strong { font-weight: 650 !important; }
+  .payment-details-header span, .payment-details-header p, .payment-details-student-info small, .payment-details-highlight span, .payment-details-grid span { font-weight: 600 !important; }
 }

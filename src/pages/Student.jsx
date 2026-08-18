@@ -1883,14 +1883,6 @@ const Students = () => {
                   />
 
                   <IdDetail
-                    icon={<FaGraduationCap />}
-                    label="Roll No"
-                    value={
-                      selectedStudent.rollNo || "-"
-                    }
-                  />
-
-                  <IdDetail
                     icon={<FiPhone />}
                     label="Phone Number"
                     value={
@@ -1952,52 +1944,6 @@ const Students = () => {
                       {formatMoney(
                         selectedStudent.totalFee
                       )}
-                    </strong>
-                  </div>
-
-                  <div className="fee-paid">
-                    <span>
-                      Paid
-                    </span>
-
-                    <strong>
-                      ₹
-                      {formatMoney(
-                        selectedStudent.paidAmount
-                      )}
-                    </strong>
-                  </div>
-
-                  <div className="fee-pending">
-                    <span>
-                      Pending
-                    </span>
-
-                    <strong>
-                      ₹
-                      {formatMoney(
-                        selectedStudent.pendingAmount
-                      )}
-                    </strong>
-                  </div>
-
-                  <div>
-                    <span>
-                      Status
-                    </span>
-
-                    <strong
-                      className={`student-id-payment ${
-                        selectedStudent.paymentStatus ===
-                        "paid"
-                          ? "paid"
-                          : "unpaid"
-                      }`}
-                    >
-                      {selectedStudent.paymentStatus ===
-                      "paid"
-                        ? "paid"
-                        : "unpaid"}
                     </strong>
                   </div>
                 </div>

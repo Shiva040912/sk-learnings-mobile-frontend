@@ -1193,13 +1193,6 @@ const Payments = () => {
                 <small>Student</small>
                 <h3>{selectedPayment.studentName}</h3>
 
-                <div className="payment-details-student-meta">
-                  <span>{selectedPayment.rollNo}</span>
-                  <i />
-                  <span>{selectedPayment.course}</span>
-                  <i />
-                  <span>{selectedPayment.batch}</span>
-                </div>
               </div>
 
               <span

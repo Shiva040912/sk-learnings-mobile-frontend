@@ -1,0 +1,137 @@
+/* Shared desktop density and typography for every data table. */
+@media (min-width: 901px) {
+  .students-table,
+  .payments-table,
+  .users-table {
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif !important;
+  }
+
+  .students-table *,
+  .payments-table *,
+  .users-table * {
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif !important;
+  }
+
+  .students-table th,
+  .payments-table th,
+  .users-table th {
+    height: 38px !important;
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+    color: #44505c !important;
+    font-size: 10.5px !important;
+    line-height: 1.2 !important;
+    font-weight: 550 !important;
+    letter-spacing: 0.35px !important;
+  }
+
+  .students-table tbody tr,
+  .payments-table tbody tr,
+  .users-table tbody tr,
+  .students-table td,
+  .payments-table td,
+  .users-table td {
+    height: 44px !important;
+  }
+
+  .students-table td,
+  .payments-table td,
+  .users-table td {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+    color: #3d4854 !important;
+    font-size: 10.5px !important;
+    line-height: 1.25 !important;
+    font-weight: 550 !important;
+  }
+
+  .students-table td span,
+  .students-table td strong,
+  .students-table td button,
+  .payments-table td span,
+  .payments-table td strong,
+  .payments-table td button,
+  .users-table td span,
+  .users-table td strong,
+  .users-table td button {
+    font-size: 10.5px !important;
+  }
+
+  /* Important values stay clear without appearing larger or extra-heavy. */
+  .student-name-cell strong,
+  .roll-number-badge,
+  .students-table td:nth-child(5),
+  .students-table td:nth-child(6),
+  .payment-student strong,
+  .payments-table td:nth-child(3),
+  .payments-table td:nth-child(5),
+  .payment-amount,
+  .user-name strong,
+  .user-email-cell strong {
+    color: #26323e !important;
+    font-size: 10.5px !important;
+    line-height: 1.25 !important;
+    font-weight: 600 !important;
+  }
+
+  .student-name-cell span,
+  .payment-student span,
+  .user-email-cell span {
+    font-size: 9px !important;
+    line-height: 1.2 !important;
+    font-weight: 550 !important;
+  }
+
+  .course-badge,
+  .payment-course,
+  .user-role-badge {
+    font-size: 10px !important;
+    font-weight: 600 !important;
+  }
+
+  .student-avatar,
+  .payment-avatar,
+  .user-avatar {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    border-radius: 8px !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+  }
+
+  /* Compact page chrome leaves enough viewport space for seven complete rows. */
+  .student-summary-grid,
+  .payments-top-grid,
+  .users-summary-grid {
+    gap: 10px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .student-summary-card,
+  .payment-summary-card,
+  .users-summary-card {
+    min-height: 72px !important;
+    padding: 10px 12px !important;
+  }
+
+  .students-toolbar,
+  .payment-toolbar,
+  .users-toolbar {
+    min-height: 50px !important;
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+  }
+
+  .students-toolbar .student-search input,
+  .students-toolbar .student-filter-button,
+  .students-toolbar .add-student-btn,
+  .students-toolbar .student-setup-btn,
+  .payment-toolbar input,
+  .payment-toolbar button,
+  .users-toolbar input,
+  .users-toolbar button {
+    height: 36px !important;
+    min-height: 36px !important;
+  }
+}

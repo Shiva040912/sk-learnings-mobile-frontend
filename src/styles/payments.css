@@ -4382,3 +4382,311 @@
     width: 100%;
   }
 }
+
+
+@media (min-width: 769px) {
+  .payment-toolbar {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns:
+      minmax(320px, 1fr)
+      92px
+      108px
+      minmax(250px, 320px)
+      142px !important;
+    grid-template-areas:
+      "search filter setup date reminder" !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 10px 12px !important;
+    box-sizing: border-box !important;
+    background: #fafbfc !important;
+    overflow: visible !important;
+  }
+
+  .payment-search {
+    grid-area: search !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+
+  .payment-search input {
+    width: 100% !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    box-sizing: border-box !important;
+    border-radius: 8px !important;
+    font-size: 9.5px !important;
+  }
+
+  .payment-filter-wrapper {
+    grid-area: filter !important;
+    width: 92px !important;
+    min-width: 92px !important;
+    max-width: 92px !important;
+    position: relative !important;
+    margin: 0 !important;
+  }
+
+  .payment-filter-button {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 0 10px !important;
+    border-radius: 8px !important;
+    font-size: 8.5px !important;
+    gap: 5px !important;
+    box-sizing: border-box !important;
+  }
+
+  .payment-upi-settings-btn {
+    grid-area: setup !important;
+    width: 108px !important;
+    min-width: 108px !important;
+    max-width: 108px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 0 10px !important;
+    margin: 0 !important;
+    border-radius: 8px !important;
+    font-size: 8.5px !important;
+    gap: 6px !important;
+    box-sizing: border-box !important;
+  }
+
+  .payment-upi-settings-btn span {
+    font-size: 0 !important;
+  }
+
+  .payment-upi-settings-btn span::after {
+    content: "Setup";
+    font-size: 8.5px;
+    font-weight: 700;
+  }
+
+  .toolbar-fee-date {
+    grid-area: date !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 38px !important;
+    display: grid !important;
+    grid-template-columns: 18px minmax(0, 1fr) 72px !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 0 6px !important;
+    margin: 0 !important;
+    border: 1px solid #dce1e7 !important;
+    border-radius: 8px !important;
+    background: #ffffff !important;
+    box-sizing: border-box !important;
+  }
+
+  .toolbar-fee-date > svg {
+    width: 18px !important;
+    flex: none !important;
+    color: #a97800 !important;
+    font-size: 13px !important;
+  }
+
+  .toolbar-fee-date input {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 30px !important;
+    padding: 0 7px !important;
+    border: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    font-size: 8.5px !important;
+    box-sizing: border-box !important;
+  }
+
+  .toolbar-fee-date button {
+    width: 72px !important;
+    min-width: 72px !important;
+    height: 30px !important;
+    padding: 0 8px !important;
+    border-radius: 6px !important;
+    font-size: 8px !important;
+    white-space: nowrap !important;
+  }
+
+  .payment-toolbar-reminder-btn {
+    grid-area: reminder !important;
+    width: 142px !important;
+    min-width: 142px !important;
+    max-width: 142px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 0 12px !important;
+    margin: 0 !important;
+    border-radius: 8px !important;
+    font-size: 8.5px !important;
+    gap: 6px !important;
+    box-sizing: border-box !important;
+    white-space: nowrap !important;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1100px) {
+  .payment-toolbar {
+    grid-template-columns:
+      minmax(220px, 1fr)
+      78px
+      92px
+      minmax(220px, 260px)
+      124px !important;
+    gap: 7px !important;
+  }
+
+  .payment-filter-wrapper {
+    width: 78px !important;
+    min-width: 78px !important;
+    max-width: 78px !important;
+  }
+
+  .payment-upi-settings-btn {
+    width: 92px !important;
+    min-width: 92px !important;
+    max-width: 92px !important;
+  }
+
+  .payment-toolbar-reminder-btn {
+    width: 124px !important;
+    min-width: 124px !important;
+    max-width: 124px !important;
+    padding: 0 8px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .payment-toolbar {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 42px 42px !important;
+    grid-template-areas:
+      "search filter setup"
+      "date date reminder" !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 7px !important;
+    box-sizing: border-box !important;
+  }
+
+  .payment-search {
+    grid-area: search !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+
+  .payment-search input {
+    width: 100% !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    font-size: 8.5px !important;
+  }
+
+  .payment-filter-wrapper {
+    grid-area: filter !important;
+    width: 42px !important;
+    min-width: 42px !important;
+    position: relative !important;
+  }
+
+  .payment-filter-button {
+    width: 42px !important;
+    min-width: 42px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 !important;
+    border-radius: 7px !important;
+  }
+
+  .payment-filter-button > span:not(.payment-filter-count) {
+    display: none !important;
+  }
+
+  .payment-upi-settings-btn {
+    grid-area: setup !important;
+    width: 42px !important;
+    min-width: 42px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 !important;
+    border-radius: 7px !important;
+  }
+
+  .payment-upi-settings-btn span {
+    display: none !important;
+  }
+
+  .toolbar-fee-date {
+    grid-area: date !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 36px !important;
+    display: grid !important;
+    grid-template-columns: 16px minmax(0, 1fr) 66px !important;
+    align-items: center !important;
+    gap: 5px !important;
+    padding: 0 5px !important;
+    border: 1px solid #dce1e7 !important;
+    border-radius: 7px !important;
+    background: #ffffff !important;
+    box-sizing: border-box !important;
+  }
+
+  .toolbar-fee-date input {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 28px !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .toolbar-fee-date button {
+    width: 66px !important;
+    min-width: 66px !important;
+    height: 28px !important;
+    font-size: 7px !important;
+  }
+
+  .payment-toolbar-reminder-btn {
+    grid-area: reminder !important;
+    width: 112px !important;
+    min-width: 112px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 8px !important;
+    border-radius: 7px !important;
+    font-size: 7.5px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .payment-toolbar {
+    grid-template-columns: minmax(0, 1fr) 38px 38px !important;
+    gap: 5px !important;
+    padding: 6px !important;
+  }
+
+  .payment-filter-wrapper,
+  .payment-filter-button,
+  .payment-upi-settings-btn {
+    width: 38px !important;
+    min-width: 38px !important;
+  }
+
+  .payment-toolbar-reminder-btn {
+    width: 104px !important;
+    min-width: 104px !important;
+    padding: 0 6px !important;
+    font-size: 7px !important;
+  }
+}

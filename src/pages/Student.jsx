@@ -998,21 +998,21 @@ const Students = () => {
           <div className="students-header-actions">
             <button
               type="button"
+              className="add-student-btn"
+              onClick={openAddModal}
+            >
+              <FiPlus />
+              <span>Add Student</span>
+            </button>
+
+            <button
+              type="button"
               className="student-setup-btn"
               onClick={() => setShowSetupModal(true)}
               title="Course and Batch Setup"
             >
               <FiSettings />
               <span>Setup</span>
-            </button>
-
-            <button
-              type="button"
-              className="add-student-btn"
-              onClick={openAddModal}
-            >
-              <FiPlus />
-              <span>Add Student</span>
             </button>
           </div>
         </div>

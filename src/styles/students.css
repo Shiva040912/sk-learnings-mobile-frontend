@@ -5718,22 +5718,272 @@
   }
 }
 
-/* FINAL GAP-ONLY OVERRIDE */
-@media (min-width: 769px) {
+
+/* Final Students Toolbar Layout */
+.students-toolbar {
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 100px 132px 100px !important;
+  align-items: center !important;
+  gap: 9px !important;
+  padding: 9px 12px !important;
+  border-bottom: 1px solid #eceef1 !important;
+  background: #fafbfc !important;
+  box-sizing: border-box !important;
+}
+
+.students-toolbar .student-search {
+  position: relative !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.students-toolbar .student-search input {
+  width: 100% !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 0 12px 0 36px !important;
+  border: 1px solid #dce1e7 !important;
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  color: #26313d !important;
+  font-size: 10px !important;
+  box-sizing: border-box !important;
+}
+
+.students-toolbar .student-search svg {
+  position: absolute !important;
+  top: 50% !important;
+  left: 12px !important;
+  transform: translateY(-50%) !important;
+  color: #8b939d !important;
+  font-size: 13px !important;
+  pointer-events: none !important;
+}
+
+.students-toolbar .student-filter-wrapper {
+  position: relative !important;
+  width: 100px !important;
+  min-width: 100px !important;
+  max-width: 100px !important;
+  margin: 0 !important;
+  z-index: 40 !important;
+}
+
+.students-toolbar .students-header-actions {
+  display: contents !important;
+  width: auto !important;
+  margin: 0 !important;
+}
+
+.students-toolbar .student-filter-button,
+.students-toolbar .add-student-btn,
+.students-toolbar .student-setup-btn {
+  width: 100% !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  padding: 0 11px !important;
+  border-radius: 8px !important;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
+  box-sizing: border-box !important;
+}
+
+.students-toolbar .student-filter-button {
+  border: 1px solid #dce1e7 !important;
+  background: #ffffff !important;
+  color: #55616d !important;
+  box-shadow: none !important;
+}
+
+.students-toolbar .add-student-btn {
+  width: 132px !important;
+  min-width: 132px !important;
+  max-width: 132px !important;
+  border: 1px solid #ffb800 !important;
+  background: #ffb800 !important;
+  color: #171717 !important;
+  box-shadow: 0 5px 14px rgba(255, 184, 0, 0.15) !important;
+}
+
+.students-toolbar .student-setup-btn {
+  width: 100px !important;
+  min-width: 100px !important;
+  max-width: 100px !important;
+  border: 1px solid #dce1e7 !important;
+  background: #ffffff !important;
+  color: #55616d !important;
+  box-shadow: none !important;
+}
+
+.students-toolbar .student-filter-button:hover,
+.students-toolbar .student-filter-button.active,
+.students-toolbar .student-setup-btn:hover {
+  border-color: #e0ad24 !important;
+  background: #fffaf0 !important;
+  color: #9b720b !important;
+}
+
+.students-toolbar .add-student-btn:hover {
+  transform: none !important;
+  background: #f2ad00 !important;
+  border-color: #f2ad00 !important;
+  box-shadow: 0 6px 16px rgba(255, 184, 0, 0.2) !important;
+}
+
+.students-toolbar .student-filter-dropdown {
+  position: absolute !important;
+  top: calc(100% + 7px) !important;
+  right: 0 !important;
+  left: auto !important;
+  bottom: auto !important;
+  z-index: 3500 !important;
+  width: 255px !important;
+}
+
+@media (max-width: 1100px) and (min-width: 769px) {
   .students-toolbar {
-    gap: 0 !important;
+    grid-template-columns: minmax(0, 1fr) 90px 120px 90px !important;
+    gap: 7px !important;
+    padding: 8px 10px !important;
   }
 
-  .students-header-actions {
-    gap: 0 !important;
+  .students-toolbar .student-filter-wrapper {
+    width: 90px !important;
+    min-width: 90px !important;
+    max-width: 90px !important;
   }
 
-  .students-toolbar .student-search,
-  .students-toolbar .student-filter-wrapper,
-  .students-toolbar .students-header-actions,
-  .students-toolbar .student-setup-btn,
   .students-toolbar .add-student-btn {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+    width: 120px !important;
+    min-width: 120px !important;
+    max-width: 120px !important;
+  }
+
+  .students-toolbar .student-setup-btn {
+    width: 90px !important;
+    min-width: 90px !important;
+    max-width: 90px !important;
+  }
+
+  .students-toolbar .student-filter-button,
+  .students-toolbar .add-student-btn,
+  .students-toolbar .student-setup-btn,
+  .students-toolbar .student-search input {
+    height: 36px !important;
+    min-height: 36px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .students-toolbar {
+    grid-template-columns: minmax(0, 1fr) 34px 34px 34px !important;
+    gap: 5px !important;
+    padding: 7px !important;
+  }
+
+  .students-toolbar .student-search {
+    grid-column: auto !important;
+    order: initial !important;
+    flex: none !important;
+    min-width: 0 !important;
+  }
+
+  .students-toolbar .student-search input {
+    width: 100% !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    padding: 0 7px 0 29px !important;
+    border-radius: 7px !important;
+    font-size: 8px !important;
+  }
+
+  .students-toolbar .student-search svg {
+    left: 9px !important;
+    font-size: 11px !important;
+  }
+
+  .students-toolbar .student-filter-wrapper {
+    grid-column: auto !important;
+    order: initial !important;
+    width: 34px !important;
+    min-width: 34px !important;
+    max-width: 34px !important;
+    flex: none !important;
+  }
+
+  .students-toolbar .students-header-actions {
+    grid-column: auto !important;
+    order: initial !important;
+    display: contents !important;
+  }
+
+  .students-toolbar .student-filter-button,
+  .students-toolbar .add-student-btn,
+  .students-toolbar .student-setup-btn {
+    width: 34px !important;
+    min-width: 34px !important;
+    max-width: 34px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    padding: 0 !important;
+    border-radius: 7px !important;
+    gap: 0 !important;
+  }
+
+  .students-toolbar .student-filter-button > span:not(.student-filter-count),
+  .students-toolbar .add-student-btn > span,
+  .students-toolbar .student-setup-btn > span {
+    display: none !important;
+  }
+
+  .students-toolbar .student-filter-button svg,
+  .students-toolbar .add-student-btn svg,
+  .students-toolbar .student-setup-btn svg {
+    font-size: 13px !important;
+  }
+
+  .students-toolbar .student-filter-dropdown {
+    position: absolute !important;
+    top: calc(100% + 7px) !important;
+    right: 0 !important;
+    left: auto !important;
+    bottom: auto !important;
+    width: min(255px, calc(100vw - 20px)) !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .students-toolbar {
+    grid-template-columns: minmax(0, 1fr) 32px 32px 32px !important;
+    gap: 4px !important;
+    padding: 6px !important;
+  }
+
+  .students-toolbar .student-filter-wrapper,
+  .students-toolbar .student-filter-button,
+  .students-toolbar .add-student-btn,
+  .students-toolbar .student-setup-btn {
+    width: 32px !important;
+    min-width: 32px !important;
+    max-width: 32px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+  }
+
+  .students-toolbar .student-search input {
+    height: 32px !important;
+    min-height: 32px !important;
+    font-size: 7.5px !important;
   }
 }

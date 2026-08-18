@@ -119,12 +119,6 @@ const StudentPayment = () => {
             "Student"
           }`,
 
-        am:
-          String(
-            student?.paymentAmount ||
-              0
-          ),
-
         cu:
           "INR",
       });

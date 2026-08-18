@@ -1162,9 +1162,16 @@ const Payments = () => {
             onClick={(event) => event.stopPropagation()}
           >
             <div className="payment-details-header">
-              <div>
-                <span>STUDENT PAYMENT DETAILS</span>
-                <h2>{selectedPayment.studentName}</h2>
+              <div className="payment-details-title-wrap">
+                <div className="payment-details-title-icon">
+                  <FiCreditCard />
+                </div>
+
+                <div>
+                  <span>STUDENT PAYMENT DETAILS</span>
+                  <h2>Payment Details</h2>
+                  <p>Complete fee information for this student</p>
+                </div>
               </div>
 
               <button
@@ -1175,6 +1182,50 @@ const Payments = () => {
               >
                 <FiX />
               </button>
+            </div>
+
+            <div className="payment-details-student-card">
+              <div className="payment-details-avatar">
+                {selectedPayment.studentName?.charAt(0)?.toUpperCase() || "S"}
+              </div>
+
+              <div className="payment-details-student-info">
+                <small>Student</small>
+                <h3>{selectedPayment.studentName}</h3>
+
+                <div className="payment-details-student-meta">
+                  <span>{selectedPayment.rollNo}</span>
+                  <i />
+                  <span>{selectedPayment.course}</span>
+                  <i />
+                  <span>{selectedPayment.batch}</span>
+                </div>
+              </div>
+
+              <span
+                className={`payment-details-status-badge ${selectedPayment.paymentStatus}`}
+              >
+                {selectedPayment.paymentStatus === "paid" ? (
+                  <FiCheckCircle />
+                ) : (
+                  <FiClock />
+                )}
+                {selectedPayment.paymentStatus}
+              </span>
+            </div>
+
+            <div className="payment-details-highlight-grid">
+              <div className="payment-details-highlight">
+                <span>Total Fee</span>
+                <strong>₹{formatMoney(selectedPayment.totalFee)}</strong>
+              </div>
+
+              <div className="payment-details-highlight">
+                <span>Payment Method</span>
+                <strong>
+                  {formatPaymentMethod(selectedPayment.paymentMethod)}
+                </strong>
+              </div>
             </div>
 
             <div className="payment-details-grid">
@@ -1199,30 +1250,25 @@ const Payments = () => {
               </div>
 
               <div>
-                <span>Total Fee</span>
-                <strong>₹{formatMoney(selectedPayment.totalFee)}</strong>
+                <span>Payment Date</span>
+                <strong>{formatDate(selectedPayment.paymentDate)}</strong>
               </div>
 
               <div>
-                <span>Status</span>
+                <span>Payment Status</span>
                 <strong
                   className={`detail-status ${selectedPayment.paymentStatus}`}
                 >
                   {selectedPayment.paymentStatus}
                 </strong>
               </div>
+            </div>
 
-              <div>
-                <span>Payment Date</span>
-                <strong>{formatDate(selectedPayment.paymentDate)}</strong>
-              </div>
-
-              <div>
-                <span>Payment Method</span>
-                <strong>
-                  {formatPaymentMethod(selectedPayment.paymentMethod)}
-                </strong>
-              </div>
+            <div className="payment-details-footer">
+              <FiCheckCircle />
+              <span>
+                Latest fee status recorded for this student.
+              </span>
             </div>
           </div>
         </div>

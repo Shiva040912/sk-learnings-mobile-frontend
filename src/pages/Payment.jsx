@@ -112,14 +112,12 @@ const Payments = () => {
     const handleWindowFocus = () => {
       fetchPaymentPageData();
       fetchFeeDueDate();
-      fetchPaymentSettings();
     };
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
         fetchPaymentPageData();
         fetchFeeDueDate();
-        fetchPaymentSettings();
       }
     };
 

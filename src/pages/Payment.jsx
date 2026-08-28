@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   FiBell,
+  FiCheck,
   FiCalendar,
   FiCheckCircle,
   FiClock,
@@ -12,6 +13,8 @@ import {
   FiSave,
   FiImage,
   FiUpload,
+  FiUser,
+  FiUsers,
   FiTrash2,
   FiX,
 } from "react-icons/fi";
@@ -35,6 +38,10 @@ const Payments = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSavingDueDate, setIsSavingDueDate] = useState(false);
   const [isSendingReminders, setIsSendingReminders] = useState(false);
+  const [showReminderMenu, setShowReminderMenu] = useState(false);
+  const [showIndividualPicker, setShowIndividualPicker] = useState(false);
+  const [selectedReminderIds, setSelectedReminderIds] = useState([]);
+  const [reminderSearch, setReminderSearch] = useState("");
   const [paymentMethodStudent, setPaymentMethodStudent] = useState(null);
   const [paymentUpdatingStudentId, setPaymentUpdatingStudentId] =
     useState(null);
@@ -449,7 +456,7 @@ const Payments = () => {
     }
   };
 
-  const handleSendReminders = async () => {
+  const handleSendReminders = async (studentIds) => {
     if (!feeDueDate) {
       toast.error("Please set the common fee due date first");
       return;
@@ -459,10 +466,17 @@ const Payments = () => {
       return;
     }
 
+    if (Array.isArray(studentIds) && studentIds.length === 0) {
+      toast.error("Please select at least one student");
+      return;
+    }
+
     try {
       setIsSendingReminders(true);
 
-      const response = await api.post("/payments/send-reminders");
+      const response = await api.post("/payments/send-reminders", {
+        studentIds: Array.isArray(studentIds) ? studentIds : undefined,
+      });
 
       const result = response.data || {};
       const sent = Number(result.sent || 0);
@@ -473,40 +487,58 @@ const Payments = () => {
         toast.success(
           `${sent} fee reminder${sent > 1 ? "s" : ""} sent successfully`,
         );
-        return;
-      }
-
-      if (sent > 0 && failed > 0) {
+      } else if (sent > 0 && failed > 0) {
         toast(`${sent} sent successfully, ${failed} failed`, {
           icon: "⚠️",
         });
-        return;
-      }
-
-      if (totalEligible === 0) {
+      } else if (totalEligible === 0) {
         toast(result.message || "No unpaid students found for reminder", {
           icon: "ℹ️",
         });
-        return;
-      }
-
-      if (failed > 0) {
+      } else if (failed > 0) {
         toast.error(
           `Failed to send ${failed} fee reminder${failed > 1 ? "s" : ""}`,
         );
-        return;
+      } else {
+        toast(result.message || "No fee reminders were sent", {
+          icon: "ℹ️",
+        });
       }
-
-      toast(result.message || "No fee reminders were sent", {
-        icon: "ℹ️",
-      });
     } catch (error) {
       toast.error(
         error.response?.data?.message || "Failed to send fee reminders",
       );
     } finally {
       setIsSendingReminders(false);
+      setShowReminderMenu(false);
+      setShowIndividualPicker(false);
+      setSelectedReminderIds([]);
     }
+  };
+
+  const openIndividualPicker = () => {
+    setShowReminderMenu(false);
+    setSelectedReminderIds([]);
+    setReminderSearch("");
+    setShowIndividualPicker(true);
+  };
+
+  const toggleReminderStudent = (studentId) => {
+    setSelectedReminderIds((current) =>
+      current.includes(studentId)
+        ? current.filter((id) => id !== studentId)
+        : [...current, studentId],
+    );
+  };
+
+  const toggleAllReminderStudents = () => {
+    const unpaidStudentIds = paymentRows
+      .filter((student) => student.paymentStatus === "unpaid")
+      .map((student) => student._id);
+
+    setSelectedReminderIds((current) =>
+      current.length === unpaidStudentIds.length ? [] : unpaidStudentIds,
+    );
   };
 
   const handlePaymentToggle = (student) => {
@@ -803,16 +835,186 @@ const Payments = () => {
             <span>UPI Settings</span>
           </button>
 
-          <button
-            type="button"
-            className="send-fee-reminder-btn payment-toolbar-reminder-btn"
-            onClick={handleSendReminders}
-            disabled={isSendingReminders || !feeDueDate}
-            title="Send WhatsApp reminder to unpaid students"
-          >
-            <FiBell />
-            <span>{isSendingReminders ? "Sending..." : "Send Reminder"}</span>
-          </button>
+          <div className="payment-reminder-wrapper">
+            <button
+              type="button"
+              className="send-fee-reminder-btn payment-toolbar-reminder-btn"
+              onClick={() => setShowReminderMenu((open) => !open)}
+              disabled={isSendingReminders || !feeDueDate}
+              title="Send WhatsApp reminder to unpaid students"
+            >
+              <FiBell />
+              <span>{isSendingReminders ? "Sending..." : "Send Reminder"}</span>
+            </button>
+          </div>
+
+          {showReminderMenu && (
+            <div
+              className="notification-options-overlay"
+              onClick={() => setShowReminderMenu(false)}
+            >
+              <section
+                className="notification-options-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="reminder-options-title"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <div className="notification-options-header">
+                  <div>
+                    <span>FEE REMINDERS</span>
+                    <h2 id="reminder-options-title">Choose recipients</h2>
+                    <p>Send a WhatsApp fee reminder to unpaid students.</p>
+                  </div>
+                  <button
+                    type="button"
+                    className="notification-options-close"
+                    aria-label="Close reminder options"
+                    onClick={() => setShowReminderMenu(false)}
+                  >
+                    <FiX />
+                  </button>
+                </div>
+
+                <div className="notification-options-body">
+                  <button
+                    type="button"
+                    className="notification-mode-card"
+                    disabled={isSendingReminders}
+                    onClick={() => handleSendReminders()}
+                  >
+                    <span className="notification-mode-icon"><FiUsers /></span>
+                    <span>
+                      <strong>Send to all unpaid students</strong>
+                      <span>Every student with an outstanding fee will receive a reminder.</span>
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="notification-mode-card"
+                    disabled={isSendingReminders}
+                    onClick={openIndividualPicker}
+                  >
+                    <span className="notification-mode-icon"><FiUser /></span>
+                    <span>
+                      <strong>Select individual students</strong>
+                      <span>Choose one or more unpaid students before sending.</span>
+                    </span>
+                  </button>
+                </div>
+              </section>
+            </div>
+          )}
+
+          {showIndividualPicker && (
+            <div
+              className="notification-options-overlay"
+              onClick={() => setShowIndividualPicker(false)}
+            >
+              <section
+                className="notification-options-modal notification-recipient-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="reminder-recipients-title"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <div className="notification-options-header">
+                  <div>
+                    <span>FEE REMINDERS</span>
+                    <h2 id="reminder-recipients-title">Select students</h2>
+                    <p>Only students with unpaid fees are shown below.</p>
+                  </div>
+                  <button
+                    type="button"
+                    className="notification-options-close"
+                    aria-label="Close student selection"
+                    onClick={() => setShowIndividualPicker(false)}
+                  >
+                    <FiX />
+                  </button>
+                </div>
+
+                <div className="notification-recipient-body">
+                  <div className="notification-recipient-toolbar">
+                    <FiSearch />
+                    <input
+                      type="search"
+                      value={reminderSearch}
+                      onChange={(event) => setReminderSearch(event.target.value)}
+                      placeholder="Search by student name or roll number"
+                    />
+                  </div>
+
+                  <div className="notification-selection-summary">
+                    <p className="notification-selection-count">
+                      <FiCheck /> {selectedReminderIds.length} student{selectedReminderIds.length === 1 ? "" : "s"} selected
+                    </p>
+                    <button
+                      type="button"
+                      className="notification-select-all-btn"
+                      onClick={toggleAllReminderStudents}
+                    >
+                      {selectedReminderIds.length === paymentRows.filter((student) => student.paymentStatus === "unpaid").length
+                        ? "Clear selection"
+                        : "Select all"}
+                    </button>
+                  </div>
+
+                  <div className="payment-reminder-picker-list">
+                  {paymentRows
+                    .filter((student) => student.paymentStatus === "unpaid")
+                    .filter((student) => {
+                      const query = reminderSearch.trim().toLowerCase();
+                      return !query || student.studentName?.toLowerCase().includes(query) || student.rollNo?.toLowerCase().includes(query);
+                    })
+                    .map((student) => (
+                      <label
+                        key={student._id}
+                        className="payment-reminder-picker-item"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedReminderIds.includes(student._id)}
+                          onChange={() => toggleReminderStudent(student._id)}
+                        />
+                        <span className="payment-reminder-student-details">
+                          <strong>{student.studentName}</strong>
+                          <small>{student.rollNo} · {student.course}</small>
+                        </span>
+                      </label>
+                    ))}
+
+                  {paymentRows.filter(
+                    (student) => student.paymentStatus === "unpaid",
+                  ).length === 0 && <p>No unpaid students found</p>}
+                  </div>
+                </div>
+
+                <div className="notification-options-footer">
+                  <button
+                    type="button"
+                    className="notification-cancel-btn"
+                    onClick={() => setShowIndividualPicker(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="notification-send-btn"
+                    disabled={
+                      isSendingReminders || selectedReminderIds.length === 0
+                    }
+                    onClick={() => handleSendReminders(selectedReminderIds)}
+                  >
+                    {isSendingReminders
+                      ? "Sending..."
+                      : `Send to Selected (${selectedReminderIds.length})`}
+                  </button>
+                </div>
+              </section>
+            </div>
+          )}
 
           <div className="toolbar-fee-date">
             <FiCalendar />

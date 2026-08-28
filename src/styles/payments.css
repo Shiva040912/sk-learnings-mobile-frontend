@@ -5276,3 +5276,438 @@
   .payment-details-header h2, .payment-details-student-info h3, .payment-details-highlight strong, .payment-details-grid strong { font-weight: 650 !important; }
   .payment-details-header span, .payment-details-header p, .payment-details-student-info small, .payment-details-highlight span, .payment-details-grid span { font-weight: 600 !important; }
 }
+
+/* Notification send options modal */
+.notification-options-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(14, 20, 27, 0.54);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.notification-options-modal {
+  width: 100%;
+  max-width: 470px;
+  overflow: hidden;
+  border: 1px solid #e3e7ec;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 24px 70px rgba(16, 24, 40, 0.24);
+}
+
+.notification-options-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 17px 18px 14px;
+  border-bottom: 1px solid #eceff2;
+  background: #fafbfc;
+}
+
+.notification-options-header > div {
+  min-width: 0;
+}
+
+.notification-options-header span {
+  display: block;
+  color: #ad7a00;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.notification-options-header h2 {
+  margin: 4px 0 0;
+  color: #26313d;
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+.notification-options-header p {
+  margin: 5px 0 0;
+  color: #89929d;
+  font-size: 8.5px;
+  line-height: 1.45;
+}
+
+.notification-options-close {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 30px;
+  border: 1px solid #e0e4e8;
+  border-radius: 7px;
+  background: #fff;
+  color: #6f7882;
+  cursor: pointer;
+}
+
+.notification-options-close:hover {
+  background: #f5f6f7;
+}
+
+.notification-options-body {
+  display: grid;
+  gap: 10px;
+  padding: 16px 18px;
+}
+
+.notification-mode-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px;
+  border: 1px solid #e0e5ea;
+  border-radius: 10px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  transition: .2s ease;
+}
+
+.notification-mode-card:hover:not(:disabled) {
+  border-color: #e1b438;
+  background: #fffaf0;
+}
+
+.notification-mode-card.selected {
+  border-color: #d9a719;
+  background: #fff8e6;
+  box-shadow: 0 0 0 2px rgba(225, 180, 56, .12);
+}
+
+.notification-mode-card:disabled {
+  opacity: .65;
+  cursor: not-allowed;
+}
+
+.notification-mode-icon {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: #fff3cf;
+  color: #a97600;
+  font-size: 16px;
+}
+
+.notification-mode-card strong,
+.notification-mode-card > span:not(.notification-mode-icon),
+.notification-mode-card > span:not(.notification-mode-icon) > span {
+  display: block;
+}
+
+.notification-mode-card strong {
+  color: #2d3742;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.notification-mode-card > span:not(.notification-mode-icon) > span {
+  margin-top: 3px;
+  color: #8a939d;
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+.notification-mode-card > span:not(.notification-mode-icon) {
+  min-width: 0;
+}
+
+.notification-mode-card > span:not(.notification-mode-icon) > span {
+  margin-top: 3px;
+  color: #8a939d;
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+.notification-student-field {
+  padding: 12px;
+  border: 1px solid #e4e7eb;
+  border-radius: 10px;
+  background: #fafbfc;
+}
+
+.notification-student-field label {
+  display: block;
+  margin-bottom: 6px;
+  color: #59636e;
+  font-size: 8px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .35px;
+}
+
+.notification-student-field select {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid #d9dee4;
+  border-radius: 7px;
+  background: #fff;
+  color: #39434e;
+  font-size: 9px;
+  outline: none;
+}
+
+.notification-student-field select:focus {
+  border-color: #d9a719;
+  box-shadow: 0 0 0 2px rgba(225, 180, 56, .12);
+}
+
+.notification-student-field small {
+  display: block;
+  margin-top: 6px;
+  color: #a35b5b;
+  font-size: 8px;
+}
+
+.notification-options-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 13px 18px 16px;
+  border-top: 1px solid #eceff2;
+}
+
+.notification-cancel-btn,
+.notification-send-btn {
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 13px;
+  border-radius: 7px;
+  font-size: 8px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.notification-cancel-btn {
+  border: 1px solid #dce1e7;
+  background: #fff;
+  color: #626c76;
+}
+
+.notification-send-btn {
+  border: 1px solid #d9a719;
+  background: #ffcc4d;
+  color: #594200;
+}
+
+.notification-send-btn:hover:not(:disabled) {
+  background: #f4bd35;
+}
+
+.notification-cancel-btn:disabled,
+.notification-send-btn:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+/* Individual reminder recipient selection */
+.notification-recipient-modal {
+  max-width: 560px;
+}
+
+.notification-recipient-body {
+  padding: 15px 18px 12px;
+}
+
+.notification-recipient-toolbar {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 11px;
+  border: 1px solid #dfe4e9;
+  border-radius: 8px;
+  background: #fff;
+  color: #88929d;
+}
+
+.notification-recipient-toolbar:focus-within {
+  border-color: #d9a719;
+  box-shadow: 0 0 0 3px rgba(225, 180, 56, .12);
+}
+
+.notification-recipient-toolbar svg {
+  flex: 0 0 auto;
+  font-size: 14px;
+}
+
+.notification-recipient-toolbar input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #34404c;
+  font: inherit;
+  font-size: 10px;
+}
+
+.notification-recipient-toolbar input::placeholder {
+  color: #9ca5af;
+}
+
+.notification-selection-count {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  color: #9a7008;
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.notification-selection-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 11px 0 8px;
+}
+
+.notification-select-all-btn {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #a87808;
+  font-size: 9px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.notification-select-all-btn:hover {
+  color: #805b00;
+  text-decoration: underline;
+}
+
+.notification-selection-count svg {
+  width: 14px;
+  height: 14px;
+  padding: 2px;
+  border-radius: 50%;
+  background: #fff0c6;
+}
+
+.payment-reminder-picker-list {
+  max-height: min(34vh, 230px);
+  overflow-y: auto;
+  border: 1px solid #e5e8ec;
+  border-radius: 9px;
+  background: #fafbfc;
+}
+
+.payment-reminder-picker-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.payment-reminder-picker-list::-webkit-scrollbar-track {
+  margin: 5px 0;
+  background: transparent;
+}
+
+.payment-reminder-picker-list::-webkit-scrollbar-thumb {
+  border: 2px solid #fafbfc;
+  border-radius: 99px;
+  background: #c6ccd2;
+}
+
+.payment-reminder-picker-list > p {
+  margin: 0;
+  padding: 20px 14px;
+  color: #87919b;
+  font-size: 10px;
+  text-align: center;
+}
+
+.payment-reminder-picker-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 53px;
+  padding: 9px 12px;
+  border-bottom: 1px solid #e7eaee;
+  background: #fff;
+  cursor: pointer;
+  transition: background .18s ease;
+}
+
+.payment-reminder-picker-item:last-child {
+  border-bottom: 0;
+}
+
+.payment-reminder-picker-item:hover {
+  background: #fffaf0;
+}
+
+.payment-reminder-picker-item:has(input:checked) {
+  background: #fff8e8;
+}
+
+.payment-reminder-picker-item input {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: #d9a719;
+}
+
+.payment-reminder-student-details {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.payment-reminder-student-details strong {
+  overflow: hidden;
+  color: #36414c;
+  font-size: 10px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.payment-reminder-student-details small {
+  color: #89939d;
+  font-size: 8.5px;
+  font-weight: 600;
+}
+
+@media (max-width: 560px) {
+  .notification-options-overlay {
+    padding: 10px;
+  }
+
+  .notification-options-header,
+  .notification-options-body,
+  .notification-options-footer,
+  .notification-recipient-body {
+    padding-left: 13px;
+    padding-right: 13px;
+  }
+
+  .notification-options-footer {
+    flex-direction: column-reverse;
+  }
+
+  .notification-cancel-btn,
+  .notification-send-btn {
+    width: 100%;
+  }
+}

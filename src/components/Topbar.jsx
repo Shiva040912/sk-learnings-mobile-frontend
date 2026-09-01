@@ -108,6 +108,13 @@ const Topbar = ({ onMenuClick }) => {
       };
     }
 
+    if (location.pathname.startsWith("/settings")) {
+      return {
+        title: "Settings",
+        subtitle: "Manage courses, payment details and fee reminders",
+      };
+    }
+
     return {
       title: "Dashboard",
       subtitle:

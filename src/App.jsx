@@ -14,6 +14,7 @@ import Students from "./pages/Student";
 import Users from "./pages/Users";
 import Payments from "./pages/Payment";
 import StudentPayment from "./pages/StudentPayment";
+import Settings from "./pages/Settings";
 
 const App = () => {
   return (
@@ -63,6 +64,11 @@ const App = () => {
                   <Users />
                 </ProtectedRoute>
               }
+            />
+
+            <Route
+              path="/settings"
+              element={<Settings />}
             />
           </Route>
         </Route>

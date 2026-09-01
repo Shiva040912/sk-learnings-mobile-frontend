@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   FiBell,
   FiCheck,
@@ -17,6 +17,7 @@ import {
   FiUsers,
   FiTrash2,
   FiX,
+  FiMessageSquare,
 } from "react-icons/fi";
 import toast from "react-hot-toast";
 
@@ -42,13 +43,29 @@ const Payments = () => {
   const [showIndividualPicker, setShowIndividualPicker] = useState(false);
   const [selectedReminderIds, setSelectedReminderIds] = useState([]);
   const [reminderSearch, setReminderSearch] = useState("");
+  const [showMessageTypePicker, setShowMessageTypePicker] = useState(false);
+  const [showCustomMessage, setShowCustomMessage] = useState(false);
+  const [notificationTarget, setNotificationTarget] = useState({
+    type: "",
+    studentIds: [],
+  });
+  const [studentNotificationMenu, setStudentNotificationMenu] =
+    useState(null);
+  const [individualNotificationStudent, setIndividualNotificationStudent] =
+    useState(null);
+  const [studentNotificationAnchor, setStudentNotificationAnchor] =
+    useState(null);
+  const [customMessageError, setCustomMessageError] = useState("");
+  const studentNotificationMenuRef = useRef(null);
+  const studentNotificationFloatingMenuRef = useRef(null);
+  const [customAudience, setCustomAudience] = useState("unpaid");
+  const [customMessage, setCustomMessage] = useState("");
   const [paymentMethodStudent, setPaymentMethodStudent] = useState(null);
   const [paymentUpdatingStudentId, setPaymentUpdatingStudentId] =
     useState(null);
 
   const [showPaymentSettings, setShowPaymentSettings] = useState(false);
-  const [isSavingPaymentSettings, setIsSavingPaymentSettings] =
-    useState(false);
+  const [isSavingPaymentSettings, setIsSavingPaymentSettings] = useState(false);
   const [paymentSettings, setPaymentSettings] = useState({
     upiId: "",
     receiverName: "",
@@ -137,6 +154,42 @@ const Payments = () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (
+        studentNotificationMenuRef.current &&
+        !studentNotificationMenuRef.current.contains(event.target) &&
+        !studentNotificationFloatingMenuRef.current?.contains(event.target)
+      ) {
+        setStudentNotificationMenu(null);
+        setStudentNotificationAnchor(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key !== "Escape") return;
+
+      setStudentNotificationMenu(null);
+      setStudentNotificationAnchor(null);
+
+      if (showCustomMessage) {
+        setShowCustomMessage(false);
+        setIndividualNotificationStudent(null);
+        setCustomMessageError("");
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [showCustomMessage]);
 
   const paymentRows = useMemo(() => {
     return students.map((student) => {
@@ -350,28 +403,16 @@ const Payments = () => {
         context.fillStyle = "#ffffff";
         context.fillRect(0, 0, maxSize, maxSize);
 
-        const scale = Math.min(
-          maxSize / image.width,
-          maxSize / image.height,
-        );
+        const scale = Math.min(maxSize / image.width, maxSize / image.height);
 
         const drawWidth = image.width * scale;
         const drawHeight = image.height * scale;
         const x = (maxSize - drawWidth) / 2;
         const y = (maxSize - drawHeight) / 2;
 
-        context.drawImage(
-          image,
-          x,
-          y,
-          drawWidth,
-          drawHeight,
-        );
+        context.drawImage(image, x, y, drawWidth, drawHeight);
 
-        const compressedQr = canvas.toDataURL(
-          "image/jpeg",
-          0.82,
-        );
+        const compressedQr = canvas.toDataURL("image/jpeg", 0.82);
 
         setPaymentSettings((current) => ({
           ...current,
@@ -456,12 +497,7 @@ const Payments = () => {
     }
   };
 
-  const handleSendReminders = async (studentIds) => {
-    if (!feeDueDate) {
-      toast.error("Please set the common fee due date first");
-      return;
-    }
-
+  const handleSendReminders = async (studentIds, messageType) => {
     if (isSendingReminders) {
       return;
     }
@@ -476,6 +512,7 @@ const Payments = () => {
 
       const response = await api.post("/payments/send-reminders", {
         studentIds: Array.isArray(studentIds) ? studentIds : undefined,
+        messageType,
       });
 
       const result = response.data || {};
@@ -512,8 +549,92 @@ const Payments = () => {
       setIsSendingReminders(false);
       setShowReminderMenu(false);
       setShowIndividualPicker(false);
+      setShowMessageTypePicker(false);
       setSelectedReminderIds([]);
     }
+  };
+
+  const openMessageTypePicker = (type, studentIds = []) => {
+    setShowReminderMenu(false);
+    setShowIndividualPicker(false);
+    setNotificationTarget({ type, studentIds });
+    setShowMessageTypePicker(true);
+  };
+
+  const chooseMessageType = (messageType) => {
+    if (messageType === "custom") {
+      setShowMessageTypePicker(false);
+      setCustomMessage("");
+      setCustomMessageError("");
+      setIndividualNotificationStudent(null);
+      setCustomAudience(
+        notificationTarget.type === "single" ? "selected" : "unpaid",
+      );
+      setShowCustomMessage(true);
+      return;
+    }
+
+    handleSendReminders(
+      notificationTarget.type === "all-unpaid"
+        ? undefined
+        : notificationTarget.studentIds,
+      messageType,
+    );
+  };
+
+  const submitCustomMessage = () => {
+    if (!customMessage.trim()) {
+      setCustomMessageError("Please enter a message before sending.");
+      return;
+    }
+
+    setCustomMessageError("");
+    toast("WhatsApp template approval pending. Custom message sending is not available yet.", {
+      icon: "ℹ️",
+    });
+    setShowCustomMessage(false);
+    setIndividualNotificationStudent(null);
+    setCustomMessage("");
+  };
+
+  const openIndividualCustomMessage = (student) => {
+    setStudentNotificationMenu(null);
+    setStudentNotificationAnchor(null);
+    setNotificationTarget({ type: "single", studentIds: [student._id] });
+    setIndividualNotificationStudent(student);
+    setCustomMessage("");
+    setCustomMessageError("");
+    setShowCustomMessage(true);
+  };
+
+  const closeCustomMessage = () => {
+    setShowCustomMessage(false);
+    setIndividualNotificationStudent(null);
+    setCustomMessageError("");
+  };
+
+  const toggleStudentNotificationMenu = (event, student) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (studentNotificationMenu === student._id) {
+      setStudentNotificationMenu(null);
+      setStudentNotificationAnchor(null);
+      return;
+    }
+
+    const buttonBounds = event.currentTarget.getBoundingClientRect();
+    setStudentNotificationAnchor({
+      top: buttonBounds.bottom + 8,
+      right: Math.max(8, window.innerWidth - buttonBounds.right),
+    });
+    setStudentNotificationMenu(student._id);
+  };
+
+  const showTemplatePending = () => {
+    setStudentNotificationMenu(null);
+    setStudentNotificationAnchor(null);
+    toast("Template approval pending", { icon: "ℹ️" });
   };
 
   const openIndividualPicker = () => {
@@ -825,23 +946,13 @@ const Payments = () => {
             )}
           </div>
 
-          <button
-            type="button"
-            className="payment-upi-settings-btn"
-            onClick={() => setShowPaymentSettings(true)}
-            title="UPI payment settings"
-          >
-            <FiSettings />
-            <span>UPI Settings</span>
-          </button>
-
           <div className="payment-reminder-wrapper">
             <button
               type="button"
               className="send-fee-reminder-btn payment-toolbar-reminder-btn"
               onClick={() => setShowReminderMenu((open) => !open)}
-              disabled={isSendingReminders || !feeDueDate}
-              title="Send WhatsApp reminder to unpaid students"
+              disabled={isSendingReminders}
+              title="Choose students and notification type"
             >
               <FiBell />
               <span>{isSendingReminders ? "Sending..." : "Send Reminder"}</span>
@@ -881,12 +992,17 @@ const Payments = () => {
                     type="button"
                     className="notification-mode-card"
                     disabled={isSendingReminders}
-                    onClick={() => handleSendReminders()}
+                    onClick={() => openMessageTypePicker("all-unpaid")}
                   >
-                    <span className="notification-mode-icon"><FiUsers /></span>
+                    <span className="notification-mode-icon">
+                      <FiUsers />
+                    </span>
                     <span>
                       <strong>Send to all unpaid students</strong>
-                      <span>Every student with an outstanding fee will receive a reminder.</span>
+                      <span>
+                        Every student with an outstanding fee will receive a
+                        reminder.
+                      </span>
                     </span>
                   </button>
 
@@ -896,10 +1012,14 @@ const Payments = () => {
                     disabled={isSendingReminders}
                     onClick={openIndividualPicker}
                   >
-                    <span className="notification-mode-icon"><FiUser /></span>
+                    <span className="notification-mode-icon">
+                      <FiUser />
+                    </span>
                     <span>
                       <strong>Select individual students</strong>
-                      <span>Choose one or more unpaid students before sending.</span>
+                      <span>
+                        Choose one or more unpaid students before sending.
+                      </span>
                     </span>
                   </button>
                 </div>
@@ -941,53 +1061,65 @@ const Payments = () => {
                     <input
                       type="search"
                       value={reminderSearch}
-                      onChange={(event) => setReminderSearch(event.target.value)}
+                      onChange={(event) =>
+                        setReminderSearch(event.target.value)
+                      }
                       placeholder="Search by student name or roll number"
                     />
                   </div>
 
                   <div className="notification-selection-summary">
                     <p className="notification-selection-count">
-                      <FiCheck /> {selectedReminderIds.length} student{selectedReminderIds.length === 1 ? "" : "s"} selected
+                      <FiCheck /> {selectedReminderIds.length} student
+                      {selectedReminderIds.length === 1 ? "" : "s"} selected
                     </p>
                     <button
                       type="button"
                       className="notification-select-all-btn"
                       onClick={toggleAllReminderStudents}
                     >
-                      {selectedReminderIds.length === paymentRows.filter((student) => student.paymentStatus === "unpaid").length
+                      {selectedReminderIds.length ===
+                      paymentRows.filter(
+                        (student) => student.paymentStatus === "unpaid",
+                      ).length
                         ? "Clear selection"
                         : "Select all"}
                     </button>
                   </div>
 
                   <div className="payment-reminder-picker-list">
-                  {paymentRows
-                    .filter((student) => student.paymentStatus === "unpaid")
-                    .filter((student) => {
-                      const query = reminderSearch.trim().toLowerCase();
-                      return !query || student.studentName?.toLowerCase().includes(query) || student.rollNo?.toLowerCase().includes(query);
-                    })
-                    .map((student) => (
-                      <label
-                        key={student._id}
-                        className="payment-reminder-picker-item"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={selectedReminderIds.includes(student._id)}
-                          onChange={() => toggleReminderStudent(student._id)}
-                        />
-                        <span className="payment-reminder-student-details">
-                          <strong>{student.studentName}</strong>
-                          <small>{student.rollNo} · {student.course}</small>
-                        </span>
-                      </label>
-                    ))}
+                    {paymentRows
+                      .filter((student) => student.paymentStatus === "unpaid")
+                      .filter((student) => {
+                        const query = reminderSearch.trim().toLowerCase();
+                        return (
+                          !query ||
+                          student.studentName?.toLowerCase().includes(query) ||
+                          student.rollNo?.toLowerCase().includes(query)
+                        );
+                      })
+                      .map((student) => (
+                        <label
+                          key={student._id}
+                          className="payment-reminder-picker-item"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedReminderIds.includes(student._id)}
+                            onChange={() => toggleReminderStudent(student._id)}
+                          />
+                          <span className="payment-reminder-student-details">
+                            <strong>{student.studentName}</strong>
+                            <small>
+                              {student.rollNo} · {student.course}
+                            </small>
+                          </span>
+                        </label>
+                      ))}
 
-                  {paymentRows.filter(
-                    (student) => student.paymentStatus === "unpaid",
-                  ).length === 0 && <p>No unpaid students found</p>}
+                    {paymentRows.filter(
+                      (student) => student.paymentStatus === "unpaid",
+                    ).length === 0 && <p>No unpaid students found</p>}
                   </div>
                 </div>
 
@@ -1005,7 +1137,9 @@ const Payments = () => {
                     disabled={
                       isSendingReminders || selectedReminderIds.length === 0
                     }
-                    onClick={() => handleSendReminders(selectedReminderIds)}
+                    onClick={() =>
+                      openMessageTypePicker("selected", selectedReminderIds)
+                    }
                   >
                     {isSendingReminders
                       ? "Sending..."
@@ -1016,23 +1150,169 @@ const Payments = () => {
             </div>
           )}
 
-          <div className="toolbar-fee-date">
-            <FiCalendar />
-
-            <input
-              type="date"
-              value={selectedDueDate}
-              onChange={(event) => setSelectedDueDate(event.target.value)}
-            />
-
-            <button
-              type="button"
-              onClick={handleSaveDueDate}
-              disabled={isSavingDueDate}
+          {showMessageTypePicker && (
+            <div
+              className="notification-options-overlay"
+              onClick={() => setShowMessageTypePicker(false)}
             >
-              {isSavingDueDate ? "Saving..." : "Set Date"}
-            </button>
-          </div>
+              <section
+                className="notification-options-modal notification-message-type-modal"
+                role="dialog"
+                aria-modal="true"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <div className="notification-options-header">
+                  <div>
+                    <span>NOTIFICATION TYPE</span>
+                    <h2>Choose message</h2>
+                    <p>Select the message to send to the chosen students.</p>
+                  </div>
+                  <button
+                    type="button"
+                    className="notification-options-close"
+                    onClick={() => setShowMessageTypePicker(false)}
+                  >
+                    <FiX />
+                  </button>
+                </div>
+                <div className="notification-options-body notification-message-type-list">
+                  <button
+                    type="button"
+                    className="notification-mode-card"
+                    onClick={() => chooseMessageType("prevent")}
+                  >
+                    <span className="notification-mode-icon">
+                      <FiCalendar />
+                    </span>
+                    <span>
+                      <strong>Prevent message</strong>
+                      <span>Payment due date is approaching.</span>
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    className="notification-mode-card"
+                    onClick={() => chooseMessageType("overdue")}
+                  >
+                    <span className="notification-mode-icon">
+                      <FiBell />
+                    </span>
+                    <span>
+                      <strong>Overdue message</strong>
+                      <span>Fee is still pending after the due date.</span>
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    className="notification-mode-card"
+                    onClick={() => chooseMessageType("custom")}
+                  >
+                    <span className="notification-mode-icon">
+                      <FiMessageSquare />
+                    </span>
+                    <span>
+                      <strong>Text message</strong>
+                      <span>Type a custom WhatsApp message.</span>
+                    </span>
+                  </button>
+                </div>
+              </section>
+            </div>
+          )}
+
+          {showCustomMessage && (
+            <div
+              className="notification-options-overlay"
+              onClick={closeCustomMessage}
+            >
+              <section
+                className="notification-options-modal notification-custom-message-modal"
+                role="dialog"
+                aria-modal="true"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <div className="notification-options-header">
+                  <div>
+                    <span>CUSTOM MESSAGE</span>
+                    <h2>Write notification</h2>
+                    <p>
+                      Template connection will be enabled after Meta approval.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className="notification-options-close"
+                    onClick={closeCustomMessage}
+                  >
+                    <FiX />
+                  </button>
+                </div>
+                <div className="notification-custom-message-body">
+                  {notificationTarget.type !== "single" && (
+                    <label className="notification-audience-select">
+                      Send to
+                      <select
+                        value={customAudience}
+                        onChange={(event) =>
+                          setCustomAudience(event.target.value)
+                        }
+                      >
+                        <option value="unpaid">Unpaid students</option>
+                        <option value="all">All students</option>
+                      </select>
+                    </label>
+                  )}
+                  {notificationTarget.type === "single" && (
+                    <div className="notification-single-recipient">
+                      <span>Student</span>
+                      <strong>
+                        {individualNotificationStudent?.studentName ||
+                          "Selected student"}
+                      </strong>
+                      <small>
+                        {individualNotificationStudent?.phone ||
+                          "Phone number unavailable"}
+                      </small>
+                    </div>
+                  )}
+                  <label className="notification-message-input">
+                    Message
+                    <textarea
+                      value={customMessage}
+                      onChange={(event) => {
+                        setCustomMessage(event.target.value);
+                        if (customMessageError) setCustomMessageError("");
+                      }}
+                      placeholder="Type your message here..."
+                      maxLength={600}
+                    />
+                    <small>{customMessage.length}/600</small>
+                    {customMessageError && (
+                      <span className="notification-message-error" role="alert">
+                        {customMessageError}
+                      </span>
+                    )}
+                  </label>
+                </div>
+                <div className="notification-options-footer">
+                  <button
+                    type="button"
+                    className="notification-cancel-btn"
+                    onClick={closeCustomMessage}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="notification-send-btn"
+                    onClick={submitCustomMessage}
+                  >
+                    {notificationTarget.type === "single" ? "Send" : "Continue"}
+                  </button>
+                </div>
+              </section>
+            </div>
+          )}
         </div>
 
         <div className="payment-table-card">
@@ -1061,6 +1341,7 @@ const Payments = () => {
                     <th>Status</th>
                     <th>Payment Date</th>
                     <th>Method</th>
+                    <th>Notify</th>
                   </tr>
                 </thead>
 
@@ -1170,6 +1451,29 @@ const Payments = () => {
                           </span>
                         )}
                       </td>
+
+                      <td>
+                        <div
+                          className="student-notification-dropdown"
+                          ref={
+                            studentNotificationMenu === payment._id
+                              ? studentNotificationMenuRef
+                              : null
+                          }
+                        >
+                          <button
+                            type="button"
+                            className="student-notify-btn"
+                            aria-label={`Send notification to ${payment.studentName}`}
+                            aria-expanded={studentNotificationMenu === payment._id}
+                            onClick={(event) =>
+                              toggleStudentNotificationMenu(event, payment)
+                            }
+                          >
+                            <FiBell />
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -1178,6 +1482,37 @@ const Payments = () => {
           )}
         </div>
       </section>
+
+      {studentNotificationMenu && studentNotificationAnchor && (
+        <div
+          ref={studentNotificationFloatingMenuRef}
+          className="student-notify-menu student-notify-menu-floating"
+          role="menu"
+          style={{
+            top: studentNotificationAnchor.top,
+            right: studentNotificationAnchor.right,
+          }}
+        >
+          <button type="button" role="menuitem" onClick={showTemplatePending}>
+            Prevent Reminder
+          </button>
+          <button type="button" role="menuitem" onClick={showTemplatePending}>
+            Overdue Reminder
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              const student = filteredPayments.find(
+                (payment) => payment._id === studentNotificationMenu,
+              );
+              if (student) openIndividualCustomMessage(student);
+            }}
+          >
+            Custom Message
+          </button>
+        </div>
+      )}
 
       {showPaymentSettings && (
         <div
@@ -1293,9 +1628,7 @@ const Payments = () => {
                     >
                       <FiUpload />
                       <span>
-                        {paymentSettings.upiQrImage
-                          ? "Change QR"
-                          : "Upload QR"}
+                        {paymentSettings.upiQrImage ? "Change QR" : "Upload QR"}
                       </span>
                     </label>
 
@@ -1321,8 +1654,8 @@ const Payments = () => {
               </div>
 
               <div className="payment-settings-note">
-                UPI details and QR are loaded dynamically on the student
-                payment page. Nothing is hardcoded.
+                UPI details and QR are loaded dynamically on the student payment
+                page. Nothing is hardcoded.
               </div>
             </div>
 
@@ -1392,7 +1725,6 @@ const Payments = () => {
               <div className="payment-details-student-info">
                 <small>Student</small>
                 <h3>{selectedPayment.studentName}</h3>
-
               </div>
 
               <span
@@ -1459,9 +1791,7 @@ const Payments = () => {
 
             <div className="payment-details-footer">
               <FiCheckCircle />
-              <span>
-                Latest fee status recorded for this student.
-              </span>
+              <span>Latest fee status recorded for this student.</span>
             </div>
           </div>
         </div>

@@ -1005,15 +1005,6 @@ const Students = () => {
               <span>Add Student</span>
             </button>
 
-            <button
-              type="button"
-              className="student-setup-btn"
-              onClick={() => setShowSetupModal(true)}
-              title="Course and Batch Setup"
-            >
-              <FiSettings />
-              <span>Setup</span>
-            </button>
           </div>
         </div>
 

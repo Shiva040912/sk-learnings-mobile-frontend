@@ -3,6 +3,7 @@ import {
   FiUsers,
   FiCreditCard,
   FiUser,
+  FiSettings,
   FiX,
 } from "react-icons/fi";
 
@@ -96,6 +97,8 @@ const Sidebar = ({ isOpen, onClose }) => {
             </span>
           </NavLink>
 
+          
+
           {isAdministrator && (
             <NavLink
               to="/users"
@@ -115,6 +118,17 @@ const Sidebar = ({ isOpen, onClose }) => {
               </span>
             </NavLink>
           )}
+
+          <NavLink
+            to="/settings"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
+            onClick={onClose}
+          >
+            <span className="sidebar-icon"><FiSettings /></span>
+            <span className="sidebar-label">Settings</span>
+          </NavLink>
         </nav>
 
         <div className="sidebar-bottom-line" />

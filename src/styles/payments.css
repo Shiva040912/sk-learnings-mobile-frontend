@@ -285,7 +285,7 @@
 .payment-search {
   position: relative;
   flex: 1;
-  max-width: 430px;
+ 
 }
 
 .payment-search svg {
@@ -866,6 +866,214 @@
 
   .payment-paid-badge {
     min-width: 44px;
+  }
+}
+
+/* Keep the new Notify column within the table viewport. */
+@media (min-width: 769px) {
+  .payments-table {
+    table-layout: fixed !important;
+  }
+
+  .payments-table th:nth-child(1), .payments-table td:nth-child(1) { width: 4% !important; }
+  .payments-table th:nth-child(2), .payments-table td:nth-child(2) { width: 19% !important; }
+  .payments-table th:nth-child(3), .payments-table td:nth-child(3) { width: 10% !important; }
+  .payments-table th:nth-child(4), .payments-table td:nth-child(4) { width: 8% !important; }
+  .payments-table th:nth-child(5), .payments-table td:nth-child(5) { width: 12% !important; }
+  .payments-table th:nth-child(6), .payments-table td:nth-child(6) { width: 10% !important; }
+  .payments-table th:nth-child(7), .payments-table td:nth-child(7) { width: 11% !important; }
+  .payments-table th:nth-child(8), .payments-table td:nth-child(8) { width: 10% !important; }
+  .payments-table th:nth-child(9), .payments-table td:nth-child(9) { width: 7% !important; }
+  .payments-table th:nth-child(10), .payments-table td:nth-child(10) {
+    width: 9% !important;
+    text-align: center !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .payments-table th:nth-child(9),
+  .payments-table td:nth-child(9) {
+    display: none !important;
+  }
+
+  .payments-table th:nth-child(2), .payments-table td:nth-child(2) { width: 48% !important; }
+  .payments-table th:nth-child(6), .payments-table td:nth-child(6) { width: 19% !important; }
+  .payments-table th:nth-child(7), .payments-table td:nth-child(7) { width: 22% !important; }
+  .payments-table th:nth-child(10), .payments-table td:nth-child(10) {
+    display: table-cell !important;
+    width: 11% !important;
+    text-align: center !important;
+  }
+}
+
+/* Allow the row notification menu to sit above the table instead of clipping it. */
+.payment-table-card,
+.payment-table-wrapper {
+  overflow: visible !important;
+}
+
+.student-notification-dropdown {
+  z-index: 1;
+}
+
+.student-notification-dropdown:has(.student-notify-menu) {
+  z-index: 40;
+}
+
+.student-notify-menu-floating {
+  position: fixed !important;
+  z-index: 2600 !important;
+}
+
+/* Anchor the final Notify column to the right edge, so it never disappears. */
+@media (min-width: 769px) {
+  .payments-table th:nth-child(10),
+  .payments-table td:nth-child(10) {
+    position: sticky;
+    right: 0;
+    min-width: 72px;
+  }
+
+  .payments-table th:nth-child(10) {
+    z-index: 4;
+    background: #f6f8fa;
+    box-shadow: -8px 0 12px -12px rgba(35, 47, 59, 0.45);
+  }
+
+  .payments-table td:nth-child(10) {
+    z-index: 2;
+    background: #ffffff;
+    box-shadow: -8px 0 12px -12px rgba(35, 47, 59, 0.28);
+  }
+
+  .payments-table tbody tr:hover td:nth-child(10) {
+    background: #fffdf7;
+  }
+}
+
+/* Individual student notification controls */
+.student-notification-dropdown {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.student-notify-btn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid rgba(217, 167, 25, 0.55);
+  border-radius: 8px;
+  background: #fffaf0;
+  color: #a87808;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(45, 55, 66, 0.06);
+  transition: background 0.18s ease, border-color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.student-notify-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.student-notify-btn:hover,
+.student-notify-btn[aria-expanded="true"] {
+  border-color: #c99209;
+  background: #fff1cb;
+}
+
+.student-notify-btn:active {
+  transform: translateY(1px);
+}
+
+.student-notify-btn:focus-visible {
+  outline: 3px solid rgba(217, 167, 25, 0.22);
+  outline-offset: 2px;
+}
+
+.student-notify-menu {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 7px);
+  right: 0;
+  width: 184px;
+  padding: 5px;
+  border: 1px solid #e1e5e9;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 14px 28px rgba(28, 39, 51, 0.16);
+}
+
+.student-notify-menu button {
+  width: 100%;
+  display: block;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #37424d;
+  font: 650 11px "Inter", system-ui, sans-serif;
+  text-align: left;
+  cursor: pointer;
+}
+
+.student-notify-menu button:hover,
+.student-notify-menu button:focus-visible {
+  outline: 0;
+  background: #fff7e4;
+  color: #9a6c00;
+}
+
+.notification-single-recipient {
+  display: grid;
+  gap: 3px;
+  padding: 12px;
+  border: 1px solid #f0dfad;
+  border-radius: 9px;
+  background: #fffaf0;
+}
+
+.notification-single-recipient span {
+  color: #9a7008;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+
+.notification-single-recipient strong {
+  color: #303b46;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.notification-single-recipient small {
+  color: #78838e;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.notification-message-error {
+  color: #c33e32;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+@media (max-width: 768px) {
+  .payments-page .payment-toolbar-reminder-btn {
+    justify-content: center !important;
+    font-size: 10px !important;
+    font-weight: 750 !important;
+  }
+
+  .student-notify-menu {
+    right: 0;
+    width: 170px;
   }
 }
 
@@ -5410,6 +5618,36 @@
   display: block;
 }
 
+.payment-row-notify-btn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(240, 171, 0, 0.26);
+  border-radius: 8px;
+  background: #fff8e5;
+  color: #b57900;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.payment-row-notify-btn:hover { background: #ffedbc; }
+.notification-message-type-list { gap: 9px; }
+.notification-custom-message-body { padding: 17px 20px 20px; }
+.notification-audience-select,
+.notification-message-input { display: flex; flex-direction: column; gap: 7px; color: #43505e; font-size: 11px; font-weight: 700; }
+.notification-audience-select select { height: 39px; padding: 0 10px; border: 1px solid #dce3e9; border-radius: 8px; background: #fff; color: #2b3541; font: 600 12px Inter, sans-serif; }
+.notification-message-input { margin-top: 14px; }
+.notification-message-input textarea { min-height: 116px; resize: vertical; padding: 10px; border: 1px solid #dce3e9; border-radius: 8px; color: #293440; font: 500 12px/1.5 Inter, sans-serif; }
+.notification-message-input textarea:focus { outline: 2px solid rgba(255, 184, 0, 0.18); border-color: #e5aa16; }
+.notification-message-input small { align-self: flex-end; color: #87919c; font-size: 10px; font-weight: 500; }
+.notification-single-recipient { margin: 0; color: #77828e; font-size: 12px; }
+
+@media (max-width: 560px) {
+  .notification-custom-message-body { padding: 15px; }
+}
+
 .notification-mode-card strong {
   color: #2d3742;
   font-size: 10px;
@@ -5689,6 +5927,36 @@
   font-weight: 600;
 }
 
+/* Final table layout: the Notify action is always visible. */
+@media (min-width: 769px) {
+  .payments-table { table-layout: fixed !important; }
+  .payments-table th:nth-child(1), .payments-table td:nth-child(1) { width: 4% !important; }
+  .payments-table th:nth-child(2), .payments-table td:nth-child(2) { width: 19% !important; }
+  .payments-table th:nth-child(3), .payments-table td:nth-child(3) { width: 10% !important; }
+  .payments-table th:nth-child(4), .payments-table td:nth-child(4) { width: 8% !important; }
+  .payments-table th:nth-child(5), .payments-table td:nth-child(5) { width: 12% !important; }
+  .payments-table th:nth-child(6), .payments-table td:nth-child(6) { width: 10% !important; }
+  .payments-table th:nth-child(7), .payments-table td:nth-child(7) { width: 11% !important; }
+  .payments-table th:nth-child(8), .payments-table td:nth-child(8) { width: 10% !important; }
+  .payments-table th:nth-child(9), .payments-table td:nth-child(9) { width: 7% !important; }
+  .payments-table th:nth-child(10), .payments-table td:nth-child(10) {
+    width: 9% !important;
+    text-align: center !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .payments-table th:nth-child(9), .payments-table td:nth-child(9) { display: none !important; }
+  .payments-table th:nth-child(2), .payments-table td:nth-child(2) { width: 48% !important; }
+  .payments-table th:nth-child(6), .payments-table td:nth-child(6) { width: 19% !important; }
+  .payments-table th:nth-child(7), .payments-table td:nth-child(7) { width: 22% !important; }
+  .payments-table th:nth-child(10), .payments-table td:nth-child(10) {
+    display: table-cell !important;
+    width: 11% !important;
+    text-align: center !important;
+  }
+}
+
 @media (max-width: 560px) {
   .notification-options-overlay {
     padding: 10px;
@@ -5711,3 +5979,19 @@
     width: 100%;
   }
 }
+
+/* Keep the row notification dropdown above the table on every screen size. */
+.payment-table-card,
+.payment-table-wrapper {
+  overflow: visible !important;
+}
+
+.student-notification-dropdown {
+  z-index: 1;
+}
+
+.student-notification-dropdown:has(.student-notify-menu) {
+  z-index: 40;
+}
+
+

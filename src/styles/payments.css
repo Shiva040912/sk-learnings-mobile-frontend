@@ -6243,3 +6243,62 @@
     font-size: 11.5px !important;
   }
 }
+
+/* =========================================================
+   ABSOLUTE FINAL TOOLBAR HEIGHT + WEIGHT MATCH
+   Brings Payments toolbar (search / filter / Send Reminder)
+   in line with the shorter Students page toolbar, and reduces
+   the Send Reminder label from very bold to a normal weight.
+   Appended last so it wins over every earlier override above.
+   ========================================================= */
+.payments-page .payment-search input,
+.payments-page .payment-filter-button,
+.payments-page .send-fee-reminder-btn.payment-toolbar-reminder-btn {
+  height: 36px !important;
+  min-height: 36px !important;
+}
+
+.payments-page .payment-search input {
+  font-size: 12.5px !important;
+}
+
+.payments-page .payment-filter-button {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+}
+
+.payments-page .send-fee-reminder-btn.payment-toolbar-reminder-btn {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+}
+
+@media (max-width: 1100px) and (min-width: 769px) {
+  .payments-page .payment-filter-button,
+  .payments-page .send-fee-reminder-btn.payment-toolbar-reminder-btn,
+  .payments-page .payment-search input {
+    height: 34px !important;
+    min-height: 34px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .payments-page .payment-search input {
+    height: 34px !important;
+    min-height: 34px !important;
+  }
+
+  .payments-page .payment-filter-button,
+  .payments-page .send-fee-reminder-btn.payment-toolbar-reminder-btn {
+    height: 34px !important;
+    min-height: 34px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .payments-page .payment-search input,
+  .payments-page .payment-filter-button,
+  .payments-page .send-fee-reminder-btn.payment-toolbar-reminder-btn {
+    height: 32px !important;
+    min-height: 32px !important;
+  }
+}

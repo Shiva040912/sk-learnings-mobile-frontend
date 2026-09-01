@@ -5995,3 +5995,251 @@
 }
 
 
+
+/* =========================================================
+   TRUE FINAL PAYMENT TOOLBAR FIX (single source of truth)
+   Scoped with .payments-page for higher specificity so it
+   reliably wins over any earlier conflicting rule in this file.
+   Matches the real DOM: .payment-toolbar > .payment-search,
+   .payment-filter-wrapper, .payment-reminder-wrapper > button
+   ========================================================= */
+
+.payments-page .payment-toolbar {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  width: 100% !important;
+  gap: 12px !important;
+  padding: 9px 12px !important;
+  box-sizing: border-box !important;
+}
+
+.payments-page .payment-search {
+  position: relative !important;
+  flex: 1 1 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+.payments-page .payment-search input {
+  width: 100% !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  padding: 0 12px 0 36px !important;
+  border: 1px solid #dce1e7 !important;
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  color: #26313d !important;
+  font-size: 13px !important;
+  box-sizing: border-box !important;
+}
+
+.payments-page .payment-search svg {
+  position: absolute !important;
+  top: 50% !important;
+  left: 12px !important;
+  transform: translateY(-50%) !important;
+  color: #8b939d !important;
+  font-size: 15px !important;
+  pointer-events: none !important;
+}
+
+.payments-page .payment-filter-wrapper {
+  position: relative !important;
+  flex: 0 0 auto !important;
+  width: auto !important;
+  margin: 0 !important;
+  z-index: 40 !important;
+}
+
+.payments-page .payment-filter-button {
+  height: 40px !important;
+  min-height: 40px !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  padding: 0 16px !important;
+  border: 1px solid #dce1e7 !important;
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  color: #55616d !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
+  box-shadow: none !important;
+  box-sizing: border-box !important;
+}
+
+.payments-page .payment-filter-button:hover,
+.payments-page .payment-filter-button.active {
+  border-color: #e0ad24 !important;
+  background: #fffaf0 !important;
+  color: #9b720b !important;
+}
+
+.payments-page .payment-filter-dropdown {
+  position: absolute !important;
+  top: calc(100% + 7px) !important;
+  right: 0 !important;
+  left: auto !important;
+  bottom: auto !important;
+  z-index: 3500 !important;
+  width: 255px !important;
+}
+
+/* The reminder button lives inside .payment-reminder-wrapper — that
+   wrapper (not the button) is the actual flex item, so it must carry
+   the layout rules. Older CSS in this file mistakenly targeted the
+   button/grid-area on a non-grid-child element, which is why the
+   button overflowed on mobile. */
+.payments-page .payment-reminder-wrapper {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  margin: 0 !important;
+}
+
+.payments-page .send-fee-reminder-btn.payment-toolbar-reminder-btn {
+  height: 40px !important;
+  min-height: 40px !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  padding: 0 16px !important;
+  border: 1px solid #e1b438 !important;
+  border-radius: 8px !important;
+  background: #fff8e6 !important;
+  color: #8d6800 !important;
+  font-size: 13px !important;
+  font-weight: 750 !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
+  box-sizing: border-box !important;
+}
+
+.payments-page .send-fee-reminder-btn.payment-toolbar-reminder-btn:hover:not(:disabled) {
+  background: #ffefbd !important;
+}
+
+.payments-page .send-fee-reminder-btn.payment-toolbar-reminder-btn:disabled {
+  opacity: 0.55 !important;
+  cursor: not-allowed !important;
+}
+
+@media (max-width: 1100px) and (min-width: 769px) {
+  .payments-page .payment-toolbar {
+    gap: 8px !important;
+    padding: 8px 10px !important;
+  }
+
+  .payments-page .payment-filter-button,
+  .payments-page .send-fee-reminder-btn.payment-toolbar-reminder-btn,
+  .payments-page .payment-search input {
+    height: 36px !important;
+    min-height: 36px !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  .payments-page .payment-search input {
+    padding-left: 34px !important;
+  }
+}
+
+/* Mobile: search stays flexible, Filter and Send-Reminder both
+   collapse to compact equal-size icon-only squares so everything
+   fits on one row without overflow. Reminder button shows only
+   the bell icon — its label text is hidden. */
+@media (max-width: 768px) {
+  .payments-page .payment-toolbar {
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
+    padding: 7px !important;
+  }
+
+  .payments-page .payment-search {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+
+  .payments-page .payment-search input {
+    width: 100% !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 0 8px 0 32px !important;
+    border-radius: 8px !important;
+    font-size: 12px !important;
+  }
+
+  .payments-page .payment-search svg {
+    left: 10px !important;
+    font-size: 13px !important;
+  }
+
+  .payments-page .payment-filter-wrapper,
+  .payments-page .payment-reminder-wrapper {
+    flex: 0 0 auto !important;
+  }
+
+  .payments-page .payment-filter-button,
+  .payments-page .send-fee-reminder-btn.payment-toolbar-reminder-btn {
+    width: 40px !important;
+    min-width: 40px !important;
+    max-width: 40px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 0 !important;
+    border-radius: 8px !important;
+    gap: 0 !important;
+  }
+
+  .payments-page .payment-filter-button > span:not(.payment-filter-count),
+  .payments-page .send-fee-reminder-btn.payment-toolbar-reminder-btn > span {
+    display: none !important;
+  }
+
+  .payments-page .payment-filter-button svg,
+  .payments-page .send-fee-reminder-btn.payment-toolbar-reminder-btn svg {
+    font-size: 15px !important;
+  }
+
+  .payments-page .payment-filter-dropdown {
+    position: absolute !important;
+    top: calc(100% + 7px) !important;
+    right: 0 !important;
+    left: auto !important;
+    bottom: auto !important;
+    width: min(255px, calc(100vw - 20px)) !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .payments-page .payment-toolbar {
+    gap: 5px !important;
+    padding: 6px !important;
+  }
+
+  .payments-page .payment-filter-button,
+  .payments-page .send-fee-reminder-btn.payment-toolbar-reminder-btn {
+    width: 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+  }
+
+  .payments-page .payment-search input {
+    height: 36px !important;
+    min-height: 36px !important;
+    font-size: 11.5px !important;
+  }
+}

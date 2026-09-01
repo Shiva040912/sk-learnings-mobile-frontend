@@ -582,19 +582,65 @@ const Payments = () => {
     );
   };
 
-  const submitCustomMessage = () => {
+  const submitCustomMessage = async () => {
     if (!customMessage.trim()) {
       setCustomMessageError("Please enter a message before sending.");
       return;
     }
 
+    if (isSendingReminders) {
+      return;
+    }
+
     setCustomMessageError("");
-    toast("WhatsApp template approval pending. Custom message sending is not available yet.", {
-      icon: "ℹ️",
-    });
-    setShowCustomMessage(false);
-    setIndividualNotificationStudent(null);
-    setCustomMessage("");
+
+    const payload = { message: customMessage.trim() };
+
+    if (notificationTarget.type === "single") {
+      payload.studentIds = notificationTarget.studentIds;
+    } else {
+      payload.audience = customAudience;
+    }
+
+    try {
+      setIsSendingReminders(true);
+
+      const response = await api.post(
+        "/payments/send-custom-message",
+        payload,
+      );
+
+      const result = response.data || {};
+      const sent = Number(result.sent || 0);
+      const failed = Number(result.failed || 0);
+
+      if (sent > 0 && failed === 0) {
+        toast.success(
+          `Message sent to ${sent} parent${sent > 1 ? "s" : ""}`,
+        );
+      } else if (sent > 0 && failed > 0) {
+        toast(`${sent} sent successfully, ${failed} failed`, {
+          icon: "⚠️",
+        });
+      } else if (failed > 0) {
+        toast.error(
+          `Failed to send ${failed} message${failed > 1 ? "s" : ""}`,
+        );
+      } else {
+        toast(result.message || "No matching students found", {
+          icon: "ℹ️",
+        });
+      }
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to send message",
+      );
+    } finally {
+      setIsSendingReminders(false);
+      setShowCustomMessage(false);
+      setIndividualNotificationStudent(null);
+      setCustomMessage("");
+    }
   };
 
   const openIndividualCustomMessage = (student) => {
@@ -631,10 +677,17 @@ const Payments = () => {
     setStudentNotificationMenu(student._id);
   };
 
-  const showTemplatePending = () => {
+  const sendIndividualReminder = (messageType) => {
+    const student = filteredPayments.find(
+      (payment) => payment._id === studentNotificationMenu,
+    );
+
     setStudentNotificationMenu(null);
     setStudentNotificationAnchor(null);
-    toast("Template approval pending", { icon: "ℹ️" });
+
+    if (student) {
+      handleSendReminders([student._id], messageType);
+    }
   };
 
   const openIndividualPicker = () => {
@@ -1236,7 +1289,7 @@ const Payments = () => {
                     <span>CUSTOM MESSAGE</span>
                     <h2>Write notification</h2>
                     <p>
-                      Template connection will be enabled after Meta approval.
+                      Sent as a WhatsApp message to the parent's number.
                     </p>
                   </div>
                   <button
@@ -1305,9 +1358,10 @@ const Payments = () => {
                   <button
                     type="button"
                     className="notification-send-btn"
+                    disabled={isSendingReminders}
                     onClick={submitCustomMessage}
                   >
-                    {notificationTarget.type === "single" ? "Send" : "Continue"}
+                    {isSendingReminders ? "Sending..." : "Send"}
                   </button>
                 </div>
               </section>
@@ -1493,10 +1547,20 @@ const Payments = () => {
             right: studentNotificationAnchor.right,
           }}
         >
-          <button type="button" role="menuitem" onClick={showTemplatePending}>
+          <button
+            type="button"
+            role="menuitem"
+            disabled={isSendingReminders}
+            onClick={() => sendIndividualReminder("prevent")}
+          >
             Prevent Reminder
           </button>
-          <button type="button" role="menuitem" onClick={showTemplatePending}>
+          <button
+            type="button"
+            role="menuitem"
+            disabled={isSendingReminders}
+            onClick={() => sendIndividualReminder("overdue")}
+          >
             Overdue Reminder
           </button>
           <button

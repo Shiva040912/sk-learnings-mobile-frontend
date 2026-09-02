@@ -17,7 +17,6 @@ import {
   FiUsers,
   FiTrash2,
   FiX,
-  FiMessageSquare,
 } from "react-icons/fi";
 import toast from "react-hot-toast";
 
@@ -44,22 +43,15 @@ const Payments = () => {
   const [selectedReminderIds, setSelectedReminderIds] = useState([]);
   const [reminderSearch, setReminderSearch] = useState("");
   const [showMessageTypePicker, setShowMessageTypePicker] = useState(false);
-  const [showCustomMessage, setShowCustomMessage] = useState(false);
   const [notificationTarget, setNotificationTarget] = useState({
     type: "",
     studentIds: [],
   });
-  const [studentNotificationMenu, setStudentNotificationMenu] =
-    useState(null);
-  const [individualNotificationStudent, setIndividualNotificationStudent] =
-    useState(null);
+  const [studentNotificationMenu, setStudentNotificationMenu] = useState(null);
   const [studentNotificationAnchor, setStudentNotificationAnchor] =
     useState(null);
-  const [customMessageError, setCustomMessageError] = useState("");
   const studentNotificationMenuRef = useRef(null);
   const studentNotificationFloatingMenuRef = useRef(null);
-  const [customAudience, setCustomAudience] = useState("unpaid");
-  const [customMessage, setCustomMessage] = useState("");
   const [paymentMethodStudent, setPaymentMethodStudent] = useState(null);
   const [paymentUpdatingStudentId, setPaymentUpdatingStudentId] =
     useState(null);
@@ -178,18 +170,12 @@ const Payments = () => {
 
       setStudentNotificationMenu(null);
       setStudentNotificationAnchor(null);
-
-      if (showCustomMessage) {
-        setShowCustomMessage(false);
-        setIndividualNotificationStudent(null);
-        setCustomMessageError("");
-      }
     };
 
     document.addEventListener("keydown", handleEscape);
 
     return () => document.removeEventListener("keydown", handleEscape);
-  }, [showCustomMessage]);
+  }, []);
 
   const paymentRows = useMemo(() => {
     return students.map((student) => {
@@ -562,101 +548,12 @@ const Payments = () => {
   };
 
   const chooseMessageType = (messageType) => {
-    if (messageType === "custom") {
-      setShowMessageTypePicker(false);
-      setCustomMessage("");
-      setCustomMessageError("");
-      setIndividualNotificationStudent(null);
-      setCustomAudience(
-        notificationTarget.type === "single" ? "selected" : "unpaid",
-      );
-      setShowCustomMessage(true);
-      return;
-    }
-
     handleSendReminders(
       notificationTarget.type === "all-unpaid"
         ? undefined
         : notificationTarget.studentIds,
       messageType,
     );
-  };
-
-  const submitCustomMessage = async () => {
-    if (!customMessage.trim()) {
-      setCustomMessageError("Please enter a message before sending.");
-      return;
-    }
-
-    if (isSendingReminders) {
-      return;
-    }
-
-    setCustomMessageError("");
-
-    const payload = { message: customMessage.trim() };
-
-    if (notificationTarget.type === "single") {
-      payload.studentIds = notificationTarget.studentIds;
-    } else {
-      payload.audience = customAudience;
-    }
-
-    try {
-      setIsSendingReminders(true);
-
-      const response = await api.post(
-        "/payments/send-custom-message",
-        payload,
-      );
-
-      const result = response.data || {};
-      const sent = Number(result.sent || 0);
-      const failed = Number(result.failed || 0);
-
-      if (sent > 0 && failed === 0) {
-        toast.success(
-          `Message sent to ${sent} parent${sent > 1 ? "s" : ""}`,
-        );
-      } else if (sent > 0 && failed > 0) {
-        toast(`${sent} sent successfully, ${failed} failed`, {
-          icon: "⚠️",
-        });
-      } else if (failed > 0) {
-        toast.error(
-          `Failed to send ${failed} message${failed > 1 ? "s" : ""}`,
-        );
-      } else {
-        toast(result.message || "No matching students found", {
-          icon: "ℹ️",
-        });
-      }
-    } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Failed to send message",
-      );
-    } finally {
-      setIsSendingReminders(false);
-      setShowCustomMessage(false);
-      setIndividualNotificationStudent(null);
-      setCustomMessage("");
-    }
-  };
-
-  const openIndividualCustomMessage = (student) => {
-    setStudentNotificationMenu(null);
-    setStudentNotificationAnchor(null);
-    setNotificationTarget({ type: "single", studentIds: [student._id] });
-    setIndividualNotificationStudent(student);
-    setCustomMessage("");
-    setCustomMessageError("");
-    setShowCustomMessage(true);
-  };
-
-  const closeCustomMessage = () => {
-    setShowCustomMessage(false);
-    setIndividualNotificationStudent(null);
-    setCustomMessageError("");
   };
 
   const toggleStudentNotificationMenu = (event, student) => {
@@ -1255,114 +1152,6 @@ const Payments = () => {
                       <span>Fee is still pending after the due date.</span>
                     </span>
                   </button>
-                  <button
-                    type="button"
-                    className="notification-mode-card"
-                    onClick={() => chooseMessageType("custom")}
-                  >
-                    <span className="notification-mode-icon">
-                      <FiMessageSquare />
-                    </span>
-                    <span>
-                      <strong>Text message</strong>
-                      <span>Type a custom WhatsApp message.</span>
-                    </span>
-                  </button>
-                </div>
-              </section>
-            </div>
-          )}
-
-          {showCustomMessage && (
-            <div
-              className="notification-options-overlay"
-              onClick={closeCustomMessage}
-            >
-              <section
-                className="notification-options-modal notification-custom-message-modal"
-                role="dialog"
-                aria-modal="true"
-                onClick={(event) => event.stopPropagation()}
-              >
-                <div className="notification-options-header">
-                  <div>
-                    <span>CUSTOM MESSAGE</span>
-                    <h2>Write notification</h2>
-                    <p>
-                      Sent as a WhatsApp message to the parent's number.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    className="notification-options-close"
-                    onClick={closeCustomMessage}
-                  >
-                    <FiX />
-                  </button>
-                </div>
-                <div className="notification-custom-message-body">
-                  {notificationTarget.type !== "single" && (
-                    <label className="notification-audience-select">
-                      Send to
-                      <select
-                        value={customAudience}
-                        onChange={(event) =>
-                          setCustomAudience(event.target.value)
-                        }
-                      >
-                        <option value="unpaid">Unpaid students</option>
-                        <option value="all">All students</option>
-                      </select>
-                    </label>
-                  )}
-                  {notificationTarget.type === "single" && (
-                    <div className="notification-single-recipient">
-                      <span>Student</span>
-                      <strong>
-                        {individualNotificationStudent?.studentName ||
-                          "Selected student"}
-                      </strong>
-                      <small>
-                        {individualNotificationStudent?.phone ||
-                          "Phone number unavailable"}
-                      </small>
-                    </div>
-                  )}
-                  <label className="notification-message-input">
-                    Message
-                    <textarea
-                      value={customMessage}
-                      onChange={(event) => {
-                        setCustomMessage(event.target.value);
-                        if (customMessageError) setCustomMessageError("");
-                      }}
-                      placeholder="Type your message here..."
-                      maxLength={600}
-                    />
-                    <small>{customMessage.length}/600</small>
-                    {customMessageError && (
-                      <span className="notification-message-error" role="alert">
-                        {customMessageError}
-                      </span>
-                    )}
-                  </label>
-                </div>
-                <div className="notification-options-footer">
-                  <button
-                    type="button"
-                    className="notification-cancel-btn"
-                    onClick={closeCustomMessage}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    className="notification-send-btn"
-                    disabled={isSendingReminders}
-                    onClick={submitCustomMessage}
-                  >
-                    {isSendingReminders ? "Sending..." : "Send"}
-                  </button>
                 </div>
               </section>
             </div>
@@ -1519,7 +1308,9 @@ const Payments = () => {
                             type="button"
                             className="student-notify-btn"
                             aria-label={`Send notification to ${payment.studentName}`}
-                            aria-expanded={studentNotificationMenu === payment._id}
+                            aria-expanded={
+                              studentNotificationMenu === payment._id
+                            }
                             onClick={(event) =>
                               toggleStudentNotificationMenu(event, payment)
                             }
@@ -1562,18 +1353,6 @@ const Payments = () => {
             onClick={() => sendIndividualReminder("overdue")}
           >
             Overdue Reminder
-          </button>
-          <button
-            type="button"
-            role="menuitem"
-            onClick={() => {
-              const student = filteredPayments.find(
-                (payment) => payment._id === studentNotificationMenu,
-              );
-              if (student) openIndividualCustomMessage(student);
-            }}
-          >
-            Custom Message
           </button>
         </div>
       )}

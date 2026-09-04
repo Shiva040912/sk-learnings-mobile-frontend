@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
+import { AuthProvider } from "./context/AuthContext";
 import DashboardLayout from "./layouts/DashboardLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -19,70 +20,90 @@ import Settings from "./pages/Settings";
 const App = () => {
   return (
     <BrowserRouter>
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 3000,
-        }}
-      />
-
-      <Routes>
-        <Route
-          path="/"
-          element={<Login />}
+      <AuthProvider>
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 3000,
+          }}
         />
 
-        {/* Public student payment page */}
-        <Route
-          path="/pay-fees/:studentId"
-          element={<StudentPayment />}
-        />
-
-        {/* Protected admin routes */}
-        <Route
-          element={<ProtectedRoute />}
-        >
+        <Routes>
           <Route
-            element={<DashboardLayout />}
+            path="/"
+            element={<Login />}
+          />
+
+          {/* Public student payment page */}
+          <Route
+            path="/pay-fees/:studentId"
+            element={<StudentPayment />}
+          />
+
+          {/* Protected admin routes */}
+          <Route
+            element={<ProtectedRoute />}
           >
             <Route
-              path="/students"
-              element={<Students />}
-            />
+              element={<DashboardLayout />}
+            >
+              <Route
+                path="/students"
+                element={
+                  <ProtectedRoute
+                    pageKey="students"
+                  >
+                    <Students />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route
-              path="/payments"
-              element={<Payments />}
-            />
+              <Route
+                path="/payments"
+                element={
+                  <ProtectedRoute
+                    pageKey="payments"
+                  >
+                    <Payments />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route
-              path="/users"
-              element={
-                <ProtectedRoute
-                  allowedRoles={["admin"]}
-                >
-                  <Users />
-                </ProtectedRoute>
-              }
-            />
+              <Route
+                path="/users"
+                element={
+                  <ProtectedRoute
+                    allowedRoles={["admin"]}
+                  >
+                    <Users />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route
-              path="/settings"
-              element={<Settings />}
-            />
+              <Route
+                path="/settings"
+                element={
+                  <ProtectedRoute
+                    allowedRoles={["admin"]}
+                  >
+                    <Settings />
+                  </ProtectedRoute>
+                }
+              />
+            </Route>
           </Route>
-        </Route>
 
-        <Route
-          path="*"
-          element={
-            <Navigate
-              to="/"
-              replace
-            />
-          }
-        />
-      </Routes>
+          <Route
+            path="*"
+            element={
+              <Navigate
+                to="/"
+                replace
+              />
+            }
+          />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 };

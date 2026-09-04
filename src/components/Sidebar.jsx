@@ -8,14 +8,12 @@ import {
 } from "react-icons/fi";
 
 import logo from "../assets/sk-logo.png";
+import { usePermissions } from "../hooks/usePermissions";
 
 const Sidebar = ({ isOpen, onClose }) => {
-  const user = JSON.parse(
-    localStorage.getItem("user") || "{}"
-  );
+  const { isAdmin, hasPageAccess } = usePermissions();
 
-  const isAdministrator =
-    user.role === "admin";
+  const isAdministrator = isAdmin;
 
   return (
     <>
@@ -61,41 +59,45 @@ const Sidebar = ({ isOpen, onClose }) => {
         </div>
 
         <nav className="sidebar-nav">
-          <NavLink
-            to="/students"
-            className={({ isActive }) =>
-              `sidebar-link ${
-                isActive ? "active" : ""
-              }`
-            }
-            onClick={onClose}
-          >
-            <span className="sidebar-icon">
-              <FiUsers />
-            </span>
+          {hasPageAccess("students") && (
+            <NavLink
+              to="/students"
+              className={({ isActive }) =>
+                `sidebar-link ${
+                  isActive ? "active" : ""
+                }`
+              }
+              onClick={onClose}
+            >
+              <span className="sidebar-icon">
+                <FiUsers />
+              </span>
 
-            <span className="sidebar-label">
-              Students
-            </span>
-          </NavLink>
+              <span className="sidebar-label">
+                Students
+              </span>
+            </NavLink>
+          )}
 
-          <NavLink
-            to="/payments"
-            className={({ isActive }) =>
-              `sidebar-link ${
-                isActive ? "active" : ""
-              }`
-            }
-            onClick={onClose}
-          >
-            <span className="sidebar-icon">
-              <FiCreditCard />
-            </span>
+          {hasPageAccess("payments") && (
+            <NavLink
+              to="/payments"
+              className={({ isActive }) =>
+                `sidebar-link ${
+                  isActive ? "active" : ""
+                }`
+              }
+              onClick={onClose}
+            >
+              <span className="sidebar-icon">
+                <FiCreditCard />
+              </span>
 
-            <span className="sidebar-label">
-              Payments
-            </span>
-          </NavLink>
+              <span className="sidebar-label">
+                Payments
+              </span>
+            </NavLink>
+          )}
 
           
 
@@ -119,16 +121,18 @@ const Sidebar = ({ isOpen, onClose }) => {
             </NavLink>
           )}
 
-          <NavLink
-            to="/settings"
-            className={({ isActive }) =>
-              `sidebar-link ${isActive ? "active" : ""}`
-            }
-            onClick={onClose}
-          >
-            <span className="sidebar-icon"><FiSettings /></span>
-            <span className="sidebar-label">Settings</span>
-          </NavLink>
+          {isAdministrator && (
+            <NavLink
+              to="/settings"
+              className={({ isActive }) =>
+                `sidebar-link ${isActive ? "active" : ""}`
+              }
+              onClick={onClose}
+            >
+              <span className="sidebar-icon"><FiSettings /></span>
+              <span className="sidebar-label">Settings</span>
+            </NavLink>
+          )}
         </nav>
 
         <div className="sidebar-bottom-line" />

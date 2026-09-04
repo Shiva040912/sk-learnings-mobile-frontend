@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   FiEdit2,
   FiEye,
@@ -16,11 +16,18 @@ import {
   FiCreditCard,
   FiSettings,
   FiSave,
+  FiUploadCloud,
+  FiDownload,
+  FiCheckCircle,
+  FiAlertTriangle,
+  FiXCircle,
+  FiFileText,
 } from "react-icons/fi";
 import { FaGraduationCap } from "react-icons/fa";
 import toast from "react-hot-toast";
 
 import api from "../services/axios";
+import { usePermissions } from "../hooks/usePermissions";
 import "../styles/students.css";
 import logo from "../assets/sk-logo.png";
 
@@ -40,6 +47,42 @@ const initialForm = {
 };
 
 const Students = () => {
+  const { isAdmin, hasPermission } = usePermissions();
+
+  // Upload Excel is an admin-only feature, unrelated to the configurable
+  // Trainer permission matrix (view/add/edit/delete only) — kept as a
+  // straight admin check.
+  const isAdministrator = isAdmin;
+
+  const canAddStudent = hasPermission(
+    "students",
+    "actions",
+    "add"
+  );
+
+  const canEditStudent = hasPermission(
+    "students",
+    "actions",
+    "edit"
+  );
+
+  const canDeleteStudent = hasPermission(
+    "students",
+    "actions",
+    "delete"
+  );
+
+  const canViewTotalFeeColumn = hasPermission(
+    "students",
+    "columns",
+    "totalFee"
+  );
+
+  const canViewFeeSection = hasPermission(
+    "students",
+    "sections",
+    "feeInfo"
+  );
 
   const [students, setStudents] = useState([]);
   const [search, setSearch] = useState("");
@@ -93,6 +136,19 @@ const Students = () => {
     endTime: "",
   });
   const [isSetupSaving, setIsSetupSaving] = useState(false);
+
+  const [showBulkUploadModal, setShowBulkUploadModal] =
+    useState(false);
+  const [bulkStage, setBulkStage] = useState("select");
+  const [bulkFile, setBulkFile] = useState(null);
+  const [isValidatingBulk, setIsValidatingBulk] =
+    useState(false);
+  const [bulkPreview, setBulkPreview] = useState(null);
+  const [isImportingBulk, setIsImportingBulk] =
+    useState(false);
+  const [bulkImportResult, setBulkImportResult] =
+    useState(null);
+  const bulkFileInputRef = useRef(null);
 
   const fetchStudents = async () => {
     try {
@@ -818,6 +874,216 @@ const Students = () => {
     return "-";
   };
 
+  const openBulkUploadModal = () => {
+    setShowBulkUploadModal(true);
+    setBulkStage("select");
+    setBulkFile(null);
+    setBulkPreview(null);
+    setBulkImportResult(null);
+  };
+
+  const closeBulkUploadModal = () => {
+    if (isValidatingBulk || isImportingBulk) return;
+
+    setShowBulkUploadModal(false);
+    setBulkStage("select");
+    setBulkFile(null);
+    setBulkPreview(null);
+    setBulkImportResult(null);
+  };
+
+  const handleDownloadTemplate = async () => {
+    try {
+      const response = await api.get(
+        "/students/bulk-upload/template",
+        { responseType: "blob" }
+      );
+
+      const url = window.URL.createObjectURL(
+        response.data
+      );
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download =
+        "sk-learnings-student-upload-template.xlsx";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to download template"
+      );
+    }
+  };
+
+  const handleBulkFileChange = (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+
+    if (!file) return;
+
+    const lowerName = file.name.toLowerCase();
+
+    if (lowerName.endsWith(".xls")) {
+      toast.error(
+        "Legacy .xls files aren't supported. Please save the file as .xlsx or .csv and try again."
+      );
+      return;
+    }
+
+    if (
+      !lowerName.endsWith(".xlsx") &&
+      !lowerName.endsWith(".csv")
+    ) {
+      toast.error(
+        "Please select a .xlsx or .csv file"
+      );
+      return;
+    }
+
+    setBulkFile(file);
+  };
+
+  const openBulkFilePicker = () => {
+    bulkFileInputRef.current?.click();
+  };
+
+  const handleValidateBulkUpload = async () => {
+    if (!bulkFile) {
+      toast.error("Please select a file to upload");
+      return;
+    }
+
+    try {
+      setIsValidatingBulk(true);
+
+      const formData = new FormData();
+      formData.append("file", bulkFile);
+
+      const response = await api.post(
+        "/students/bulk-upload/preview",
+        formData,
+        {
+          headers: {
+            "Content-Type": undefined,
+          },
+        }
+      );
+
+      setBulkPreview(response.data);
+      setBulkStage("preview");
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to validate the uploaded file"
+      );
+    } finally {
+      setIsValidatingBulk(false);
+    }
+  };
+
+  const handleImportValidRows = async () => {
+    if (!bulkPreview) return;
+
+    const validRows = bulkPreview.rows.filter(
+      (row) => row.status === "valid"
+    );
+
+    if (validRows.length === 0) {
+      toast.error("There are no valid rows to import");
+      return;
+    }
+
+    try {
+      setIsImportingBulk(true);
+
+      const response = await api.post(
+        "/students/bulk-upload/import",
+        {
+          rows: validRows.map((row) => ({
+            row: row.row,
+            data: row.data,
+          })),
+        }
+      );
+
+      setBulkImportResult(response.data);
+      setBulkStage("result");
+
+      await fetchStudents();
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to import students"
+      );
+    } finally {
+      setIsImportingBulk(false);
+    }
+  };
+
+  const handleDownloadErrorReport = () => {
+    if (!bulkPreview) return;
+
+    const rejectedFromPreview = bulkPreview.rows
+      .filter((row) => row.status !== "valid")
+      .map((row) => ({
+        row: row.row,
+        studentName: row.studentName,
+        status: row.status,
+        reason: row.reason,
+      }));
+
+    const rejectedFromImport = (
+      bulkImportResult?.skipped || []
+    ).map((row) => ({
+      row: row.row,
+      studentName: row.studentName,
+      status: "invalid",
+      reason: row.reason,
+    }));
+
+    const allRejected = [
+      ...rejectedFromPreview,
+      ...rejectedFromImport,
+    ];
+
+    if (allRejected.length === 0) {
+      toast.error("No rejected rows to report");
+      return;
+    }
+
+    const escapeCsv = (value) =>
+      `"${String(value ?? "").replace(/"/g, '""')}"`;
+
+    const csvLines = [
+      ["Row", "Student Name", "Status", "Reason"]
+        .map(escapeCsv)
+        .join(","),
+
+      ...allRejected.map((row) =>
+        [row.row, row.studentName, row.status, row.reason]
+          .map(escapeCsv)
+          .join(",")
+      ),
+    ];
+
+    const blob = new Blob([csvLines.join("\n")], {
+      type: "text/csv;charset=utf-8;",
+    });
+
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "student-upload-error-report.csv";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="students-page">
       
@@ -995,17 +1261,31 @@ const Students = () => {
             )}
           </div>
 
-          <div className="students-header-actions">
-            <button
-              type="button"
-              className="add-student-btn"
-              onClick={openAddModal}
-            >
-              <FiPlus />
-              <span>Add Student</span>
-            </button>
+          {(isAdministrator || canAddStudent) && (
+            <div className="students-header-actions">
+              {isAdministrator && (
+                <button
+                  type="button"
+                  className="upload-excel-btn"
+                  onClick={openBulkUploadModal}
+                >
+                  <FiUploadCloud />
+                  <span>Upload Excel</span>
+                </button>
+              )}
 
-          </div>
+              {canAddStudent && (
+                <button
+                  type="button"
+                  className="add-student-btn"
+                  onClick={openAddModal}
+                >
+                  <FiPlus />
+                  <span>Add Student</span>
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="students-table-card">
@@ -1041,7 +1321,15 @@ const Students = () => {
                     <th>Roll No</th>
                     <th>Course</th>
                     <th>Phone</th>
-                    <th>Total Fee</th>
+                    <th
+                      className={
+                        !canViewTotalFeeColumn
+                          ? "fee-column-hidden"
+                          : ""
+                      }
+                    >
+                      Total Fee
+                    </th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -1104,7 +1392,13 @@ const Students = () => {
                           {student.phone}
                         </td>
 
-                        <td>
+                        <td
+                          className={
+                            !canViewTotalFeeColumn
+                              ? "fee-column-hidden"
+                              : ""
+                          }
+                        >
                           ₹
                           {formatMoney(
                             student.totalFee
@@ -1124,28 +1418,32 @@ const Students = () => {
                               <FiEye />
                             </button>
 
-                            <button
-                              type="button"
-                              title="Edit Student"
-                              onClick={(event) => {
-                                event.stopPropagation();
-                                openEditModal(student);
-                              }}
-                            >
-                              <FiEdit2 />
-                            </button>
+                            {canEditStudent && (
+                              <button
+                                type="button"
+                                title="Edit Student"
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  openEditModal(student);
+                                }}
+                              >
+                                <FiEdit2 />
+                              </button>
+                            )}
 
-                            <button
-                              type="button"
-                              title="Delete Student"
-                              className="delete-btn"
-                              onClick={(event) => {
-                                event.stopPropagation();
-                                openDeleteModal(student);
-                              }}
-                            >
-                              <FiTrash2 />
-                            </button>
+                            {canDeleteStudent && (
+                              <button
+                                type="button"
+                                title="Delete Student"
+                                className="delete-btn"
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  openDeleteModal(student);
+                                }}
+                              >
+                                <FiTrash2 />
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -1924,22 +2222,24 @@ const Students = () => {
 
                 
 
-                <div className="student-id-fees">
-                  <div>
-                    <span>
-                      Total Fee
-                    </span>
+                {canViewFeeSection && (
+                  <div className="student-id-fees">
+                    <div>
+                      <span>
+                        Total Fee
+                      </span>
 
-                    <strong>
-                      ₹
-                      {formatMoney(
-                        selectedStudent.totalFee
-                      )}
-                    </strong>
+                      <strong>
+                        ₹
+                        {formatMoney(
+                          selectedStudent.totalFee
+                        )}
+                      </strong>
+                    </div>
                   </div>
-                </div>
+                )}
 
-                
+
 
                 <div className="student-id-address">
                   <FiMapPin />
@@ -2029,6 +2329,291 @@ const Students = () => {
             </div>
           </div>
         )}
+
+      {showBulkUploadModal && (
+        <div className="student-modal-overlay">
+          <div className="student-modal bulk-upload-modal">
+            <div className="student-modal-header">
+              <div className="modal-heading-content">
+                <span className="modal-icon">
+                  <FiUploadCloud />
+                </span>
+
+                <div>
+                  <h2>Bulk Student Upload</h2>
+                  <p>
+                    {bulkStage === "select" &&
+                      "Upload an Excel or CSV file to add multiple students at once"}
+                    {bulkStage === "preview" &&
+                      "Review the results before importing"}
+                    {bulkStage === "result" &&
+                      "Import summary"}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="modal-close-btn"
+                onClick={closeBulkUploadModal}
+                disabled={isValidatingBulk || isImportingBulk}
+              >
+                <FiX />
+              </button>
+            </div>
+
+            <div className="bulk-upload-body">
+              {bulkStage === "select" && (
+                <>
+                  <button
+                    type="button"
+                    className="bulk-template-btn"
+                    onClick={handleDownloadTemplate}
+                  >
+                    <FiDownload />
+                    Download Excel Template
+                  </button>
+
+                  <input
+                    ref={bulkFileInputRef}
+                    type="file"
+                    accept=".xlsx,.csv"
+                    className="bulk-upload-file-input"
+                    onChange={handleBulkFileChange}
+                  />
+
+                  <button
+                    type="button"
+                    className="bulk-upload-dropzone"
+                    onClick={openBulkFilePicker}
+                    disabled={isValidatingBulk}
+                  >
+                    <FiUploadCloud />
+
+                    {bulkFile ? (
+                      <strong>{bulkFile.name}</strong>
+                    ) : (
+                      <strong>
+                        Click to select a file
+                      </strong>
+                    )}
+
+                    <span>
+                      Supported formats: .xlsx, .csv
+                      (legacy .xls is not supported)
+                    </span>
+                  </button>
+                </>
+              )}
+
+              {bulkStage === "preview" &&
+                bulkPreview && (
+                  <>
+                    <div className="bulk-summary-grid">
+                      <div className="bulk-summary-card">
+                        <span>Total Rows</span>
+                        <strong>
+                          {bulkPreview.summary.totalRows}
+                        </strong>
+                      </div>
+
+                      <div className="bulk-summary-card is-valid">
+                        <span>Valid</span>
+                        <strong>
+                          {bulkPreview.summary.validRows}
+                        </strong>
+                      </div>
+
+                      <div className="bulk-summary-card is-duplicate">
+                        <span>Duplicate</span>
+                        <strong>
+                          {
+                            bulkPreview.summary
+                              .duplicateRows
+                          }
+                        </strong>
+                      </div>
+
+                      <div className="bulk-summary-card is-invalid">
+                        <span>Invalid</span>
+                        <strong>
+                          {bulkPreview.summary.invalidRows}
+                        </strong>
+                      </div>
+                    </div>
+
+                    <div className="bulk-preview-table-wrapper">
+                      <table className="bulk-preview-table">
+                        <thead>
+                          <tr>
+                            <th>Row</th>
+                            <th>Student Name</th>
+                            <th>Status</th>
+                            <th>Reason</th>
+                          </tr>
+                        </thead>
+
+                        <tbody>
+                          {bulkPreview.rows.map((row) => (
+                            <tr key={row.row}>
+                              <td>{row.row}</td>
+                              <td>{row.studentName}</td>
+                              <td>
+                                <span
+                                  className={`bulk-status-pill is-${row.status}`}
+                                >
+                                  {row.status ===
+                                    "valid" && (
+                                    <FiCheckCircle />
+                                  )}
+                                  {row.status ===
+                                    "duplicate" && (
+                                    <FiAlertTriangle />
+                                  )}
+                                  {row.status ===
+                                    "invalid" && (
+                                    <FiXCircle />
+                                  )}
+                                  {row.status}
+                                </span>
+                              </td>
+                              <td>{row.reason}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </>
+                )}
+
+              {bulkStage === "result" &&
+                bulkImportResult && (
+                  <div className="bulk-summary-grid">
+                    <div className="bulk-summary-card">
+                      <span>Total Rows</span>
+                      <strong>
+                        {bulkImportResult.totalRows}
+                      </strong>
+                    </div>
+
+                    <div className="bulk-summary-card is-valid">
+                      <span>Successfully Added</span>
+                      <strong>
+                        {bulkImportResult.successCount}
+                      </strong>
+                    </div>
+
+                    <div className="bulk-summary-card is-duplicate">
+                      <span>Duplicates Skipped</span>
+                      <strong>
+                        {
+                          bulkImportResult.duplicateSkipped
+                        }
+                      </strong>
+                    </div>
+
+                    <div className="bulk-summary-card is-invalid">
+                      <span>Invalid Skipped</span>
+                      <strong>
+                        {bulkImportResult.invalidSkipped}
+                      </strong>
+                    </div>
+                  </div>
+                )}
+            </div>
+
+            <div className="bulk-upload-actions">
+              {bulkStage === "select" && (
+                <>
+                  <button
+                    type="button"
+                    className="secondary-btn"
+                    onClick={closeBulkUploadModal}
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="button"
+                    className="primary-btn"
+                    onClick={handleValidateBulkUpload}
+                    disabled={!bulkFile || isValidatingBulk}
+                  >
+                    {isValidatingBulk
+                      ? "Validating..."
+                      : "Validate & Preview"}
+                  </button>
+                </>
+              )}
+
+              {bulkStage === "preview" && (
+                <>
+                  <button
+                    type="button"
+                    className="secondary-btn"
+                    onClick={closeBulkUploadModal}
+                    disabled={isImportingBulk}
+                  >
+                    Cancel
+                  </button>
+
+                  {bulkPreview.summary.totalRows -
+                    bulkPreview.summary.validRows >
+                    0 && (
+                    <button
+                      type="button"
+                      className="secondary-btn"
+                      onClick={handleDownloadErrorReport}
+                    >
+                      <FiFileText />
+                      Error Report
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    className="primary-btn"
+                    onClick={handleImportValidRows}
+                    disabled={
+                      isImportingBulk ||
+                      bulkPreview.summary.validRows === 0
+                    }
+                  >
+                    {isImportingBulk
+                      ? "Importing..."
+                      : `Import Valid Students (${bulkPreview.summary.validRows})`}
+                  </button>
+                </>
+              )}
+
+              {bulkStage === "result" && (
+                <>
+                  {(bulkImportResult.duplicateSkipped > 0 ||
+                    bulkImportResult.invalidSkipped >
+                      0) && (
+                    <button
+                      type="button"
+                      className="secondary-btn"
+                      onClick={handleDownloadErrorReport}
+                    >
+                      <FiFileText />
+                      Error Report
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    className="primary-btn"
+                    onClick={closeBulkUploadModal}
+                  >
+                    Done
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

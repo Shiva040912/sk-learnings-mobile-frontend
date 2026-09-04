@@ -396,6 +396,193 @@ body {
   line-height: 1.5;
 }
 
+.payment-proof-card {
+  margin: 12px 14px 0;
+  padding: 14px;
+  border: 1px solid #dde2e7;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow:
+    0 7px 24px
+    rgba(26, 36, 50, 0.05);
+}
+
+.payment-proof-hint {
+  margin: 8px 0 0;
+  color: #77818d;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.payment-proof-file-input {
+  display: none;
+}
+
+.payment-proof-dropzone {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 12px;
+  padding: 22px 14px;
+  border: 1.5px dashed #d8ad38;
+  border-radius: 12px;
+  outline: none;
+  background: #fffaf0;
+  color: #a87700;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+  -webkit-tap-highlight-color:
+    transparent;
+}
+
+.payment-proof-dropzone:hover,
+.payment-proof-dropzone:active {
+  border-color: #c8971f;
+  background: #fff5df;
+}
+
+.payment-proof-dropzone:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.payment-proof-dropzone > svg {
+  font-size: 22px;
+  color: #c8971f;
+}
+
+.payment-proof-dropzone strong {
+  color: #7a5900;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.payment-proof-dropzone span {
+  color: #a3925e;
+  font-size: 8px;
+}
+
+.payment-proof-spin {
+  animation:
+    payment-page-spin
+    0.8s linear infinite;
+}
+
+.payment-proof-preview {
+  margin-top: 12px;
+}
+
+.payment-proof-preview-image {
+  width: 100%;
+  max-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 6px;
+  border: 1px solid #e0e4e8;
+  border-radius: 12px;
+  background: #f4f6f8;
+}
+
+.payment-proof-preview-image img {
+  max-width: 100%;
+  max-height: 248px;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+.payment-proof-preview-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 9px;
+}
+
+.payment-proof-uploaded-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #2d7746;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.payment-proof-uploaded-badge svg {
+  font-size: 10px;
+}
+
+.payment-proof-uploaded-date {
+  color: #9099a1;
+  font-size: 8px;
+}
+
+.payment-proof-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 9px;
+}
+
+.payment-proof-action-btn {
+  flex: 1;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 1px solid #dfe4e8;
+  border-radius: 9px;
+  outline: none;
+  background: #ffffff;
+  color: #303a45;
+  font-size: 9px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+  -webkit-tap-highlight-color:
+    transparent;
+}
+
+.payment-proof-action-btn:hover {
+  border-color: #d8ad38;
+  background: #fffaf0;
+}
+
+.payment-proof-action-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.payment-proof-remove-btn {
+  border-color: #f0c6c6;
+  color: #b23b3b;
+}
+
+.payment-proof-remove-btn:hover {
+  border-color: #e19a9a;
+  background: #fdf2f2;
+}
+
+.payment-proof-error {
+  margin-top: 10px;
+  padding: 9px 10px;
+  border: 1px solid #f0c6c6;
+  border-radius: 8px;
+  background: #fdf2f2;
+  color: #a13939;
+  font-size: 8px;
+  line-height: 1.5;
+}
+
 .payment-paid-box {
   margin: 14px 14px 0;
   display: flex;
@@ -568,10 +755,27 @@ body {
 
   .payment-checkout-card,
   .payment-method-card,
+  .payment-proof-card,
   .payment-paid-box,
   .payment-trust-strip {
     margin-left: 10px;
     margin-right: 10px;
+  }
+
+  .payment-proof-card {
+    padding: 12px;
+  }
+
+  .payment-proof-dropzone {
+    padding: 18px 12px;
+  }
+
+  .payment-proof-preview-image {
+    max-height: 220px;
+  }
+
+  .payment-proof-preview-image img {
+    max-height: 208px;
   }
 
   .payment-card-header {

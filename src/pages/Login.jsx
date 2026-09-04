@@ -13,11 +13,13 @@ import {
 import toast from "react-hot-toast";
 
 import api from "../services/axios";
+import { useAuth } from "../context/AuthContext";
 import "../styles/login.css";
 import logo from "../assets/sk-logo.png";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { setAuthenticatedUser } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -53,6 +55,8 @@ const Login = () => {
         "user",
         JSON.stringify(response.data.user)
       );
+
+      setAuthenticatedUser(response.data.user);
 
       toast.success("Login successful");
 
@@ -206,20 +210,7 @@ const Login = () => {
               </div>
             </div>
 
-            <div className="login-options">
-              <label className="remember">
-                <input type="checkbox" />
-
-                <span>Remember me</span>
-              </label>
-
-              <button
-                type="button"
-                className="forgot-btn"
-              >
-                Forgot Password?
-              </button>
-            </div>
+           
 
             <button
               type="submit"

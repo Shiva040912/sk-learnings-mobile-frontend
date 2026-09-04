@@ -2363,3 +2363,171 @@
     font-size: 8px;
   }
 }
+
+/* ======================================================
+   TRAINER PERMISSIONS PANEL
+====================================================== */
+
+.user-form-modal {
+  max-height: 90vh;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.user-form {
+  overflow-y: auto;
+}
+
+.user-permissions-panel {
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+
+  padding-top: 4px;
+
+  border-top: 1px solid #e9ecf0;
+}
+
+.user-permissions-panel > h3 {
+  margin: 4px 0 0;
+
+  color: #202b36;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.permissions-loading {
+  margin: 0;
+
+  color: #8d959e;
+
+  font-size: 10px;
+}
+
+.permission-page-card {
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+
+  padding: 12px;
+
+  border: 1px solid #e9ecf0;
+
+  border-radius: 10px;
+
+  background: #fafbfc;
+}
+
+.permission-page-access {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  cursor: pointer;
+}
+
+.permission-page-access input {
+  width: 15px;
+  height: 15px;
+
+  cursor: pointer;
+}
+
+.permission-page-access strong {
+  color: #202b36;
+
+  font-size: 11px;
+}
+
+.permission-page-access span {
+  color: #8d959e;
+
+  font-size: 9px;
+}
+
+.permission-group {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+
+  padding-left: 4px;
+}
+
+.permission-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 8px;
+}
+
+.permission-group-header > span {
+  color: #515c68;
+
+  font-size: 9.5px;
+  font-weight: 650;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.03em;
+}
+
+.permission-group-actions {
+  display: flex;
+
+  gap: 6px;
+}
+
+.permission-group-actions button {
+  border: 0;
+
+  background: none;
+
+  color: #aa7800;
+
+  font-size: 8.5px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  text-decoration: underline;
+}
+
+.permission-checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 6px 10px;
+}
+
+.permission-checkbox {
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+
+  color: #29343f;
+
+  font-size: 10px;
+
+  cursor: pointer;
+}
+
+.permission-checkbox input {
+  width: 13px;
+  height: 13px;
+
+  cursor: pointer;
+}
+
+@media (max-width: 480px) {
+  .permission-checkbox-grid {
+    grid-template-columns: 1fr;
+  }
+}

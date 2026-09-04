@@ -23,6 +23,35 @@ const initialForm = {
   email: "",
   password: "",
   role: "trainer",
+  permissions: {},
+};
+
+// "totalFee" -> "Total Fee", "feeInfo" -> "Fee Info"
+const humanizeKey = (key) =>
+  key
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (char) => char.toUpperCase());
+
+const buildEmptyPermissions = (catalog) => {
+  if (!catalog) return {};
+
+  return Object.fromEntries(
+    Object.entries(catalog).map(([page, def]) => [
+      page,
+      {
+        access: false,
+        actions: Object.fromEntries(
+          def.actions.map((key) => [key, false])
+        ),
+        columns: Object.fromEntries(
+          def.columns.map((key) => [key, false])
+        ),
+        sections: Object.fromEntries(
+          def.sections.map((key) => [key, false])
+        ),
+      },
+    ])
+  );
 };
 
 const Users = () => {
@@ -41,6 +70,29 @@ const Users = () => {
 
   const [formData, setFormData] = useState(initialForm);
   const [showPassword, setShowPassword] = useState(false);
+
+  const [catalog, setCatalog] = useState(null);
+  const [isLoadingPermissions, setIsLoadingPermissions] =
+    useState(false);
+
+  const fetchCatalog = async () => {
+    try {
+      const response = await api.get(
+        "/permissions/catalog"
+      );
+
+      setCatalog(response.data || {});
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to load the permission catalog"
+      );
+    }
+  };
+
+  useEffect(() => {
+    fetchCatalog();
+  }, []);
 
   const fetchUsers = async () => {
     try {
@@ -81,12 +133,17 @@ const Users = () => {
 
   const openAddModal = () => {
     setEditingUser(null);
-    setFormData(initialForm);
+
+    setFormData({
+      ...initialForm,
+      permissions: buildEmptyPermissions(catalog),
+    });
+
     setShowPassword(false);
     setShowFormModal(true);
   };
 
-  const openEditModal = (user) => {
+  const openEditModal = async (user) => {
     setEditingUser(user);
 
     setFormData({
@@ -94,10 +151,36 @@ const Users = () => {
       email: user.email || "",
       password: "",
       role: user.role || "trainer",
+      permissions: buildEmptyPermissions(catalog),
     });
 
     setShowPassword(false);
     setShowFormModal(true);
+
+    if (user.role === "trainer") {
+      try {
+        setIsLoadingPermissions(true);
+
+        const response = await api.get(
+          `/permissions/effective/${user.id}`
+        );
+
+        setFormData((current) => ({
+          ...current,
+          permissions: {
+            ...buildEmptyPermissions(catalog),
+            ...(response.data || {}),
+          },
+        }));
+      } catch (error) {
+        toast.error(
+          error.response?.data?.message ||
+            "Failed to load this trainer's permissions"
+        );
+      } finally {
+        setIsLoadingPermissions(false);
+      }
+    }
   };
 
   const openViewModal = (user) => {
@@ -129,6 +212,56 @@ const Users = () => {
       ...current,
       [name]: value,
     }));
+  };
+
+  const togglePageAccess = (page) => {
+    setFormData((current) => ({
+      ...current,
+      permissions: {
+        ...current.permissions,
+        [page]: {
+          ...current.permissions[page],
+          access: !current.permissions[page]?.access,
+        },
+      },
+    }));
+  };
+
+  const togglePermission = (page, kind, key) => {
+    setFormData((current) => ({
+      ...current,
+      permissions: {
+        ...current.permissions,
+        [page]: {
+          ...current.permissions[page],
+          [kind]: {
+            ...current.permissions[page]?.[kind],
+            [key]: !current.permissions[page]?.[kind]?.[
+              key
+            ],
+          },
+        },
+      },
+    }));
+  };
+
+  const setGroupAll = (page, kind, value) => {
+    setFormData((current) => {
+      const keys = catalog?.[page]?.[kind] || [];
+
+      return {
+        ...current,
+        permissions: {
+          ...current.permissions,
+          [page]: {
+            ...current.permissions[page],
+            [kind]: Object.fromEntries(
+              keys.map((key) => [key, value])
+            ),
+          },
+        },
+      };
+    });
   };
 
   const validateForm = () => {
@@ -191,6 +324,10 @@ const Users = () => {
           payload.password = formData.password;
         }
 
+        if (formData.role === "trainer") {
+          payload.permissions = formData.permissions;
+        }
+
         await api.patch(
           `/users/${editingUser.id}`,
           payload
@@ -198,12 +335,18 @@ const Users = () => {
 
         toast.success("User updated successfully");
       } else {
-        await api.post("/users/create-admin", {
+        const payload = {
           name: formData.name.trim(),
           email: formData.email.trim(),
           password: formData.password,
           role: formData.role,
-        });
+        };
+
+        if (formData.role === "trainer") {
+          payload.permissions = formData.permissions;
+        }
+
+        await api.post("/users/create-admin", payload);
 
         toast.success("User created successfully");
       }
@@ -523,6 +666,153 @@ const Users = () => {
                   </select>
                 </div>
               </div>
+
+              {formData.role === "trainer" && (
+                <div className="user-permissions-panel">
+                  <h3>Trainer Permissions</h3>
+
+                  {isLoadingPermissions ? (
+                    <p className="permissions-loading">
+                      Loading current permissions...
+                    </p>
+                  ) : !catalog ? (
+                    <p className="permissions-loading">
+                      Loading permission catalog...
+                    </p>
+                  ) : (
+                    Object.entries(catalog).map(
+                      ([page, def]) => {
+                        const pagePermissions =
+                          formData.permissions[page] ||
+                          {};
+
+                        return (
+                          <div
+                            key={page}
+                            className="permission-page-card"
+                          >
+                            <label className="permission-page-access">
+                              <input
+                                type="checkbox"
+                                checked={
+                                  pagePermissions.access ===
+                                  true
+                                }
+                                onChange={() =>
+                                  togglePageAccess(page)
+                                }
+                              />
+                              <strong>{def.label}</strong>
+                              <span>Page Access</span>
+                            </label>
+
+                            {pagePermissions.access && (
+                              <>
+                                {[
+                                  [
+                                    "actions",
+                                    "Actions",
+                                    def.actions,
+                                  ],
+                                  [
+                                    "columns",
+                                    "Columns",
+                                    def.columns,
+                                  ],
+                                  [
+                                    "sections",
+                                    "Cards / Sections",
+                                    def.sections,
+                                  ],
+                                ].map(
+                                  ([
+                                    kind,
+                                    kindLabel,
+                                    keys,
+                                  ]) =>
+                                    keys.length > 0 && (
+                                      <div
+                                        key={kind}
+                                        className="permission-group"
+                                      >
+                                        <div className="permission-group-header">
+                                          <span>
+                                            {kindLabel}
+                                          </span>
+
+                                          <div className="permission-group-actions">
+                                            <button
+                                              type="button"
+                                              onClick={() =>
+                                                setGroupAll(
+                                                  page,
+                                                  kind,
+                                                  true
+                                                )
+                                              }
+                                            >
+                                              Select All
+                                            </button>
+
+                                            <button
+                                              type="button"
+                                              onClick={() =>
+                                                setGroupAll(
+                                                  page,
+                                                  kind,
+                                                  false
+                                                )
+                                              }
+                                            >
+                                              Clear All
+                                            </button>
+                                          </div>
+                                        </div>
+
+                                        <div className="permission-checkbox-grid">
+                                          {keys.map(
+                                            (key) => (
+                                              <label
+                                                key={key}
+                                                className="permission-checkbox"
+                                              >
+                                                <input
+                                                  type="checkbox"
+                                                  checked={
+                                                    pagePermissions[
+                                                      kind
+                                                    ]?.[
+                                                      key
+                                                    ] ===
+                                                    true
+                                                  }
+                                                  onChange={() =>
+                                                    togglePermission(
+                                                      page,
+                                                      kind,
+                                                      key
+                                                    )
+                                                  }
+                                                />
+                                                {humanizeKey(
+                                                  key
+                                                )}
+                                              </label>
+                                            )
+                                          )}
+                                        </div>
+                                      </div>
+                                    )
+                                )}
+                              </>
+                            )}
+                          </div>
+                        );
+                      }
+                    )
+                  )}
+                </div>
+              )}
 
               <div className="user-form-actions">
                 <button

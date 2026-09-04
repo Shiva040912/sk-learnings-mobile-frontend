@@ -21,9 +21,54 @@ import {
 import toast from "react-hot-toast";
 
 import api from "../services/axios";
+import { usePermissions } from "../hooks/usePermissions";
 import "../styles/payments.css";
 
 const Payments = () => {
+  const { hasPermission } = usePermissions();
+
+  const canViewSummary = hasPermission(
+    "payments",
+    "sections",
+    "summary"
+  );
+
+  const canViewTotalFeeColumn = hasPermission(
+    "payments",
+    "columns",
+    "totalFee"
+  );
+
+  const canViewPaymentDetails = hasPermission(
+    "payments",
+    "actions",
+    "viewDetails"
+  );
+
+  const canCollectPayment = hasPermission(
+    "payments",
+    "actions",
+    "collect"
+  );
+
+  const canViewFeeBreakdown = hasPermission(
+    "payments",
+    "sections",
+    "feeBreakdown"
+  );
+
+  // Whether real totalFee/paidAmount/pendingAmount numbers are even present
+  // in this trainer's copy of a student record — governed by the Students
+  // page's own feeInfo permission (that's the API this page's fee numbers
+  // are actually sourced from), not by this page's own display toggles
+  // above. Used only where the *value* is read for arithmetic/validation,
+  // as opposed to just deciding whether to show a UI element.
+  const canSeeStudentFeeNumbers = hasPermission(
+    "students",
+    "sections",
+    "feeInfo"
+  );
+
   const [students, setStudents] = useState([]);
   const [paymentRecords, setPaymentRecords] = useState([]);
   const [feeDueDate, setFeeDueDate] = useState("");
@@ -52,9 +97,11 @@ const Payments = () => {
     useState(null);
   const studentNotificationMenuRef = useRef(null);
   const studentNotificationFloatingMenuRef = useRef(null);
-  const [paymentMethodStudent, setPaymentMethodStudent] = useState(null);
-  const [paymentUpdatingStudentId, setPaymentUpdatingStudentId] =
-    useState(null);
+
+  const [collectModalStudent, setCollectModalStudent] = useState(null);
+  const [collectAmountInput, setCollectAmountInput] = useState("");
+  const [collectMethodInput, setCollectMethodInput] = useState("");
+  const [isCollectingPayment, setIsCollectingPayment] = useState(false);
 
   const [showPaymentSettings, setShowPaymentSettings] = useState(false);
   const [isSavingPaymentSettings, setIsSavingPaymentSettings] = useState(false);
@@ -191,7 +238,10 @@ const Payments = () => {
           new Date(firstPayment.paymentDate || 0),
       )[0];
 
-      const isPaid = student.paymentStatus === "paid";
+      const status = student.paymentStatus || "unpaid";
+      const hasCollectedAnything = status !== "unpaid";
+      const totalFee = Number(student.totalFee || 0);
+      const paidAmount = Number(student.paidAmount || 0);
 
       return {
         _id: student._id,
@@ -200,14 +250,22 @@ const Payments = () => {
         course: student.course || "-",
         batch: student.batch || "-",
         phone: student.phone || "-",
-        totalFee: Number(student.totalFee || 0),
-        paymentStatus: isPaid ? "paid" : "unpaid",
-        paymentDate: isPaid
+        totalFee,
+        paidAmount,
+        pendingAmount: Number(
+          student.pendingAmount ?? Math.max(0, totalFee - paidAmount),
+        ),
+        paymentStatus: status,
+        paymentDate: hasCollectedAnything
           ? latestPayment?.paymentDate || student.updatedAt || null
           : null,
-        paymentMethod: isPaid
+        paymentMethod: hasCollectedAnything
           ? latestPayment?.paymentMethod || student.paymentMethod || ""
           : "",
+        paymentProofImage:
+          student.paymentProofImage ||
+          latestPayment?.paymentProofImage ||
+          "",
       };
     });
   }, [students, paymentRecords]);
@@ -295,8 +353,11 @@ const Payments = () => {
 
         if (payment.paymentStatus === "paid") {
           result.paidStudents += 1;
-          result.totalCollected += payment.totalFee;
+        }
 
+        result.totalCollected += payment.paidAmount;
+
+        if (payment.paidAmount > 0) {
           if (payment.paymentMethod === "cash") {
             result.cashPayments += 1;
           } else if (payment.paymentMethod) {
@@ -612,57 +673,6 @@ const Payments = () => {
     );
   };
 
-  const handlePaymentToggle = (student) => {
-    if (
-      student.paymentStatus === "paid" ||
-      paymentUpdatingStudentId === student._id
-    ) {
-      return;
-    }
-
-    setPaymentMethodStudent(student);
-
-    toast("Select the payment method", {
-      icon: "💳",
-    });
-  };
-
-  const handlePaymentMethodSelect = async (student, paymentMethod) => {
-    if (!paymentMethod || !student) {
-      return;
-    }
-
-    const totalFee = Number(student.totalFee || 0);
-
-    if (totalFee <= 0) {
-      toast.error("Student total fee is invalid");
-      return;
-    }
-
-    try {
-      setPaymentUpdatingStudentId(student._id);
-
-      await api.patch(`/students/${student._id}`, {
-        paymentStatus: "paid",
-        paymentMethod,
-        paidAmount: totalFee,
-        pendingAmount: 0,
-      });
-
-      setPaymentMethodStudent(null);
-
-      toast.success(`${student.studentName} payment marked as paid`);
-
-      await fetchPaymentPageData();
-    } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Failed to update payment status",
-      );
-    } finally {
-      setPaymentUpdatingStudentId(null);
-    }
-  };
-
   const formatMoney = (value) => Number(value || 0).toLocaleString("en-IN");
 
   const formatDate = (value) => {
@@ -686,6 +696,80 @@ const Payments = () => {
     return methods[method] || "-";
   };
 
+  const openCollectModal = (payment) => {
+    setCollectModalStudent(payment);
+    setCollectAmountInput("");
+    setCollectMethodInput("");
+  };
+
+  const closeCollectModal = () => {
+    if (isCollectingPayment) return;
+
+    setCollectModalStudent(null);
+    setCollectAmountInput("");
+    setCollectMethodInput("");
+  };
+
+  const handleCollectPayment = async () => {
+    if (!collectModalStudent) return;
+
+    const amount = Number(collectAmountInput);
+
+    if (!amount || amount <= 0) {
+      toast.error("Enter a valid amount received");
+      return;
+    }
+
+    if (!collectMethodInput) {
+      toast.error("Select a payment method");
+      return;
+    }
+
+    // Checked up front only when this trainer's copy of the record
+    // actually has a real pending balance in it (students.feeInfo
+    // permission) — otherwise it's 0 either way and the backend still
+    // enforces the real limit, returning a balance-free error message.
+    if (canSeeStudentFeeNumbers) {
+      const pending = Number(collectModalStudent.pendingAmount || 0);
+
+      if (amount > pending) {
+        toast.error(
+          `Amount exceeds the pending balance of ₹${formatMoney(pending)}`,
+        );
+        return;
+      }
+    }
+
+    try {
+      setIsCollectingPayment(true);
+
+      const response = await api.patch(
+        `/students/${collectModalStudent._id}/collect-payment`,
+        { amount, paymentMethod: collectMethodInput },
+      );
+
+      const updatedStatus = response.data?.paymentStatus;
+
+      toast.success(
+        updatedStatus === "paid"
+          ? `${collectModalStudent.studentName}'s payment is now fully collected`
+          : `₹${formatMoney(amount)} collected from ${collectModalStudent.studentName}`,
+      );
+
+      setCollectModalStudent(null);
+      setCollectAmountInput("");
+      setCollectMethodInput("");
+
+      await fetchPaymentPageData();
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to collect payment",
+      );
+    } finally {
+      setIsCollectingPayment(false);
+    }
+  };
+
   const isDueDateReached = useMemo(() => {
     if (!feeDueDate) return false;
 
@@ -702,18 +786,24 @@ const Payments = () => {
 
   return (
     <div className="payments-page">
-      <div className="payments-top-grid">
-        <div className="payment-summary-card">
-          <div className="payment-summary-icon">
-            <FiDollarSign />
-          </div>
+      <div
+        className={`payments-top-grid ${
+          !canViewSummary ? "trainer-summary-grid" : ""
+        }`}
+      >
+        {canViewSummary && (
+          <div className="payment-summary-card">
+            <div className="payment-summary-icon">
+              <FiDollarSign />
+            </div>
 
-          <div>
-            <span>Total Collected</span>
-            <strong>₹{formatMoney(summary.totalCollected)}</strong>
-            <small>Successfully collected fees</small>
+            <div>
+              <span>Total Collected</span>
+              <strong>₹{formatMoney(summary.totalCollected)}</strong>
+              <small>Successfully collected fees</small>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="payment-summary-card cash-card">
           <div className="payment-summary-icon">
@@ -857,6 +947,7 @@ const Payments = () => {
                   >
                     <option value="all">All Status</option>
                     <option value="paid">Paid</option>
+                    <option value="partial">Partial</option>
                     <option value="unpaid">Unpaid</option>
                   </select>
                 </div>
@@ -1180,7 +1271,16 @@ const Payments = () => {
                     <th>Roll No</th>
                     <th>Course</th>
                     <th>Phone</th>
-                    <th>Total Fee</th>
+                    <th>Proof</th>
+                    <th
+                      className={
+                        !canViewTotalFeeColumn
+                          ? "fee-column-hidden"
+                          : ""
+                      }
+                    >
+                      Total Fee
+                    </th>
                     <th>Status</th>
                     <th>Payment Date</th>
                     <th>Method</th>
@@ -1192,12 +1292,17 @@ const Payments = () => {
                   {filteredPayments.map((payment, index) => (
                     <tr
                       key={payment._id}
-                      className={
-                        paymentMethodStudent?._id === payment._id
-                          ? "payment-row selecting-method"
-                          : "payment-row"
+                      className={[
+                        "payment-row",
+                        canViewPaymentDetails && "payment-row-clickable",
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
+                      onClick={
+                        canViewPaymentDetails
+                          ? () => setSelectedPayment(payment)
+                          : undefined
                       }
-                      onClick={() => setSelectedPayment(payment)}
                     >
                       <td>{index + 1}</td>
 
@@ -1223,76 +1328,96 @@ const Payments = () => {
 
                       <td>{payment.phone}</td>
 
-                      <td>
+                      <td className="payment-proof-cell">
+                        {!canCollectPayment ? (
+                          payment.paymentProofImage ? (
+                            <button
+                              type="button"
+                              className="payment-proof-icon-btn"
+                              title="View payment proof"
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                openCollectModal(payment);
+                              }}
+                            >
+                              <FiImage />
+                            </button>
+                          ) : (
+                            <span className="payment-proof-empty">-</span>
+                          )
+                        ) : payment.paymentProofImage ? (
+                          <button
+                            type="button"
+                            className="payment-proof-icon-btn"
+                            title="View payment proof & collect payment"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              openCollectModal(payment);
+                            }}
+                          >
+                            <FiImage />
+                          </button>
+                        ) : payment.paymentStatus !== "paid" ? (
+                          <button
+                            type="button"
+                            className="payment-proof-icon-btn payment-proof-icon-btn-empty"
+                            title="Collect payment"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              openCollectModal(payment);
+                            }}
+                          >
+                            <FiCreditCard />
+                          </button>
+                        ) : (
+                          <span className="payment-proof-empty">-</span>
+                        )}
+                      </td>
+
+                      <td
+                        className={
+                          !canViewTotalFeeColumn
+                            ? "fee-column-hidden"
+                            : ""
+                        }
+                      >
                         <strong className="payment-amount">
                           ₹{formatMoney(payment.totalFee)}
                         </strong>
                       </td>
 
                       <td>
-                        <button
-                          type="button"
-                          className={`payment-switch ${
+                        <span
+                          className={`payment-status-badge ${
                             payment.paymentStatus === "paid"
                               ? "is-paid"
-                              : "is-unpaid"
+                              : payment.paymentStatus === "partial"
+                                ? "is-partial"
+                                : "is-unpaid"
                           }`}
-                          onClick={(event) => {
-                            event.stopPropagation();
-
-                            handlePaymentToggle(payment);
-                          }}
-                          disabled={
-                            payment.paymentStatus === "paid" ||
-                            paymentUpdatingStudentId === payment._id
-                          }
                         >
-                          <span className="payment-switch-track">
-                            <span className="payment-switch-thumb" />
-                          </span>
-
-                          <span className="payment-switch-label">
-                            {payment.paymentStatus === "paid"
-                              ? "Paid"
+                          {payment.paymentStatus === "paid"
+                            ? "Paid"
+                            : payment.paymentStatus === "partial"
+                              ? "Partial"
                               : "Unpaid"}
-                          </span>
-                        </button>
+                        </span>
+
+                        {canViewTotalFeeColumn &&
+                          payment.paymentStatus === "partial" && (
+                            <span className="payment-partial-caption">
+                              ₹{formatMoney(payment.paidAmount)} of ₹
+                              {formatMoney(payment.totalFee)}
+                            </span>
+                          )}
                       </td>
 
                       <td>{formatDate(payment.paymentDate)}</td>
 
                       <td>
-                        {paymentMethodStudent?._id === payment._id &&
-                        payment.paymentStatus !== "paid" ? (
-                          <div className="inline-payment-methods">
-                            {[
-                              ["cash", "Cash"],
-                              ["bank", "Bank"],
-                              ["upi", "UPI"],
-                              ["qr", "QR"],
-                            ].map(([value, label]) => (
-                              <button
-                                key={value}
-                                type="button"
-                                className="inline-payment-method-btn"
-                                onClick={(event) => {
-                                  event.stopPropagation();
-
-                                  handlePaymentMethodSelect(payment, value);
-                                }}
-                                disabled={
-                                  paymentUpdatingStudentId === payment._id
-                                }
-                              >
-                                {label}
-                              </button>
-                            ))}
-                          </div>
-                        ) : (
-                          <span className="payment-method">
-                            {formatPaymentMethod(payment.paymentMethod)}
-                          </span>
-                        )}
+                        <span className="payment-method">
+                          {formatPaymentMethod(payment.paymentMethod)}
+                        </span>
                       </td>
 
                       <td>
@@ -1632,10 +1757,153 @@ const Payments = () => {
               </div>
             </div>
 
+            {selectedPayment.paymentProofImage && (
+              <div className="payment-details-proof">
+                <span>Payment Proof</span>
+
+                <div className="payment-details-proof-image">
+                  <img
+                    src={selectedPayment.paymentProofImage}
+                    alt="Payment proof screenshot"
+                  />
+                </div>
+              </div>
+            )}
+
             <div className="payment-details-footer">
               <FiCheckCircle />
               <span>Latest fee status recorded for this student.</span>
             </div>
+          </div>
+        </div>
+      )}
+
+      {collectModalStudent && (
+        <div
+          className="collect-payment-overlay"
+          onClick={closeCollectModal}
+        >
+          <div
+            className="collect-payment-modal"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="collect-payment-header">
+              <div>
+                <span>PAYMENT PROOF</span>
+                <h2>{collectModalStudent.studentName}</h2>
+              </div>
+
+              <button
+                type="button"
+                onClick={closeCollectModal}
+                aria-label="Close collect payment"
+                title="Close"
+                disabled={isCollectingPayment}
+              >
+                <FiX />
+              </button>
+            </div>
+
+            {collectModalStudent.paymentProofImage ? (
+              <div className="collect-payment-proof-image">
+                <img
+                  src={collectModalStudent.paymentProofImage}
+                  alt="Payment proof screenshot"
+                />
+              </div>
+            ) : (
+              <div className="collect-payment-proof-empty">
+                <FiImage />
+                <span>No payment screenshot uploaded</span>
+              </div>
+            )}
+
+            {canViewFeeBreakdown && (
+              <div className="collect-payment-balance-grid">
+                <div>
+                  <span>Total Fee</span>
+                  <strong>
+                    ₹{formatMoney(collectModalStudent.totalFee)}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>Collected</span>
+                  <strong>
+                    ₹{formatMoney(collectModalStudent.paidAmount)}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>Pending</span>
+                  <strong>
+                    ₹{formatMoney(collectModalStudent.pendingAmount)}
+                  </strong>
+                </div>
+              </div>
+            )}
+
+            {canCollectPayment && (
+              <div className="collect-payment-form">
+                <label>Payment Method</label>
+
+                <div className="collect-payment-method-row">
+                  {[
+                    ["cash", "Cash"],
+                    ["bank", "Bank"],
+                    ["upi", "UPI"],
+                    ["qr", "QR"],
+                  ].map(([value, label]) => (
+                    <button
+                      key={value}
+                      type="button"
+                      className={`collect-payment-method-btn ${
+                        collectMethodInput === value ? "active" : ""
+                      }`}
+                      onClick={() => setCollectMethodInput(value)}
+                      disabled={isCollectingPayment}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+
+                <label htmlFor="collect-amount">Amount Received</label>
+
+                <input
+                  id="collect-amount"
+                  type="number"
+                  min="1"
+                  max={
+                    canSeeStudentFeeNumbers
+                      ? collectModalStudent.pendingAmount
+                      : undefined
+                  }
+                  placeholder={
+                    canSeeStudentFeeNumbers
+                      ? `Up to ₹${formatMoney(
+                          collectModalStudent.pendingAmount,
+                        )}`
+                      : "Enter amount received"
+                  }
+                  value={collectAmountInput}
+                  onChange={(event) =>
+                    setCollectAmountInput(event.target.value)
+                  }
+                  disabled={isCollectingPayment}
+                />
+
+                <button
+                  type="button"
+                  className="collect-payment-btn"
+                  onClick={handleCollectPayment}
+                  disabled={isCollectingPayment}
+                >
+                  <FiCheck />
+                  {isCollectingPayment ? "Collecting..." : "Collect"}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

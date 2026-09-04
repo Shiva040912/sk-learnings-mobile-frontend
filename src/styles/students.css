@@ -2686,7 +2686,8 @@
   }
 
   .student-setup-btn,
-  .add-student-btn {
+  .add-student-btn,
+  .upload-excel-btn {
     min-height: 36px;
     gap: 5px;
     padding: 0 10px;
@@ -3535,7 +3536,8 @@
   }
 
   .student-setup-btn,
-  .students-header-actions .add-student-btn {
+  .students-header-actions .add-student-btn,
+  .students-header-actions .upload-excel-btn {
     min-height: 34px;
     height: 34px;
     padding: 0 10px;
@@ -4157,7 +4159,8 @@
 
   .student-filter-button,
   .student-setup-btn,
-  .students-header-actions .add-student-btn {
+  .students-header-actions .add-student-btn,
+  .students-header-actions .upload-excel-btn {
     height: 34px;
     min-height: 34px;
     font-size: 7.5px;
@@ -4518,7 +4521,8 @@
 
   .student-filter-button,
   .student-setup-btn,
-  .students-header-actions .add-student-btn {
+  .students-header-actions .add-student-btn,
+  .students-header-actions .upload-excel-btn {
     height: 39px;
     min-height: 39px;
     border-radius: 11px;
@@ -5419,7 +5423,8 @@
 
   .student-filter-button,
   .student-setup-btn,
-  .add-student-btn {
+  .add-student-btn,
+  .upload-excel-btn {
     height: 42px !important;
     min-height: 42px !important;
     border-radius: 9px !important;
@@ -5519,7 +5524,8 @@
 
   .student-filter-button,
   .student-setup-btn,
-  .add-student-btn {
+  .add-student-btn,
+  .upload-excel-btn {
     min-height: 40px !important;
     height: 40px !important;
   }
@@ -5664,7 +5670,8 @@
   }
 
   .student-setup-btn,
-  .add-student-btn {
+  .add-student-btn,
+  .upload-excel-btn {
     min-height: 30px !important;
     height: 30px !important;
     gap: 5px !important;
@@ -5675,7 +5682,8 @@
   }
 
   .student-setup-btn svg,
-  .add-student-btn svg {
+  .add-student-btn svg,
+  .upload-excel-btn svg {
     font-size: 11px !important;
   }
 
@@ -6320,7 +6328,8 @@
 
 .students-toolbar .student-filter-button,
 .students-toolbar .add-student-btn,
-.students-toolbar .student-setup-btn {
+.students-toolbar .student-setup-btn,
+.students-toolbar .upload-excel-btn {
   height: 40px !important;
   min-height: 40px !important;
   margin: 0 !important;
@@ -6396,6 +6405,7 @@
   .students-toolbar .student-filter-button,
   .students-toolbar .add-student-btn,
   .students-toolbar .student-setup-btn,
+  .students-toolbar .upload-excel-btn,
   .students-toolbar .student-search input {
     height: 36px !important;
     min-height: 36px !important;
@@ -6443,7 +6453,8 @@
 
   .students-toolbar .student-filter-button,
   .students-toolbar .add-student-btn,
-  .students-toolbar .student-setup-btn {
+  .students-toolbar .student-setup-btn,
+  .students-toolbar .upload-excel-btn {
     width: 100% !important;
     height: 38px !important;
     min-height: 38px !important;
@@ -6454,7 +6465,8 @@
 
   .students-toolbar .student-filter-button svg,
   .students-toolbar .add-student-btn svg,
-  .students-toolbar .student-setup-btn svg {
+  .students-toolbar .student-setup-btn svg,
+  .students-toolbar .upload-excel-btn svg {
     font-size: 14px !important;
   }
 
@@ -6476,7 +6488,8 @@
 
   .students-toolbar .student-filter-button,
   .students-toolbar .add-student-btn,
-  .students-toolbar .student-setup-btn {
+  .students-toolbar .student-setup-btn,
+  .students-toolbar .upload-excel-btn {
     height: 36px !important;
     min-height: 36px !important;
     font-size: 12px !important;
@@ -6486,6 +6499,244 @@
     height: 36px !important;
     min-height: 36px !important;
     font-size: 11.5px !important;
+  }
+}
+
+/* Trainer role: Total Fee column hidden via class, not removed from the
+   DOM, so nth-child-based responsive rules above keep indexing correctly. */
+.students-table th.fee-column-hidden,
+.students-table td.fee-column-hidden {
+  display: none !important;
+}
+
+/* Bulk student upload */
+.upload-excel-btn {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
+  border: 1px solid #dce1e7;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #303a45;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.upload-excel-btn:hover {
+  border-color: #d8ad38;
+  background: #fffaf0;
+}
+
+.bulk-upload-modal {
+  width: min(640px, 94vw);
+}
+
+.bulk-upload-body {
+  padding: 18px 22px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.bulk-template-btn {
+  width: 100%;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  border: 1px solid #dce1e7;
+  border-radius: 9px;
+  background: #fafbfc;
+  color: #303a45;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.bulk-template-btn:hover {
+  border-color: #d8ad38;
+  background: #fffaf0;
+}
+
+.bulk-upload-file-input {
+  display: none;
+}
+
+.bulk-upload-dropzone {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 30px 16px;
+  border: 1.5px dashed #d8ad38;
+  border-radius: 12px;
+  background: #fffaf0;
+  color: #a87700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.bulk-upload-dropzone:hover {
+  border-color: #c8971f;
+  background: #fff5df;
+}
+
+.bulk-upload-dropzone:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.bulk-upload-dropzone > svg {
+  font-size: 26px;
+  color: #c8971f;
+}
+
+.bulk-upload-dropzone strong {
+  color: #7a5900;
+  font-size: 12px;
+}
+
+.bulk-upload-dropzone span {
+  color: #a3925e;
+  font-size: 9px;
+  text-align: center;
+}
+
+.bulk-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 9px;
+  margin-bottom: 16px;
+}
+
+.bulk-summary-card {
+  padding: 11px;
+  border: 1px solid #e5e9ee;
+  border-radius: 10px;
+  background: #fafbfc;
+  text-align: center;
+}
+
+.bulk-summary-card span {
+  display: block;
+  color: #8a939d;
+  font-size: 8.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.bulk-summary-card strong {
+  display: block;
+  margin-top: 5px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #29343f;
+}
+
+.bulk-summary-card.is-valid strong {
+  color: #2e9351;
+}
+
+.bulk-summary-card.is-duplicate strong {
+  color: #b77d00;
+}
+
+.bulk-summary-card.is-invalid strong {
+  color: #b23b3b;
+}
+
+.bulk-preview-table-wrapper {
+  max-height: 320px;
+  overflow: auto;
+  border: 1px solid #e5e9ee;
+  border-radius: 10px;
+}
+
+.bulk-preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.bulk-preview-table thead th {
+  position: sticky;
+  top: 0;
+  padding: 9px 10px;
+  background: #f6f8fa;
+  color: #4d5864;
+  font-size: 9.5px;
+  font-weight: 750;
+  text-align: left;
+  text-transform: uppercase;
+  border-bottom: 1px solid #e5e9ee;
+}
+
+.bulk-preview-table tbody td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #eef0f2;
+  color: #303a45;
+}
+
+.bulk-preview-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.bulk-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.bulk-status-pill.is-valid {
+  background: #e6f6ec;
+  color: #2f8e50;
+}
+
+.bulk-status-pill.is-duplicate {
+  background: #fff3d8;
+  color: #b77d00;
+}
+
+.bulk-status-pill.is-invalid {
+  background: #fdf2f2;
+  color: #b23b3b;
+}
+
+.bulk-upload-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 22px;
+  border-top: 1px solid #eceef1;
+}
+
+@media (max-width: 640px) {
+  .bulk-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .bulk-upload-actions {
+    flex-wrap: wrap;
+  }
+
+  .bulk-upload-actions button {
+    flex: 1;
+    min-width: 120px;
   }
 }
 

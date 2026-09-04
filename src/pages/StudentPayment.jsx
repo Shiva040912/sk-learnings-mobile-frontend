@@ -1,13 +1,18 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   FiCalendar,
   FiCheckCircle,
   FiCreditCard,
+  FiImage,
   FiLoader,
   FiLock,
+  FiRefreshCw,
   FiShield,
+  FiTrash2,
+  FiUploadCloud,
 } from "react-icons/fi";
+import toast from "react-hot-toast";
 
 import api from "../services/axios";
 
@@ -30,6 +35,23 @@ const StudentPayment = () => {
   const [error, setError] =
     useState("");
 
+  const [proofImage, setProofImage] =
+    useState("");
+
+  const [proofUploadedAt, setProofUploadedAt] =
+    useState(null);
+
+  const [isUploadingProof, setIsUploadingProof] =
+    useState(false);
+
+  const [isRemovingProof, setIsRemovingProof] =
+    useState(false);
+
+  const [proofError, setProofError] =
+    useState("");
+
+  const proofFileInputRef = useRef(null);
+
   useEffect(() => {
     const fetchPaymentDetails = async () => {
       try {
@@ -42,6 +64,16 @@ const StudentPayment = () => {
 
         setPaymentData(
           response.data || null
+        );
+
+        setProofImage(
+          response.data?.student
+            ?.paymentProofImage || ""
+        );
+
+        setProofUploadedAt(
+          response.data?.student
+            ?.paymentProofUploadedAt || null
         );
       } catch (err) {
         setError(
@@ -92,6 +124,216 @@ const StudentPayment = () => {
         year: "numeric",
       }
     );
+  };
+
+  const compressProofImage = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const image = new Image();
+
+        image.onload = () => {
+          const maxDimension = 1080;
+
+          const scale = Math.min(
+            1,
+            maxDimension /
+              Math.max(
+                image.width,
+                image.height
+              )
+          );
+
+          const canvas =
+            document.createElement(
+              "canvas"
+            );
+
+          canvas.width =
+            Math.round(
+              image.width * scale
+            );
+
+          canvas.height =
+            Math.round(
+              image.height * scale
+            );
+
+          const context =
+            canvas.getContext("2d");
+
+          context.fillStyle =
+            "#ffffff";
+
+          context.fillRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+          );
+
+          context.drawImage(
+            image,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+          );
+
+          resolve(
+            canvas.toDataURL(
+              "image/jpeg",
+              0.85
+            )
+          );
+        };
+
+        image.onerror = () =>
+          reject(
+            new Error(
+              "Unable to read the selected image"
+            )
+          );
+
+        image.src = String(
+          reader.result || ""
+        );
+      };
+
+      reader.onerror = () =>
+        reject(
+          new Error(
+            "Unable to read the selected image"
+          )
+        );
+
+      reader.readAsDataURL(file);
+    });
+
+  const uploadProofImage = async (
+    dataUrl
+  ) => {
+    setIsUploadingProof(true);
+    setProofError("");
+
+    try {
+      const response = await api.put(
+        `/payments/public/student/${studentId}/proof`,
+        { proofImage: dataUrl }
+      );
+
+      setProofImage(
+        response.data
+          ?.paymentProofImage ||
+          dataUrl
+      );
+
+      setProofUploadedAt(
+        response.data
+          ?.paymentProofUploadedAt ||
+          new Date().toISOString()
+      );
+
+      toast.success(
+        "Payment screenshot uploaded successfully"
+      );
+    } catch (err) {
+      const message =
+        err.response?.data
+          ?.message ||
+        "Failed to upload payment screenshot";
+
+      setProofError(message);
+      toast.error(message);
+    } finally {
+      setIsUploadingProof(false);
+    }
+  };
+
+  const handleProofFileChange = async (
+    event
+  ) => {
+    const file =
+      event.target.files?.[0];
+
+    event.target.value = "";
+
+    if (!file) {
+      return;
+    }
+
+    if (
+      !file.type.startsWith("image/")
+    ) {
+      const message =
+        "Please select a valid image file";
+
+      setProofError(message);
+      toast.error(message);
+      return;
+    }
+
+    if (file.size > 8 * 1024 * 1024) {
+      const message =
+        "Image is too large. Please select a file under 8MB";
+
+      setProofError(message);
+      toast.error(message);
+      return;
+    }
+
+    try {
+      const compressed =
+        await compressProofImage(
+          file
+        );
+
+      await uploadProofImage(
+        compressed
+      );
+    } catch (err) {
+      const message =
+        err.message ||
+        "Unable to process the selected image";
+
+      setProofError(message);
+      toast.error(message);
+    }
+  };
+
+  const openProofFilePicker = () => {
+    proofFileInputRef.current?.click();
+  };
+
+  const handleRemoveProofImage =
+    async () => {
+      setIsRemovingProof(true);
+      setProofError("");
+
+      try {
+        await api.put(
+          `/payments/public/student/${studentId}/proof`,
+          { proofImage: "" }
+        );
+
+        setProofImage("");
+        setProofUploadedAt(null);
+
+        toast.success(
+          "Payment screenshot removed"
+        );
+      } catch (err) {
+        const message =
+          err.response?.data
+            ?.message ||
+          "Failed to remove payment screenshot";
+
+        setProofError(message);
+        toast.error(message);
+      } finally {
+        setIsRemovingProof(false);
+      }
   };
 
   const buildUpiQuery = () => {
@@ -338,6 +580,8 @@ const StudentPayment = () => {
             </div>
           </section>
         ) : (
+          <>
+
           <section className="payment-method-card">
 
             <div className="payment-method-title">
@@ -445,6 +689,126 @@ const StudentPayment = () => {
             )}
 
           </section>
+
+          <section className="payment-proof-card">
+
+            <div className="payment-method-title">
+              <div>
+                <span>
+                  PAYMENT PROOF
+                </span>
+
+                <h3>
+                  Upload Payment Screenshot
+                </h3>
+              </div>
+
+              <FiImage />
+            </div>
+
+            <p className="payment-proof-hint">
+              After completing the payment, upload
+              a screenshot of the transaction so
+              the institute can verify it.
+            </p>
+
+            <input
+              ref={proofFileInputRef}
+              type="file"
+              accept="image/*"
+              className="payment-proof-file-input"
+              onChange={handleProofFileChange}
+            />
+
+            {!proofImage ? (
+              <button
+                type="button"
+                className="payment-proof-dropzone"
+                onClick={openProofFilePicker}
+                disabled={isUploadingProof}
+              >
+                {isUploadingProof ? (
+                  <>
+                    <FiLoader className="payment-proof-spin" />
+                    <strong>Uploading...</strong>
+                  </>
+                ) : (
+                  <>
+                    <FiUploadCloud />
+                    <strong>
+                      Upload Payment Screenshot
+                    </strong>
+                    <span>
+                      PNG or JPG, up to 8MB
+                    </span>
+                  </>
+                )}
+              </button>
+            ) : (
+              <div className="payment-proof-preview">
+                <div className="payment-proof-preview-image">
+                  <img
+                    src={proofImage}
+                    alt="Payment proof screenshot"
+                  />
+                </div>
+
+                <div className="payment-proof-preview-meta">
+                  <span className="payment-proof-uploaded-badge">
+                    <FiCheckCircle />
+                    Screenshot uploaded
+                  </span>
+
+                  {proofUploadedAt && (
+                    <span className="payment-proof-uploaded-date">
+                      {formatDate(proofUploadedAt)}
+                    </span>
+                  )}
+                </div>
+
+                <div className="payment-proof-actions">
+                  <button
+                    type="button"
+                    className="payment-proof-action-btn"
+                    onClick={openProofFilePicker}
+                    disabled={
+                      isUploadingProof ||
+                      isRemovingProof
+                    }
+                  >
+                    <FiRefreshCw />
+                    {isUploadingProof
+                      ? "Replacing..."
+                      : "Replace"}
+                  </button>
+
+                  <button
+                    type="button"
+                    className="payment-proof-action-btn payment-proof-remove-btn"
+                    onClick={handleRemoveProofImage}
+                    disabled={
+                      isUploadingProof ||
+                      isRemovingProof
+                    }
+                  >
+                    <FiTrash2 />
+                    {isRemovingProof
+                      ? "Removing..."
+                      : "Remove"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {proofError && (
+              <div className="payment-proof-error">
+                {proofError}
+              </div>
+            )}
+
+          </section>
+
+          </>
         )}
 
         <section className="payment-trust-strip">

@@ -29,7 +29,7 @@
   .payments-table td:nth-child(2),
   .payments-table td:nth-child(3),
   .payments-table td:nth-child(5),
-  .payments-table td:nth-child(6) {
+  .payments-table td:nth-child(7) {
     font-weight: 800 !important;
   }
 
@@ -876,30 +876,31 @@
   }
 
   .payments-table th:nth-child(1), .payments-table td:nth-child(1) { width: 4% !important; }
-  .payments-table th:nth-child(2), .payments-table td:nth-child(2) { width: 19% !important; }
+  .payments-table th:nth-child(2), .payments-table td:nth-child(2) { width: 17% !important; }
   .payments-table th:nth-child(3), .payments-table td:nth-child(3) { width: 10% !important; }
   .payments-table th:nth-child(4), .payments-table td:nth-child(4) { width: 8% !important; }
-  .payments-table th:nth-child(5), .payments-table td:nth-child(5) { width: 12% !important; }
-  .payments-table th:nth-child(6), .payments-table td:nth-child(6) { width: 10% !important; }
-  .payments-table th:nth-child(7), .payments-table td:nth-child(7) { width: 11% !important; }
-  .payments-table th:nth-child(8), .payments-table td:nth-child(8) { width: 10% !important; }
-  .payments-table th:nth-child(9), .payments-table td:nth-child(9) { width: 7% !important; }
-  .payments-table th:nth-child(10), .payments-table td:nth-child(10) {
+  .payments-table th:nth-child(5), .payments-table td:nth-child(5) { width: 11% !important; }
+  .payments-table th:nth-child(6), .payments-table td:nth-child(6) { width: 5% !important; text-align: center !important; }
+  .payments-table th:nth-child(7), .payments-table td:nth-child(7) { width: 10% !important; }
+  .payments-table th:nth-child(8), .payments-table td:nth-child(8) { width: 11% !important; }
+  .payments-table th:nth-child(9), .payments-table td:nth-child(9) { width: 10% !important; }
+  .payments-table th:nth-child(10), .payments-table td:nth-child(10) { width: 7% !important; }
+  .payments-table th:nth-child(11), .payments-table td:nth-child(11) {
     width: 9% !important;
     text-align: center !important;
   }
 }
 
 @media (max-width: 768px) {
-  .payments-table th:nth-child(9),
-  .payments-table td:nth-child(9) {
+  .payments-table th:nth-child(10),
+  .payments-table td:nth-child(10) {
     display: none !important;
   }
 
   .payments-table th:nth-child(2), .payments-table td:nth-child(2) { width: 48% !important; }
-  .payments-table th:nth-child(6), .payments-table td:nth-child(6) { width: 19% !important; }
-  .payments-table th:nth-child(7), .payments-table td:nth-child(7) { width: 22% !important; }
-  .payments-table th:nth-child(10), .payments-table td:nth-child(10) {
+  .payments-table th:nth-child(7), .payments-table td:nth-child(7) { width: 19% !important; }
+  .payments-table th:nth-child(8), .payments-table td:nth-child(8) { width: 22% !important; }
+  .payments-table th:nth-child(11), .payments-table td:nth-child(11) {
     display: table-cell !important;
     width: 11% !important;
     text-align: center !important;
@@ -927,20 +928,20 @@
 
 /* Anchor the final Notify column to the right edge, so it never disappears. */
 @media (min-width: 769px) {
-  .payments-table th:nth-child(10),
-  .payments-table td:nth-child(10) {
+  .payments-table th:nth-child(11),
+  .payments-table td:nth-child(11) {
     position: sticky;
     right: 0;
     min-width: 72px;
   }
 
-  .payments-table th:nth-child(10) {
+  .payments-table th:nth-child(11) {
     z-index: 4;
     background: #f6f8fa;
     box-shadow: -8px 0 12px -12px rgba(35, 47, 59, 0.45);
   }
 
-  .payments-table td:nth-child(10) {
+  .payments-table td:nth-child(11) {
     z-index: 2;
     background: #ffffff;
     box-shadow: -8px 0 12px -12px rgba(35, 47, 59, 0.28);
@@ -1082,7 +1083,7 @@
   .payments-page { font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif !important; }
   .payments-table th { padding-top: 11px !important; padding-bottom: 11px !important; color: #303c49 !important; font-size: 11px !important; font-weight: 800 !important; }
   .payments-table td { height: 62px !important; padding-top: 7px !important; padding-bottom: 7px !important; color: #263340 !important; font-size: 12px !important; font-weight: 700 !important; }
-  .payments-table td:nth-child(2), .payments-table td:nth-child(3), .payments-table td:nth-child(5), .payments-table td:nth-child(6), .payment-student strong, .payment-amount { color: #1f2b37 !important; font-weight: 800 !important; }
+  .payments-table td:nth-child(2), .payments-table td:nth-child(3), .payments-table td:nth-child(5), .payments-table td:nth-child(7), .payment-student strong, .payment-amount { color: #1f2b37 !important; font-weight: 800 !important; }
   .payment-course { padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; color: #b7860b !important; font-weight: 800 !important; }
   .payment-details-modal { font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif !important; }
   .payment-details-header h2, .payment-details-student-info h3, .payment-details-highlight strong, .payment-details-grid strong { font-weight: 800 !important; }
@@ -1342,11 +1343,6 @@
   width: 13%;
 }
 
-.payments-table th:nth-child(6),
-.payments-table td:nth-child(6) {
-  width: 11%;
-}
-
 .payments-table th:nth-child(7),
 .payments-table td:nth-child(7) {
   width: 11%;
@@ -1354,11 +1350,16 @@
 
 .payments-table th:nth-child(8),
 .payments-table td:nth-child(8) {
-  width: 12%;
+  width: 11%;
 }
 
 .payments-table th:nth-child(9),
 .payments-table td:nth-child(9) {
+  width: 12%;
+}
+
+.payments-table th:nth-child(10),
+.payments-table td:nth-child(10) {
   width: 9%;
 }
 
@@ -2153,14 +2154,9 @@
     width: 14%;
   }
 
-  .payments-table th:nth-child(6),
-  .payments-table td:nth-child(6) {
-    width: 12%;
-  }
-
   .payments-table th:nth-child(7),
   .payments-table td:nth-child(7) {
-    width: 11%;
+    width: 12%;
   }
 
   .payments-table th:nth-child(8),
@@ -2170,6 +2166,11 @@
 
   .payments-table th:nth-child(9),
   .payments-table td:nth-child(9) {
+    width: 11%;
+  }
+
+  .payments-table th:nth-child(10),
+  .payments-table td:nth-child(10) {
     width: 8%;
     text-align: center;
   }
@@ -2392,23 +2393,23 @@
     width: 10%;
   }
 
-  .payments-table th:nth-child(6),
-  .payments-table td:nth-child(6) {
-    width: 13%;
-  }
-
   .payments-table th:nth-child(7),
   .payments-table td:nth-child(7) {
-    width: 12%;
+    width: 13%;
   }
 
   .payments-table th:nth-child(8),
   .payments-table td:nth-child(8) {
-    width: 14%;
+    width: 12%;
   }
 
   .payments-table th:nth-child(9),
   .payments-table td:nth-child(9) {
+    width: 14%;
+  }
+
+  .payments-table th:nth-child(10),
+  .payments-table td:nth-child(10) {
     width: 10%;
     text-align: center;
   }
@@ -2752,8 +2753,8 @@
   .payments-table td:nth-child(4),
   .payments-table th:nth-child(5),
   .payments-table td:nth-child(5),
-  .payments-table th:nth-child(8),
-  .payments-table td:nth-child(8) {
+  .payments-table th:nth-child(9),
+  .payments-table td:nth-child(9) {
     display: none !important;
   }
 
@@ -2764,22 +2765,22 @@
     text-align: left !important;
   }
 
-  .payments-table th:nth-child(6),
-  .payments-table td:nth-child(6) {
+  .payments-table th:nth-child(7),
+  .payments-table td:nth-child(7) {
     display: table-cell !important;
     width: 21% !important;
     text-align: center !important;
   }
 
-  .payments-table th:nth-child(7),
-  .payments-table td:nth-child(7) {
+  .payments-table th:nth-child(8),
+  .payments-table td:nth-child(8) {
     display: table-cell !important;
     width: 22% !important;
     text-align: center !important;
   }
 
-  .payments-table th:nth-child(9),
-  .payments-table td:nth-child(9) {
+  .payments-table th:nth-child(10),
+  .payments-table td:nth-child(10) {
     display: table-cell !important;
     width: 20% !important;
     text-align: center !important;
@@ -2942,18 +2943,18 @@
     width: 39% !important;
   }
 
-  .payments-table th:nth-child(6),
-  .payments-table td:nth-child(6) {
+  .payments-table th:nth-child(7),
+  .payments-table td:nth-child(7) {
     width: 20% !important;
   }
 
-  .payments-table th:nth-child(7),
-  .payments-table td:nth-child(7) {
+  .payments-table th:nth-child(8),
+  .payments-table td:nth-child(8) {
     width: 22% !important;
   }
 
-  .payments-table th:nth-child(9),
-  .payments-table td:nth-child(9) {
+  .payments-table th:nth-child(10),
+  .payments-table td:nth-child(10) {
     width: 19% !important;
   }
 }
@@ -3506,8 +3507,8 @@
   .payments-table td:nth-child(4),
   .payments-table th:nth-child(5),
   .payments-table td:nth-child(5),
-  .payments-table th:nth-child(8),
-  .payments-table td:nth-child(8) {
+  .payments-table th:nth-child(9),
+  .payments-table td:nth-child(9) {
     display: none !important;
   }
 
@@ -3518,22 +3519,22 @@
     text-align: left !important;
   }
 
-  .payments-table th:nth-child(6),
-  .payments-table td:nth-child(6) {
+  .payments-table th:nth-child(7),
+  .payments-table td:nth-child(7) {
     display: table-cell !important;
     width: 20% !important;
     text-align: center !important;
   }
 
-  .payments-table th:nth-child(7),
-  .payments-table td:nth-child(7) {
+  .payments-table th:nth-child(8),
+  .payments-table td:nth-child(8) {
     display: table-cell !important;
     width: 18% !important;
     text-align: center !important;
   }
 
-  .payments-table th:nth-child(9),
-  .payments-table td:nth-child(9) {
+  .payments-table th:nth-child(10),
+  .payments-table td:nth-child(10) {
     display: table-cell !important;
     width: 18% !important;
     text-align: center !important;
@@ -3682,18 +3683,18 @@
     width: 43% !important;
   }
 
-  .payments-table th:nth-child(6),
-  .payments-table td:nth-child(6) {
+  .payments-table th:nth-child(7),
+  .payments-table td:nth-child(7) {
     width: 21% !important;
   }
 
-  .payments-table th:nth-child(7),
-  .payments-table td:nth-child(7) {
+  .payments-table th:nth-child(8),
+  .payments-table td:nth-child(8) {
     width: 18% !important;
   }
 
-  .payments-table th:nth-child(9),
-  .payments-table td:nth-child(9) {
+  .payments-table th:nth-child(10),
+  .payments-table td:nth-child(10) {
     width: 18% !important;
   }
 
@@ -3787,23 +3788,23 @@
     width: 39% !important;
   }
 
-  .payments-table th:nth-child(6),
-  .payments-table td:nth-child(6) {
+  .payments-table th:nth-child(7),
+  .payments-table td:nth-child(7) {
     width: 20% !important;
   }
 
-  .payments-table th:nth-child(7),
-  .payments-table td:nth-child(7) {
+  .payments-table th:nth-child(8),
+  .payments-table td:nth-child(8) {
     width: 17% !important;
   }
 
-  .payments-table th:nth-child(9),
-  .payments-table td:nth-child(9) {
+  .payments-table th:nth-child(10),
+  .payments-table td:nth-child(10) {
     width: 24% !important;
     text-align: center !important;
   }
 
-  .payments-table td:nth-child(9) {
+  .payments-table td:nth-child(10) {
     overflow: hidden !important;
     padding-left: 4px !important;
     padding-right: 4px !important;
@@ -3843,18 +3844,18 @@
     width: 38% !important;
   }
 
-  .payments-table th:nth-child(6),
-  .payments-table td:nth-child(6) {
+  .payments-table th:nth-child(7),
+  .payments-table td:nth-child(7) {
     width: 20% !important;
   }
 
-  .payments-table th:nth-child(7),
-  .payments-table td:nth-child(7) {
+  .payments-table th:nth-child(8),
+  .payments-table td:nth-child(8) {
     width: 17% !important;
   }
 
-  .payments-table th:nth-child(9),
-  .payments-table td:nth-child(9) {
+  .payments-table th:nth-child(10),
+  .payments-table td:nth-child(10) {
     width: 25% !important;
   }
 
@@ -3937,6 +3938,10 @@
 }
 
 .payment-row {
+  cursor: default;
+}
+
+.payment-row-clickable {
   cursor: pointer;
 }
 
@@ -4040,6 +4045,41 @@
 .detail-status.unpaid {
   color: #b77d00;
   text-transform: capitalize;
+}
+
+.payment-details-proof {
+  margin: 0 18px 14px;
+  padding: 12px;
+  border: 1px solid #e7eaee;
+  border-radius: 10px;
+  background: #fafbfc;
+}
+
+.payment-details-proof > span {
+  display: block;
+  color: #929aa4;
+  font-size: 7px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.payment-details-proof-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 260px;
+  margin-top: 9px;
+  overflow: hidden;
+  border: 1px solid #e4e8ed;
+  border-radius: 8px;
+  background: #f1f3f5;
+}
+
+.payment-details-proof-image img {
+  max-width: 100%;
+  max-height: 250px;
+  object-fit: contain;
 }
 
 @media (max-width: 560px) {
@@ -5380,6 +5420,40 @@
   font-size: 12px !important;
 }
 
+.payments-page .payment-details-proof {
+  margin: 0 18px 14px !important;
+  padding: 12px !important;
+  border: 1px solid #e7eaee !important;
+  border-radius: 10px !important;
+  background: #fafbfc !important;
+}
+
+.payments-page .payment-details-proof > span {
+  display: block !important;
+  color: #929aa4 !important;
+  font-size: 6.5px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+}
+
+.payments-page .payment-details-proof-image {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  max-height: 260px !important;
+  margin-top: 9px !important;
+  overflow: hidden !important;
+  border: 1px solid #e4e8ed !important;
+  border-radius: 8px !important;
+  background: #f1f3f5 !important;
+}
+
+.payments-page .payment-details-proof-image img {
+  max-width: 100% !important;
+  max-height: 250px !important;
+  object-fit: contain !important;
+}
+
 @media (max-width: 560px) {
   .payments-page .payment-details-overlay {
     align-items: flex-end !important;
@@ -5469,6 +5543,19 @@
   .payments-page .payment-details-footer {
     margin: 0 14px calc(14px + env(safe-area-inset-bottom)) !important;
   }
+
+  .payments-page .payment-details-proof {
+    margin: 0 14px 12px !important;
+    padding: 10px !important;
+  }
+
+  .payments-page .payment-details-proof-image {
+    max-height: 200px !important;
+  }
+
+  .payments-page .payment-details-proof-image img {
+    max-height: 190px !important;
+  }
 }
 
 @media (min-width: 901px) {
@@ -5476,7 +5563,7 @@
   .payments-table th { height: 42px !important; padding-block: 8px !important; color: #3d4956 !important; font-size: 10.5px !important; font-weight: 700 !important; }
   .payments-table td { height: 50px !important; padding-block: 5px !important; color: #35414d !important; font-size: 11.5px !important; font-weight: 500 !important; }
   .payments-table tbody tr { height: 50px !important; }
-  .payments-table td:nth-child(2), .payments-table td:nth-child(3), .payments-table td:nth-child(5), .payments-table td:nth-child(6), .payment-student strong, .payment-amount { color: #263340 !important; font-weight: 650 !important; }
+  .payments-table td:nth-child(2), .payments-table td:nth-child(3), .payments-table td:nth-child(5), .payments-table td:nth-child(7), .payment-student strong, .payment-amount { color: #263340 !important; font-weight: 650 !important; }
   .payment-student span { font-weight: 500 !important; }
   .payment-avatar { width: 36px !important; height: 36px !important; min-width: 36px !important; border-radius: 9px !important; font-size: 12px !important; font-weight: 650 !important; }
   .payment-course { padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; color: #a87808 !important; font-weight: 650 !important; }
@@ -5931,26 +6018,27 @@
 @media (min-width: 769px) {
   .payments-table { table-layout: fixed !important; }
   .payments-table th:nth-child(1), .payments-table td:nth-child(1) { width: 4% !important; }
-  .payments-table th:nth-child(2), .payments-table td:nth-child(2) { width: 19% !important; }
+  .payments-table th:nth-child(2), .payments-table td:nth-child(2) { width: 17% !important; }
   .payments-table th:nth-child(3), .payments-table td:nth-child(3) { width: 10% !important; }
   .payments-table th:nth-child(4), .payments-table td:nth-child(4) { width: 8% !important; }
-  .payments-table th:nth-child(5), .payments-table td:nth-child(5) { width: 12% !important; }
-  .payments-table th:nth-child(6), .payments-table td:nth-child(6) { width: 10% !important; }
-  .payments-table th:nth-child(7), .payments-table td:nth-child(7) { width: 11% !important; }
-  .payments-table th:nth-child(8), .payments-table td:nth-child(8) { width: 10% !important; }
-  .payments-table th:nth-child(9), .payments-table td:nth-child(9) { width: 7% !important; }
-  .payments-table th:nth-child(10), .payments-table td:nth-child(10) {
+  .payments-table th:nth-child(5), .payments-table td:nth-child(5) { width: 11% !important; }
+  .payments-table th:nth-child(6), .payments-table td:nth-child(6) { width: 5% !important; text-align: center !important; }
+  .payments-table th:nth-child(7), .payments-table td:nth-child(7) { width: 10% !important; }
+  .payments-table th:nth-child(8), .payments-table td:nth-child(8) { width: 11% !important; }
+  .payments-table th:nth-child(9), .payments-table td:nth-child(9) { width: 10% !important; }
+  .payments-table th:nth-child(10), .payments-table td:nth-child(10) { width: 7% !important; }
+  .payments-table th:nth-child(11), .payments-table td:nth-child(11) {
     width: 9% !important;
     text-align: center !important;
   }
 }
 
 @media (max-width: 768px) {
-  .payments-table th:nth-child(9), .payments-table td:nth-child(9) { display: none !important; }
+  .payments-table th:nth-child(10), .payments-table td:nth-child(10) { display: none !important; }
   .payments-table th:nth-child(2), .payments-table td:nth-child(2) { width: 48% !important; }
-  .payments-table th:nth-child(6), .payments-table td:nth-child(6) { width: 19% !important; }
-  .payments-table th:nth-child(7), .payments-table td:nth-child(7) { width: 22% !important; }
-  .payments-table th:nth-child(10), .payments-table td:nth-child(10) {
+  .payments-table th:nth-child(7), .payments-table td:nth-child(7) { width: 19% !important; }
+  .payments-table th:nth-child(8), .payments-table td:nth-child(8) { width: 22% !important; }
+  .payments-table th:nth-child(11), .payments-table td:nth-child(11) {
     display: table-cell !important;
     width: 11% !important;
     text-align: center !important;
@@ -6301,4 +6389,406 @@
     height: 32px !important;
     min-height: 32px !important;
   }
+}
+
+/* Trainer role: Total Fee column hidden via class, not removed from the
+   DOM, so nth-child-based responsive rules above keep indexing correctly. */
+.payments-table th.fee-column-hidden,
+.payments-table td.fee-column-hidden {
+  display: none !important;
+}
+
+/* Partial payment status — additive to the existing unpaid/paid switch
+   colors defined in students.css (shared bundle); does not touch them. */
+.payment-switch.is-partial .payment-switch-track {
+  background: #ffb800;
+}
+
+.payment-switch.is-partial .payment-switch-label {
+  color: #a66a00;
+}
+
+.payment-partial-caption {
+  display: block;
+  margin-top: 4px;
+  color: #a66a00;
+  font-size: 7px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+/* Proof icon next to the phone number */
+.payment-phone-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.payment-proof-icon-btn {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid #f0d590;
+  border-radius: 6px;
+  outline: none;
+  background: #fff8e5;
+  color: #a67500;
+  font-size: 11px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.payment-proof-icon-btn:hover {
+  border-color: #e0b94a;
+  background: #fff1cb;
+}
+
+/* Collect Payment modal */
+.collect-payment-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(14, 19, 25, 0.62);
+  backdrop-filter: blur(5px);
+}
+
+.collect-payment-modal {
+  width: min(420px, 96vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid #e0e4e8;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(18, 26, 35, 0.25);
+}
+
+.collect-payment-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 16px 18px;
+  border-bottom: 1px solid #e9ecf0;
+  background: #fafbfc;
+}
+
+.collect-payment-header span {
+  color: #a67500;
+  font-size: 7px;
+  font-weight: 750;
+  letter-spacing: 1px;
+}
+
+.collect-payment-header h2 {
+  margin: 4px 0 0;
+  color: #202b36;
+  font-size: 15px;
+}
+
+.collect-payment-header button {
+  width: 31px;
+  height: 31px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid #dde2e7;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #66717d;
+  cursor: pointer;
+}
+
+.collect-payment-header button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.collect-payment-proof-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 320px;
+  margin: 16px 18px 0;
+  overflow: hidden;
+  border: 1px solid #e4e8ed;
+  border-radius: 10px;
+  background: #f1f3f5;
+}
+
+.collect-payment-proof-image img {
+  max-width: 100%;
+  max-height: 310px;
+  object-fit: contain;
+}
+
+.collect-payment-balance-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 14px 18px 0;
+}
+
+.collect-payment-balance-grid > div {
+  min-width: 0;
+  padding: 9px 8px;
+  border: 1px solid #e7eaee;
+  border-radius: 8px;
+  background: #fafbfc;
+  text-align: center;
+}
+
+.collect-payment-balance-grid span {
+  display: block;
+  color: #929aa4;
+  font-size: 6.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.collect-payment-balance-grid strong {
+  display: block;
+  margin-top: 4px;
+  overflow: hidden;
+  color: #35404c;
+  font-size: 10.5px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.collect-payment-form {
+  padding: 16px 18px 18px;
+}
+
+.collect-payment-form label {
+  display: block;
+  margin-bottom: 6px;
+  color: #4d5864;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.collect-payment-form input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #dce1e7;
+  border-radius: 8px;
+  outline: none;
+  color: #26313d;
+  font-size: 13px;
+  transition: 0.2s ease;
+}
+
+.collect-payment-form input:focus {
+  border-color: #d8a400;
+  box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.08);
+}
+
+.collect-payment-btn {
+  width: 100%;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 12px;
+  border: 0;
+  border-radius: 9px;
+  outline: none;
+  background: #ffb800;
+  color: #26313d;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.collect-payment-btn:hover:not(:disabled) {
+  background: #f0ac00;
+}
+
+.collect-payment-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+@media (max-width: 480px) {
+  .collect-payment-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .collect-payment-modal {
+    width: 100%;
+    max-height: 92dvh;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .collect-payment-balance-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+}
+
+/* Trainer view: fee-amount summary card removed, remaining 3 cards
+   reflow evenly. !important guarantees this wins over every width
+   breakpoint above regardless of specificity/media-query ordering. */
+.payments-top-grid.trainer-summary-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+/* Proof column */
+.payment-proof-cell {
+  text-align: center;
+}
+
+.payment-proof-icon-btn {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid #f0d590;
+  border-radius: 6px;
+  outline: none;
+  background: #fff8e5;
+  color: #a67500;
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.payment-proof-icon-btn:hover {
+  border-color: #e0b94a;
+  background: #fff1cb;
+}
+
+.payment-proof-icon-btn-empty {
+  border-color: #dde2e7;
+  background: #f6f8fa;
+  color: #66717d;
+}
+
+.payment-proof-icon-btn-empty:hover {
+  border-color: #c8cdd3;
+  background: #eef1f4;
+}
+
+.payment-proof-empty {
+  color: #b0b6bd;
+  font-size: 12px;
+}
+
+/* Trainer status badge — replaces the admin switch, plain and read-only */
+.payment-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 8.5px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.payment-status-badge.is-unpaid {
+  background: #fff3d8;
+  color: #b77d00;
+}
+
+.payment-status-badge.is-partial {
+  background: #fff1cb;
+  color: #a66a00;
+}
+
+.payment-status-badge.is-paid {
+  background: #e6f6ec;
+  color: #2f8e50;
+}
+
+/* Collect modal: no-screenshot placeholder */
+.collect-payment-proof-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 120px;
+  margin: 16px 18px 0;
+  border: 1.5px dashed #dde2e7;
+  border-radius: 10px;
+  background: #fafbfc;
+  color: #9099a1;
+}
+
+.collect-payment-proof-empty svg {
+  font-size: 22px;
+  color: #c3cad1;
+}
+
+.collect-payment-proof-empty span {
+  font-size: 9px;
+  font-weight: 600;
+}
+
+/* Collect modal: payment method selector */
+.collect-payment-form label:not(:first-child) {
+  margin-top: 14px;
+}
+
+.collect-payment-method-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.collect-payment-method-btn {
+  flex: 1;
+  height: 36px;
+  border: 1px solid #dce1e7;
+  border-radius: 8px;
+  outline: none;
+  background: #ffffff;
+  color: #4d5864;
+  font-size: 10.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.collect-payment-method-btn:hover:not(:disabled) {
+  border-color: #d8ad38;
+  background: #fffaf0;
+}
+
+.collect-payment-method-btn.active {
+  border-color: #ffb800;
+  background: #fff1cb;
+  color: #7a5900;
+}
+
+.collect-payment-method-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }

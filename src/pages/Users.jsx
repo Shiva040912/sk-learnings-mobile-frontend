@@ -35,8 +35,8 @@ const humanizeKey = (key) =>
 const buildEmptyPermissions = (catalog) => {
   if (!catalog) return {};
 
-  return Object.fromEntries(
-    Object.entries(catalog).map(([page, def]) => [
+  const pagePermissions = Object.fromEntries(
+    Object.entries(catalog.pages || {}).map(([page, def]) => [
       page,
       {
         access: false,
@@ -52,6 +52,12 @@ const buildEmptyPermissions = (catalog) => {
       },
     ])
   );
+
+  const globalPermissions = Object.fromEntries(
+    Object.keys(catalog.global || {}).map((key) => [key, false])
+  );
+
+  return { ...globalPermissions, ...pagePermissions };
 };
 
 const Users = () => {
@@ -214,6 +220,16 @@ const Users = () => {
     }));
   };
 
+  const toggleGlobalPermission = (key) => {
+    setFormData((current) => ({
+      ...current,
+      permissions: {
+        ...current.permissions,
+        [key]: !current.permissions[key],
+      },
+    }));
+  };
+
   const togglePageAccess = (page) => {
     setFormData((current) => ({
       ...current,
@@ -247,7 +263,7 @@ const Users = () => {
 
   const setGroupAll = (page, kind, value) => {
     setFormData((current) => {
-      const keys = catalog?.[page]?.[kind] || [];
+      const keys = catalog?.pages?.[page]?.[kind] || [];
 
       return {
         ...current,
@@ -680,8 +696,35 @@ const Users = () => {
                       Loading permission catalog...
                     </p>
                   ) : (
-                    Object.entries(catalog).map(
-                      ([page, def]) => {
+                    <>
+                      {Object.entries(catalog.global || {}).map(
+                        ([key, def]) => (
+                          <div
+                            key={key}
+                            className="permission-page-card"
+                          >
+                            <label className="permission-page-access">
+                              <input
+                                type="checkbox"
+                                checked={
+                                  formData.permissions[key] === true
+                                }
+                                onChange={() =>
+                                  toggleGlobalPermission(key)
+                                }
+                              />
+                              <strong>{def.label}</strong>
+                              <span>
+                                Global — applies everywhere, not just
+                                one page
+                              </span>
+                            </label>
+                          </div>
+                        )
+                      )}
+
+                      {Object.entries(catalog.pages || {}).map(
+                        ([page, def]) => {
                         const pagePermissions =
                           formData.permissions[page] ||
                           {};
@@ -721,7 +764,9 @@ const Users = () => {
                                   ],
                                   [
                                     "sections",
-                                    "Cards / Sections",
+                                    page === "students"
+                                      ? "Student Details Popup"
+                                      : "Cards / Sections",
                                     def.sections,
                                   ],
                                 ].map(
@@ -809,7 +854,8 @@ const Users = () => {
                           </div>
                         );
                       }
-                    )
+                      )}
+                    </>
                   )}
                 </div>
               )}

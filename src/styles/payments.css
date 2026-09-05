@@ -4082,6 +4082,420 @@
   object-fit: contain;
 }
 
+.payment-history-section-inner {
+  margin: 0 18px 14px;
+  padding: 12px;
+  border: 1px solid #e7eaee;
+  border-radius: 10px;
+  background: #fafbfc;
+}
+
+.payment-history-heading {
+  display: block;
+  color: #929aa4;
+  font-size: 7px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.payment-history-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.payment-history-entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid #e4e8ed;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.payment-history-entry-image,
+.payment-history-entry-image-btn {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  overflow: hidden;
+  border: 1px solid #e4e8ed;
+  border-radius: 6px;
+  background: #f1f3f5;
+}
+
+.payment-history-entry-image-btn {
+  padding: 0;
+  cursor: pointer;
+}
+
+.payment-history-entry-image-btn:hover {
+  border-color: #f0d590;
+}
+
+.payment-history-entry-image-btn .payment-history-entry-image {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  object-fit: cover;
+}
+
+.payment-history-entry-image-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #b7bdc4;
+  font-size: 15px;
+}
+
+.payment-history-entry-details {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.payment-history-amount {
+  display: block;
+  overflow: hidden;
+  margin: 0;
+  color: #35404c;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: left;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.payment-history-entry-meta {
+  display: block;
+  overflow: hidden;
+  color: #8b939c;
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: left;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-transform: capitalize;
+}
+
+.payment-history-delete-btn {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid #f2d3d3;
+  border-radius: 7px;
+  background: #fff4f4;
+  color: #c44343;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.payment-history-empty {
+  margin: 10px 0 0;
+  color: #98a0a8;
+  font-size: 10px;
+}
+
+/* Shared by any modal that can open on top of an already-open Payment
+   Proof modal (the delete confirmation, the screenshot viewer) — needs a
+   higher z-index than .collect-payment-overlay (2300) rather than reusing
+   .payment-details-overlay (2200), which would render underneath it. */
+.payment-nested-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(14, 19, 25, 0.62);
+  backdrop-filter: blur(5px);
+}
+
+.history-image-viewer {
+  width: min(420px, 96vw);
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e0e4e8;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(18, 26, 35, 0.25);
+}
+
+.history-image-viewer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e9ecf0;
+  background: #fafbfc;
+}
+
+.history-image-viewer-header strong {
+  color: #202b36;
+  font-size: 14px;
+}
+
+.history-image-viewer-header button {
+  width: 29px;
+  height: 29px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid #dde2e7;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #66717d;
+  cursor: pointer;
+}
+
+.history-image-viewer-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  padding: 14px;
+  background: #f1f3f5;
+}
+
+.history-image-viewer-body img {
+  max-width: 100%;
+  max-height: min(70vh, 520px);
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.history-delete-modal {
+  width: min(390px, 92vw);
+  padding: 24px;
+  border-radius: 14px;
+  background: #ffffff;
+  text-align: center;
+  box-shadow: 0 24px 70px rgba(18, 26, 35, 0.25);
+}
+
+.history-delete-icon {
+  width: 47px;
+  height: 47px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  border-radius: 11px;
+  background: #fff0f0;
+  color: #d84d4d;
+  font-size: 19px;
+}
+
+.history-delete-modal h2 {
+  margin: 0;
+  color: #26313c;
+  font-size: 17px;
+}
+
+.history-delete-modal p {
+  margin: 9px 0 0;
+  color: #78818b;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.history-delete-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 19px;
+}
+
+.history-delete-cancel-btn,
+.history-delete-confirm-btn {
+  min-width: 104px;
+  min-height: 39px;
+  padding: 0 13px;
+  border-radius: 8px;
+  font-size: 10.5px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.history-delete-cancel-btn {
+  border: 1px solid #d9dee4;
+  background: #ffffff;
+  color: #5d6874;
+}
+
+.history-delete-confirm-btn {
+  border: 0;
+  background: #d84d4d;
+  color: #ffffff;
+}
+
+/* Generate Fee modal */
+.generate-fee-modal {
+  width: min(420px, 96vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid #e0e4e8;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(18, 26, 35, 0.25);
+}
+
+.generate-fee-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 16px 18px;
+  border-bottom: 1px solid #e9ecf0;
+  background: #fafbfc;
+}
+
+.generate-fee-header span {
+  color: #a67500;
+  font-size: 7px;
+  font-weight: 750;
+  letter-spacing: 1px;
+}
+
+.generate-fee-header h2 {
+  margin: 4px 0 0;
+  color: #202b36;
+  font-size: 15px;
+}
+
+.generate-fee-header button {
+  width: 31px;
+  height: 31px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid #dde2e7;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #66717d;
+  cursor: pointer;
+}
+
+.generate-fee-header button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.generate-fee-body {
+  padding: 16px 18px 18px;
+}
+
+.generate-fee-previous {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  border: 1px solid #e7eaee;
+  border-radius: 8px;
+  background: #fafbfc;
+}
+
+.generate-fee-previous span {
+  color: #929aa4;
+  font-size: 7px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.generate-fee-previous strong {
+  color: #35404c;
+  font-size: 11px;
+}
+
+.generate-fee-body label {
+  display: block;
+  margin-bottom: 6px;
+  color: #4d5864;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.generate-fee-body input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #dce1e7;
+  border-radius: 8px;
+  outline: none;
+  color: #26313d;
+  font-size: 13px;
+  transition: 0.2s ease;
+}
+
+.generate-fee-body input:focus {
+  border-color: #d8a400;
+  box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.08);
+}
+
+.generate-fee-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.generate-fee-cancel-btn,
+.generate-fee-confirm-btn {
+  min-width: 104px;
+  min-height: 39px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 13px;
+  border-radius: 8px;
+  font-size: 10.5px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.generate-fee-cancel-btn {
+  border: 1px solid #d9dee4;
+  background: #ffffff;
+  color: #5d6874;
+}
+
+.generate-fee-confirm-btn {
+  border: 0;
+  background: #ffb800;
+  color: #26313d;
+}
+
+.generate-fee-cancel-btn:disabled,
+.generate-fee-confirm-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
 @media (max-width: 560px) {
   .payment-details-overlay {
     padding: 10px;
@@ -6408,15 +6822,6 @@
   color: #a66a00;
 }
 
-.payment-partial-caption {
-  display: block;
-  margin-top: 4px;
-  color: #a66a00;
-  font-size: 7px;
-  font-weight: 650;
-  white-space: nowrap;
-}
-
 /* Proof icon next to the phone number */
 .payment-phone-cell {
   display: flex;
@@ -6465,6 +6870,7 @@
 .collect-payment-modal {
   width: min(420px, 96vw);
   max-height: 90vh;
+  overflow-x: hidden;
   overflow-y: auto;
   border: 1px solid #e0e4e8;
   border-radius: 14px;
@@ -6482,6 +6888,10 @@
   background: #fafbfc;
 }
 
+.collect-payment-header-title {
+  min-width: 0;
+}
+
 .collect-payment-header span {
   color: #a67500;
   font-size: 7px;
@@ -6491,8 +6901,11 @@
 
 .collect-payment-header h2 {
   margin: 4px 0 0;
+  overflow: hidden;
   color: #202b36;
   font-size: 15px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .collect-payment-header button {
@@ -6513,6 +6926,53 @@
 .collect-payment-header button:disabled {
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+.collect-payment-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.collect-payment-header .collect-payment-history-btn {
+  width: auto;
+  height: 31px;
+  padding: 0 10px;
+  gap: 5px;
+  border: 1px solid #f0d590;
+  border-radius: 7px;
+  background: #fff8e5;
+  color: #a67500;
+  font-size: 10px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.collect-payment-header .collect-payment-history-btn:hover {
+  border-color: #e0b94a;
+  background: #fff1cb;
+}
+
+.collect-payment-header .collect-payment-history-btn.active {
+  border-color: #ffb800;
+  background: #ffb800;
+  color: #161616;
+}
+
+.collect-payment-header .collect-payment-history-btn svg {
+  font-size: 12px;
+}
+
+.collect-payment-header .collect-payment-history-btn span {
+  color: inherit;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0;
+}
+
+.collect-payment-history {
+  margin: 16px 18px 0;
 }
 
 .collect-payment-proof-image {
@@ -6658,6 +7118,7 @@
 }
 
 .payment-proof-icon-btn {
+  position: relative;
   width: 26px;
   height: 26px;
   flex-shrink: 0;
@@ -6693,6 +7154,36 @@
   background: #eef1f4;
 }
 
+/* Solid, pulsing red dot — a waiting/unprocessed payment screenshot on
+   this student's record. Disappears on its own once Collect archives the
+   proof into history and clears student.paymentProofImage server-side, so
+   this never has to be dismissed by hand. */
+.payment-proof-notification-dot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #e5342c;
+  border: 1.5px solid #ffffff;
+  animation: payment-proof-notification-pulse 1.8s ease-out infinite;
+}
+
+@keyframes payment-proof-notification-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(229, 52, 44, 0.55);
+  }
+
+  70% {
+    box-shadow: 0 0 0 6px rgba(229, 52, 44, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(229, 52, 44, 0);
+  }
+}
+
 .payment-proof-empty {
   color: #b0b6bd;
   font-size: 12px;
@@ -6722,6 +7213,42 @@
 .payment-status-badge.is-paid {
   background: #e6f6ec;
   color: #2f8e50;
+}
+
+.payment-status-badge.is-no-fee {
+  background: #eef0f2;
+  color: #767f88;
+}
+
+/* "+" in the Status column — generates a fee (no fee yet) or the next
+   fee cycle (beside "Paid"). */
+.payment-status-generate-btn {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid #f0d590;
+  border-radius: 6px;
+  outline: none;
+  background: #fff8e5;
+  color: #a67500;
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.payment-status-generate-btn:hover {
+  border-color: #e0b94a;
+  background: #fff1cb;
+}
+
+.payment-status-generate-btn-inline {
+  margin-left: 6px;
 }
 
 /* Collect modal: no-screenshot placeholder */

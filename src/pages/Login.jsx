@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 
 import api from "../services/axios";
 import { useAuth } from "../context/AuthContext";
+import { resolveLandingPath } from "../utils/accessRouting";
 import "../styles/login.css";
 import logo from "../assets/sk-logo.png";
 
@@ -60,7 +61,7 @@ const Login = () => {
 
       toast.success("Login successful");
 
-      navigate("/students");
+      navigate(resolveLandingPath(response.data.user));
     } catch (error) {
       toast.error(
         error.response?.data?.message ||

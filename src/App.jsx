@@ -16,6 +16,7 @@ import Users from "./pages/Users";
 import Payments from "./pages/Payment";
 import StudentPayment from "./pages/StudentPayment";
 import Settings from "./pages/Settings";
+import NoAccess from "./pages/NoAccess";
 
 const App = () => {
   return (
@@ -44,6 +45,13 @@ const App = () => {
           <Route
             element={<ProtectedRoute />}
           >
+            {/* Rendered full-page (no sidebar/topbar) for a Trainer with
+                no page turned on yet — see accessRouting.js */}
+            <Route
+              path="/no-access"
+              element={<NoAccess />}
+            />
+
             <Route
               element={<DashboardLayout />}
             >
@@ -73,7 +81,7 @@ const App = () => {
                 path="/users"
                 element={
                   <ProtectedRoute
-                    allowedRoles={["admin"]}
+                    pageKey="users"
                   >
                     <Users />
                   </ProtectedRoute>
@@ -84,7 +92,7 @@ const App = () => {
                 path="/settings"
                 element={
                   <ProtectedRoute
-                    allowedRoles={["admin"]}
+                    pageKey="settings"
                   >
                     <Settings />
                   </ProtectedRoute>

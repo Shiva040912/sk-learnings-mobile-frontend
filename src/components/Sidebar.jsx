@@ -11,9 +11,7 @@ import logo from "../assets/sk-logo.png";
 import { usePermissions } from "../hooks/usePermissions";
 
 const Sidebar = ({ isOpen, onClose }) => {
-  const { isAdmin, hasPageAccess } = usePermissions();
-
-  const isAdministrator = isAdmin;
+  const { hasPageAccess } = usePermissions();
 
   return (
     <>
@@ -101,7 +99,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
           
 
-          {isAdministrator && (
+          {hasPageAccess("users") && (
             <NavLink
               to="/users"
               className={({ isActive }) =>
@@ -121,7 +119,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             </NavLink>
           )}
 
-          {isAdministrator && (
+          {hasPageAccess("settings") && (
             <NavLink
               to="/settings"
               className={({ isActive }) =>

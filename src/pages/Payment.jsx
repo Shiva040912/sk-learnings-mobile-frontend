@@ -7,11 +7,13 @@ import {
   FiClock,
   FiCreditCard,
   FiDollarSign,
+  FiEdit2,
   FiFilter,
   FiSearch,
   FiSettings,
   FiSave,
   FiImage,
+  FiPlus,
   FiUpload,
   FiUser,
   FiUsers,
@@ -25,7 +27,16 @@ import { usePermissions } from "../hooks/usePermissions";
 import "../styles/payments.css";
 
 const Payments = () => {
-  const { hasPermission } = usePermissions();
+  const { hasPermission, hasGlobalPermission } = usePermissions();
+
+  // The master money switch — controls whether any fee AMOUNT (not proof
+  // images, methods or dates) is visible anywhere on this page, on top of
+  // whatever the more specific column/section toggle below says. Admin
+  // passes it automatically via usePermissions' isAdmin bypass; the
+  // backend enforces the same flag independently (omitFeeFields /
+  // omitAmount / getFeeCycles), so hiding it here is a UI nicety on top of
+  // real server-side stripping, not the only thing standing in the way.
+  const canSeeFees = hasGlobalPermission("fees");
 
   const canViewSummary = hasPermission(
     "payments",
@@ -33,10 +44,26 @@ const Payments = () => {
     "summary"
   );
 
-  const canViewTotalFeeColumn = hasPermission(
+  const canViewPhoneColumn = hasPermission(
     "payments",
     "columns",
-    "totalFee"
+    "phone"
+  );
+
+  const canViewProofColumn = hasPermission(
+    "payments",
+    "columns",
+    "proof"
+  );
+
+  const canViewTotalFeeColumn =
+    canSeeFees &&
+    hasPermission("payments", "columns", "totalFee");
+
+  const canViewStatusColumn = hasPermission(
+    "payments",
+    "columns",
+    "status"
   );
 
   const canViewPaymentDetails = hasPermission(
@@ -51,23 +78,30 @@ const Payments = () => {
     "collect"
   );
 
-  const canViewFeeBreakdown = hasPermission(
+  const canEditFee = hasPermission(
     "payments",
-    "sections",
-    "feeBreakdown"
+    "actions",
+    "editFee"
   );
 
-  // Whether real totalFee/paidAmount/pendingAmount numbers are even present
-  // in this trainer's copy of a student record — governed by the Students
-  // page's own feeInfo permission (that's the API this page's fee numbers
-  // are actually sourced from), not by this page's own display toggles
-  // above. Used only where the *value* is read for arithmetic/validation,
-  // as opposed to just deciding whether to show a UI element.
-  const canSeeStudentFeeNumbers = hasPermission(
-    "students",
-    "sections",
-    "feeInfo"
+  const canSeeProofNotification = hasPermission(
+    "payments",
+    "actions",
+    "proofNotification"
   );
+
+  const canViewFeeBreakdown =
+    canSeeFees &&
+    hasPermission("payments", "sections", "feeBreakdown");
+
+  // Whether real totalFee/paidAmount/pendingAmount numbers are even present
+  // in this trainer's copy of a student record — governed by the same
+  // global `fees` flag the backend already strips those fields on (see
+  // StudentsService.omitFeeFields), not by this page's own column/section
+  // display toggles above. Used only where the *value* is read for
+  // arithmetic/validation, as opposed to just deciding whether to show a
+  // UI element.
+  const canSeeStudentFeeNumbers = canSeeFees;
 
   const [students, setStudents] = useState([]);
   const [paymentRecords, setPaymentRecords] = useState([]);
@@ -102,6 +136,20 @@ const Payments = () => {
   const [collectAmountInput, setCollectAmountInput] = useState("");
   const [collectMethodInput, setCollectMethodInput] = useState("");
   const [isCollectingPayment, setIsCollectingPayment] = useState(false);
+  const [showCollectHistory, setShowCollectHistory] = useState(false);
+  const [isRefreshingCollectModal, setIsRefreshingCollectModal] =
+    useState(false);
+
+  const [historyDeleteTarget, setHistoryDeleteTarget] = useState(null);
+  const [isDeletingHistory, setIsDeletingHistory] = useState(false);
+
+  const [generateFeeStudent, setGenerateFeeStudent] = useState(null);
+  const [generateFeeAmountInput, setGenerateFeeAmountInput] = useState("");
+  const [isGeneratingFee, setIsGeneratingFee] = useState(false);
+
+  const [historyFeeCycles, setHistoryFeeCycles] = useState([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+  const [viewingHistoryRecord, setViewingHistoryRecord] = useState(null);
 
   const [showPaymentSettings, setShowPaymentSettings] = useState(false);
   const [isSavingPaymentSettings, setIsSavingPaymentSettings] = useState(false);
@@ -112,23 +160,41 @@ const Payments = () => {
     upiQrImage: "",
   });
 
-  const fetchPaymentPageData = async () => {
+  // Returns the freshly-fetched arrays (not just setting state) so a caller
+  // that needs the data *right now* — e.g. opening the collect/proof popup
+  // — doesn't have to wait a render cycle for state to catch up. `silent`
+  // skips the page-level loading spinner for on-demand refreshes that
+  // shouldn't blank out the table underneath an already-open modal.
+  const fetchPaymentPageData = async (silent = false) => {
     try {
-      setIsLoading(true);
+      if (!silent) setIsLoading(true);
 
+      // /students/for-payments (not /students) — gated by the Payments
+      // page's own access permission, so a Trainer with Payments access
+      // but no Students page access can still load this page.
       const [studentsResponse, paymentsResponse] = await Promise.all([
-        api.get("/students"),
+        api.get("/students/for-payments"),
         api.get("/payments"),
       ]);
 
-      setStudents(studentsResponse.data || []);
-      setPaymentRecords(paymentsResponse.data || []);
+      const freshStudents = studentsResponse.data || [];
+      const freshPaymentRecords = paymentsResponse.data || [];
+
+      setStudents(freshStudents);
+      setPaymentRecords(freshPaymentRecords);
+
+      return {
+        students: freshStudents,
+        paymentRecords: freshPaymentRecords,
+      };
     } catch (error) {
       toast.error(
         error.response?.data?.message || "Failed to load payment details",
       );
+
+      return null;
     } finally {
-      setIsLoading(false);
+      if (!silent) setIsLoading(false);
     }
   };
 
@@ -224,51 +290,67 @@ const Payments = () => {
     return () => document.removeEventListener("keydown", handleEscape);
   }, []);
 
-  const paymentRows = useMemo(() => {
-    return students.map((student) => {
-      const studentPaymentRecords = paymentRecords.filter(
-        (payment) =>
-          String(payment.studentId) === String(student._id) ||
-          String(payment.student?._id) === String(student._id),
-      );
+  // Pure — shared by the memoized table rows and by anything (e.g. opening
+  // the collect/proof popup) that needs a freshly-fetched row built outside
+  // the students/paymentRecords state, so it isn't stuck waiting a render
+  // cycle for that state to catch up.
+  const buildPaymentRow = (student, records) => {
+    const studentPaymentRecords = records.filter(
+      (payment) =>
+        String(payment.studentId) === String(student._id) ||
+        String(payment.student?._id) === String(student._id),
+    );
 
-      const latestPayment = studentPaymentRecords.sort(
-        (firstPayment, secondPayment) =>
-          new Date(secondPayment.paymentDate || 0) -
-          new Date(firstPayment.paymentDate || 0),
-      )[0];
+    // Only used to surface "last collected on/via" on the aggregated row —
+    // the full per-cycle history now comes from GET /students/:id/fee-cycles
+    // (fetched on demand when the History panel opens), not from here.
+    const latestPayment = [...studentPaymentRecords].sort(
+      (firstPayment, secondPayment) =>
+        new Date(secondPayment.paymentDate || 0) -
+        new Date(firstPayment.paymentDate || 0),
+    )[0];
 
-      const status = student.paymentStatus || "unpaid";
-      const hasCollectedAnything = status !== "unpaid";
-      const totalFee = Number(student.totalFee || 0);
-      const paidAmount = Number(student.paidAmount || 0);
+    // `paymentStatus` is only ever set once a fee cycle has been generated
+    // for this student (see generateFeeCycle on the backend) — missing
+    // means "no fee generated yet", NOT "unpaid". Those are different
+    // Status-column states ("+" vs "Unpaid").
+    const hasFeeCycle = Boolean(student.paymentStatus);
+    const status = student.paymentStatus || null;
+    const hasCollectedAnything = status && status !== "unpaid";
+    const totalFee = Number(student.totalFee || 0);
+    const paidAmount = Number(student.paidAmount || 0);
 
-      return {
-        _id: student._id,
-        studentName: student.studentName || "-",
-        rollNo: student.rollNo || "-",
-        course: student.course || "-",
-        batch: student.batch || "-",
-        phone: student.phone || "-",
-        totalFee,
-        paidAmount,
-        pendingAmount: Number(
-          student.pendingAmount ?? Math.max(0, totalFee - paidAmount),
-        ),
-        paymentStatus: status,
-        paymentDate: hasCollectedAnything
-          ? latestPayment?.paymentDate || student.updatedAt || null
-          : null,
-        paymentMethod: hasCollectedAnything
-          ? latestPayment?.paymentMethod || student.paymentMethod || ""
-          : "",
-        paymentProofImage:
-          student.paymentProofImage ||
-          latestPayment?.paymentProofImage ||
-          "",
-      };
-    });
-  }, [students, paymentRecords]);
+    return {
+      _id: student._id,
+      studentName: student.studentName || "-",
+      rollNo: student.rollNo || "-",
+      course: student.course || "-",
+      batch: student.batch || "-",
+      phone: student.phone || "-",
+      hasFeeCycle,
+      totalFee,
+      paidAmount,
+      pendingAmount: Number(
+        student.pendingAmount ?? Math.max(0, totalFee - paidAmount),
+      ),
+      paymentStatus: status,
+      paymentDate: hasCollectedAnything
+        ? latestPayment?.paymentDate || student.updatedAt || null
+        : null,
+      paymentMethod: hasCollectedAnything
+        ? latestPayment?.paymentMethod || student.paymentMethod || ""
+        : "",
+      // The currently pending/unprocessed upload only — never a past
+      // (already collected) screenshot. Once Collect archives it into
+      // history, the backend clears this field, so it disappears here too.
+      paymentProofImage: student.paymentProofImage || "",
+    };
+  };
+
+  const paymentRows = useMemo(
+    () => students.map((student) => buildPaymentRow(student, paymentRecords)),
+    [students, paymentRecords],
+  );
 
   const courseOptions = useMemo(
     () =>
@@ -308,7 +390,10 @@ const Payments = () => {
           payment.phone.replace(/\s/g, "").includes(phoneKeyword);
 
         const matchesStatus =
-          statusFilter === "all" || payment.paymentStatus === statusFilter;
+          statusFilter === "all" ||
+          (statusFilter === "no-fee"
+            ? !payment.hasFeeCycle
+            : payment.paymentStatus === statusFilter);
 
         const matchesMethod =
           methodFilter === "all" || payment.paymentMethod === methodFilter;
@@ -628,9 +713,21 @@ const Payments = () => {
     }
 
     const buttonBounds = event.currentTarget.getBoundingClientRect();
+
+    // Two menu items plus padding — roughly its real rendered height.
+    // For a row near the bottom of the viewport (e.g. the last row of the
+    // table), opening downward from here would push the menu mostly or
+    // entirely below the visible window. Flip it to open upward instead
+    // whenever there isn't enough room below.
+    const estimatedMenuHeight = 100;
+    const spaceBelow = window.innerHeight - buttonBounds.bottom;
+    const openUpward = spaceBelow < estimatedMenuHeight + 8;
+
     setStudentNotificationAnchor({
-      top: buttonBounds.bottom + 8,
       right: Math.max(8, window.innerWidth - buttonBounds.right),
+      ...(openUpward
+        ? { bottom: Math.max(8, window.innerHeight - buttonBounds.top + 8) }
+        : { top: buttonBounds.bottom + 8 }),
     });
     setStudentNotificationMenu(student._id);
   };
@@ -696,10 +793,36 @@ const Payments = () => {
     return methods[method] || "-";
   };
 
-  const openCollectModal = (payment) => {
+  // A student's fee can be edited from the Students page — a different
+  // mounted component with its own copy of this data — so the row clicked
+  // here can be stale (e.g. a fully-paid student whose fee was just raised
+  // to open a second round of collection). Show what's on hand immediately,
+  // then silently re-pull this one student + the payment log before
+  // allowing a collection, so "still shows paid" can't happen at the one
+  // moment it actually matters.
+  const openCollectModal = async (payment) => {
     setCollectModalStudent(payment);
     setCollectAmountInput("");
     setCollectMethodInput("");
+    setShowCollectHistory(false);
+
+    try {
+      setIsRefreshingCollectModal(true);
+
+      const fresh = await fetchPaymentPageData(true);
+
+      const freshStudent = fresh?.students.find(
+        (student) => String(student._id) === String(payment._id),
+      );
+
+      if (freshStudent) {
+        setCollectModalStudent(
+          buildPaymentRow(freshStudent, fresh.paymentRecords),
+        );
+      }
+    } finally {
+      setIsRefreshingCollectModal(false);
+    }
   };
 
   const closeCollectModal = () => {
@@ -708,10 +831,139 @@ const Payments = () => {
     setCollectModalStudent(null);
     setCollectAmountInput("");
     setCollectMethodInput("");
+    setShowCollectHistory(false);
+    setHistoryFeeCycles([]);
+    setViewingHistoryRecord(null);
+  };
+
+  // Fetched fresh from the backend (grouped by fee cycle there) rather than
+  // derived from the flat /payments list, so each record's amount and
+  // screenshot can never be mismatched on the frontend — flattened below
+  // only for display, into one simple, compact list.
+  const toggleCollectHistory = async () => {
+    if (showCollectHistory) {
+      setShowCollectHistory(false);
+      setViewingHistoryRecord(null);
+      return;
+    }
+
+    // Defense in depth — the History button itself is only rendered when
+    // canViewPaymentDetails is true, but the real access control lives on
+    // the backend (GET /students/:id/fee-cycles now requires the same
+    // 'viewDetails' permission), not here.
+    if (!canViewPaymentDetails) return;
+
+    setShowCollectHistory(true);
+
+    if (!collectModalStudent) return;
+
+    try {
+      setIsLoadingHistory(true);
+
+      const response = await api.get(
+        `/students/${collectModalStudent._id}/fee-cycles`,
+      );
+
+      setHistoryFeeCycles(response.data || []);
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to load fee collection history",
+      );
+    } finally {
+      setIsLoadingHistory(false);
+    }
+  };
+
+  // Same modal serves two actions on the same fee-cycle concept: editing
+  // the CURRENT cycle's amount while it's still unpaid/partial, versus
+  // generating a brand new cycle (only possible once the old one is fully
+  // paid, or there's no cycle yet). isEditingActiveFee below is what tells
+  // the modal and its submit handler which of the two this is.
+  const openGenerateFeeModal = (payment) => {
+    setGenerateFeeStudent(payment);
+
+    const isEditingActiveFee =
+      payment.hasFeeCycle && payment.paymentStatus !== "paid";
+
+    setGenerateFeeAmountInput(
+      isEditingActiveFee && canViewTotalFeeColumn && payment.totalFee
+        ? String(payment.totalFee)
+        : "",
+    );
+  };
+
+  const closeGenerateFeeModal = () => {
+    if (isGeneratingFee) return;
+
+    setGenerateFeeStudent(null);
+    setGenerateFeeAmountInput("");
+  };
+
+  const handleGenerateFee = async () => {
+    if (!generateFeeStudent) return;
+
+    const amount = Number(generateFeeAmountInput);
+
+    if (!amount || amount <= 0) {
+      toast.error("Enter a valid fee amount");
+      return;
+    }
+
+    const isEditingActiveFee =
+      generateFeeStudent.hasFeeCycle &&
+      generateFeeStudent.paymentStatus !== "paid";
+
+    try {
+      setIsGeneratingFee(true);
+
+      if (isEditingActiveFee) {
+        await api.patch(
+          `/students/${generateFeeStudent._id}/fee-cycles/active`,
+          { totalFee: amount },
+        );
+
+        toast.success(
+          `Fee updated to ₹${formatMoney(amount)} for ${
+            generateFeeStudent.studentName
+          }`,
+        );
+      } else {
+        await api.post(
+          `/students/${generateFeeStudent._id}/fee-cycles`,
+          { totalFee: amount },
+        );
+
+        toast.success(
+          `New fee cycle of ₹${formatMoney(amount)} generated for ${
+            generateFeeStudent.studentName
+          }`,
+        );
+      }
+
+      setGenerateFeeStudent(null);
+      setGenerateFeeAmountInput("");
+
+      await fetchPaymentPageData();
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message ||
+          (isEditingActiveFee
+            ? "Failed to update the fee amount"
+            : "Failed to generate the new fee cycle"),
+      );
+    } finally {
+      setIsGeneratingFee(false);
+    }
   };
 
   const handleCollectPayment = async () => {
     if (!collectModalStudent) return;
+
+    if (isRefreshingCollectModal) {
+      toast.error("Still refreshing this student's fee status, please wait");
+      return;
+    }
 
     const amount = Number(collectAmountInput);
 
@@ -767,6 +1019,55 @@ const Payments = () => {
       );
     } finally {
       setIsCollectingPayment(false);
+    }
+  };
+
+  const openHistoryDeleteConfirm = (record) => {
+    setHistoryDeleteTarget(record);
+  };
+
+  const closeHistoryDeleteConfirm = () => {
+    if (isDeletingHistory) return;
+
+    setHistoryDeleteTarget(null);
+  };
+
+  const handleConfirmDeleteHistory = async () => {
+    if (!historyDeleteTarget) return;
+
+    try {
+      setIsDeletingHistory(true);
+
+      await api.delete(`/payments/${historyDeleteTarget._id}`);
+
+      toast.success("Payment history record deleted");
+
+      setHistoryDeleteTarget(null);
+
+      // Only the history log changes here — the student's fee balance is
+      // untouched, so no need to re-check pending amounts, just refresh
+      // the underlying records this page derives everything from.
+      await fetchPaymentPageData();
+
+      setHistoryFeeCycles((current) =>
+        current.map((feeCycle) => ({
+          ...feeCycle,
+          payments: feeCycle.payments.filter(
+            (record) => record._id !== historyDeleteTarget._id,
+          ),
+        })),
+      );
+
+      setViewingHistoryRecord((current) =>
+        current?._id === historyDeleteTarget._id ? null : current,
+      );
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to delete payment history record",
+      );
+    } finally {
+      setIsDeletingHistory(false);
     }
   };
 
@@ -949,6 +1250,7 @@ const Payments = () => {
                     <option value="paid">Paid</option>
                     <option value="partial">Partial</option>
                     <option value="unpaid">Unpaid</option>
+                    <option value="no-fee">No Fee Generated</option>
                   </select>
                 </div>
 
@@ -1270,18 +1572,10 @@ const Payments = () => {
                     <th>Student</th>
                     <th>Roll No</th>
                     <th>Course</th>
-                    <th>Phone</th>
-                    <th>Proof</th>
-                    <th
-                      className={
-                        !canViewTotalFeeColumn
-                          ? "fee-column-hidden"
-                          : ""
-                      }
-                    >
-                      Total Fee
-                    </th>
-                    <th>Status</th>
+                    {canViewPhoneColumn && <th>Phone</th>}
+                    {canViewProofColumn && <th>Proof</th>}
+                    {canViewTotalFeeColumn && <th>Total Fee</th>}
+                    {canViewStatusColumn && <th>Status</th>}
                     <th>Payment Date</th>
                     <th>Method</th>
                     <th>Notify</th>
@@ -1326,8 +1620,9 @@ const Payments = () => {
                         <span className="payment-course">{payment.course}</span>
                       </td>
 
-                      <td>{payment.phone}</td>
+                      {canViewPhoneColumn && <td>{payment.phone}</td>}
 
+                      {canViewProofColumn && (
                       <td className="payment-proof-cell">
                         {!canCollectPayment ? (
                           payment.paymentProofImage ? (
@@ -1341,6 +1636,13 @@ const Payments = () => {
                               }}
                             >
                               <FiImage />
+
+                              {canSeeProofNotification && (
+                                <span
+                                  className="payment-proof-notification-dot"
+                                  title="New payment screenshot waiting to be processed"
+                                />
+                              )}
                             </button>
                           ) : (
                             <span className="payment-proof-empty">-</span>
@@ -1356,8 +1658,22 @@ const Payments = () => {
                             }}
                           >
                             <FiImage />
+
+                            {canSeeProofNotification && (
+                              <span
+                                className="payment-proof-notification-dot"
+                                title="New payment screenshot waiting to be processed"
+                              />
+                            )}
                           </button>
-                        ) : payment.paymentStatus !== "paid" ? (
+                        ) : payment.hasFeeCycle ? (
+                          // Not gated on payment.paymentStatus — that status
+                          // can be stale here (e.g. this student's fee was
+                          // just raised elsewhere after being fully paid).
+                          // Always give an authorized user a way in;
+                          // openCollectModal re-pulls this student fresh
+                          // before the popup shows anything, so "still
+                          // shows paid" can't block a real collection.
                           <button
                             type="button"
                             className="payment-proof-icon-btn payment-proof-icon-btn-empty"
@@ -1370,47 +1686,96 @@ const Payments = () => {
                             <FiCreditCard />
                           </button>
                         ) : (
+                          // No fee cycle at all — nothing to collect
+                          // against yet. Use the "+" in the Status column
+                          // to generate one first.
                           <span className="payment-proof-empty">-</span>
                         )}
                       </td>
+                      )}
 
-                      <td
-                        className={
-                          !canViewTotalFeeColumn
-                            ? "fee-column-hidden"
-                            : ""
-                        }
-                      >
+                      {canViewTotalFeeColumn && (
+                      <td>
                         <strong className="payment-amount">
-                          ₹{formatMoney(payment.totalFee)}
+                          {payment.hasFeeCycle
+                            ? `₹${formatMoney(payment.totalFee)}`
+                            : "-"}
                         </strong>
                       </td>
+                      )}
 
+                      {canViewStatusColumn && (
                       <td>
-                        <span
-                          className={`payment-status-badge ${
-                            payment.paymentStatus === "paid"
-                              ? "is-paid"
-                              : payment.paymentStatus === "partial"
-                                ? "is-partial"
-                                : "is-unpaid"
-                          }`}
-                        >
-                          {payment.paymentStatus === "paid"
-                            ? "Paid"
-                            : payment.paymentStatus === "partial"
-                              ? "Partial"
-                              : "Unpaid"}
-                        </span>
-
-                        {canViewTotalFeeColumn &&
-                          payment.paymentStatus === "partial" && (
-                            <span className="payment-partial-caption">
-                              ₹{formatMoney(payment.paidAmount)} of ₹
-                              {formatMoney(payment.totalFee)}
+                        {!payment.hasFeeCycle ? (
+                          canEditFee ? (
+                            <button
+                              type="button"
+                              className="payment-status-generate-btn"
+                              title="Generate fee"
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                openGenerateFeeModal(payment);
+                              }}
+                            >
+                              <FiPlus />
+                            </button>
+                          ) : (
+                            <span className="payment-status-badge is-no-fee">
+                              No Fee
                             </span>
-                          )}
+                          )
+                        ) : (
+                          <>
+                            <span
+                              className={`payment-status-badge ${
+                                payment.paymentStatus === "paid"
+                                  ? "is-paid"
+                                  : payment.paymentStatus === "partial"
+                                    ? "is-partial"
+                                    : "is-unpaid"
+                              }`}
+                            >
+                              {payment.paymentStatus === "paid"
+                                ? "Paid"
+                                : payment.paymentStatus === "partial"
+                                  ? "Partial"
+                                  : "Unpaid"}
+                            </span>
+
+                            {payment.paymentStatus === "paid" &&
+                              canEditFee && (
+                                <button
+                                  type="button"
+                                  className="payment-status-generate-btn payment-status-generate-btn-inline"
+                                  title="Generate next fee cycle"
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    openGenerateFeeModal(payment);
+                                  }}
+                                >
+                                  <FiPlus />
+                                </button>
+                              )}
+
+                            {(payment.paymentStatus === "unpaid" ||
+                              payment.paymentStatus === "partial") &&
+                              canEditFee && (
+                                <button
+                                  type="button"
+                                  className="payment-status-generate-btn payment-status-generate-btn-inline"
+                                  title="Edit fee amount"
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    openGenerateFeeModal(payment);
+                                  }}
+                                >
+                                  <FiEdit2 />
+                                </button>
+                              )}
+                          </>
+                        )}
                       </td>
+                      )}
 
                       <td>{formatDate(payment.paymentDate)}</td>
 
@@ -1459,7 +1824,12 @@ const Payments = () => {
           className="student-notify-menu student-notify-menu-floating"
           role="menu"
           style={{
-            top: studentNotificationAnchor.top,
+            // Both explicitly set (never left to fall through to the base
+            // .student-notify-menu class's own `top: calc(100% + 7px)`,
+            // which — since it's not !important — would otherwise still
+            // apply here whenever this inline style skips `top`).
+            top: studentNotificationAnchor.top ?? "auto",
+            bottom: studentNotificationAnchor.bottom ?? "auto",
             right: studentNotificationAnchor.right,
           }}
         >
@@ -1708,10 +2078,12 @@ const Payments = () => {
             </div>
 
             <div className="payment-details-highlight-grid">
-              <div className="payment-details-highlight">
-                <span>Total Fee</span>
-                <strong>₹{formatMoney(selectedPayment.totalFee)}</strong>
-              </div>
+              {canViewTotalFeeColumn && (
+                <div className="payment-details-highlight">
+                  <span>Total Fee</span>
+                  <strong>₹{formatMoney(selectedPayment.totalFee)}</strong>
+                </div>
+              )}
 
               <div className="payment-details-highlight">
                 <span>Payment Method</span>
@@ -1759,12 +2131,12 @@ const Payments = () => {
 
             {selectedPayment.paymentProofImage && (
               <div className="payment-details-proof">
-                <span>Payment Proof</span>
+                <span>Current Payment Screenshot</span>
 
                 <div className="payment-details-proof-image">
                   <img
                     src={selectedPayment.paymentProofImage}
-                    alt="Payment proof screenshot"
+                    alt="Current payment proof screenshot"
                   />
                 </div>
               </div>
@@ -1773,6 +2145,55 @@ const Payments = () => {
             <div className="payment-details-footer">
               <FiCheckCircle />
               <span>Latest fee status recorded for this student.</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {historyDeleteTarget && (
+        <div
+          className="payment-nested-modal-overlay"
+          onClick={closeHistoryDeleteConfirm}
+        >
+          <div
+            className="history-delete-modal"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="history-delete-icon">
+              <FiTrash2 />
+            </div>
+
+            <h2>
+              Are you sure you want to delete this payment
+              history?
+            </h2>
+
+            <p>
+              {canViewTotalFeeColumn
+                ? `The ₹${formatMoney(
+                    historyDeleteTarget.amount,
+                  )} collection record will be removed. This only deletes the log entry — it will not change the student's current fee balance.`
+                : "This only deletes the log entry — it will not change the student's current fee balance."}
+            </p>
+
+            <div className="history-delete-actions">
+              <button
+                type="button"
+                className="history-delete-cancel-btn"
+                onClick={closeHistoryDeleteConfirm}
+                disabled={isDeletingHistory}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="history-delete-confirm-btn"
+                onClick={handleConfirmDeleteHistory}
+                disabled={isDeletingHistory}
+              >
+                {isDeletingHistory ? "Deleting..." : "Delete"}
+              </button>
             </div>
           </div>
         </div>
@@ -1788,23 +2209,135 @@ const Payments = () => {
             onClick={(event) => event.stopPropagation()}
           >
             <div className="collect-payment-header">
-              <div>
+              <div className="collect-payment-header-title">
                 <span>PAYMENT PROOF</span>
                 <h2>{collectModalStudent.studentName}</h2>
               </div>
 
-              <button
-                type="button"
-                onClick={closeCollectModal}
-                aria-label="Close collect payment"
-                title="Close"
-                disabled={isCollectingPayment}
-              >
-                <FiX />
-              </button>
+              <div className="collect-payment-header-actions">
+                {canViewPaymentDetails && (
+                  <button
+                    type="button"
+                    className={`collect-payment-history-btn ${
+                      showCollectHistory ? "active" : ""
+                    }`}
+                    onClick={toggleCollectHistory}
+                    aria-label={
+                      showCollectHistory
+                        ? "Back to payment proof"
+                        : "View fee collection history"
+                    }
+                    title={
+                      showCollectHistory
+                        ? "Back to payment proof"
+                        : "Fee Collection History"
+                    }
+                  >
+                    <FiClock />
+                    <span>History</span>
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={closeCollectModal}
+                  aria-label="Close collect payment"
+                  title="Close"
+                  disabled={isCollectingPayment}
+                >
+                  <FiX />
+                </button>
+              </div>
             </div>
 
-            {collectModalStudent.paymentProofImage ? (
+            {showCollectHistory ? (
+              <div className="collect-payment-history">
+                {isLoadingHistory ? (
+                  <p className="payment-history-empty">
+                    Loading payment history...
+                  </p>
+                ) : (
+                  (() => {
+                    // Flattened for display only — each record still comes
+                    // straight from its own fee cycle's payment list, so an
+                    // amount and its screenshot can never end up mismatched.
+                    const historyRecords = historyFeeCycles.flatMap(
+                      (feeCycle) => feeCycle.payments,
+                    );
+
+                    if (historyRecords.length === 0) {
+                      return (
+                        <p className="payment-history-empty">
+                          No payment history available.
+                        </p>
+                      );
+                    }
+
+                    return (
+                      <div className="payment-history-entries">
+                        {historyRecords.map((record) => (
+                          <div
+                            className="payment-history-entry"
+                            key={record._id}
+                          >
+                            {record.paymentProofImage ? (
+                              <button
+                                type="button"
+                                className="payment-history-entry-image-btn"
+                                title="View this payment's screenshot"
+                                onClick={() =>
+                                  setViewingHistoryRecord(record)
+                                }
+                              >
+                                <img
+                                  className="payment-history-entry-image"
+                                  src={record.paymentProofImage}
+                                  alt="Collected payment screenshot"
+                                />
+                              </button>
+                            ) : (
+                              <div
+                                className="payment-history-entry-image payment-history-entry-image-empty"
+                                title="No proof uploaded"
+                              >
+                                <FiImage />
+                              </div>
+                            )}
+
+                            <span className="payment-history-entry-details">
+                              {canViewTotalFeeColumn && (
+                                <strong className="payment-history-amount">
+                                  ₹{formatMoney(record.amount)}
+                                </strong>
+                              )}
+
+                              <span className="payment-history-entry-meta">
+                                {formatPaymentMethod(record.paymentMethod)}
+                                {" · "}
+                                {formatDate(record.paymentDate)}
+                              </span>
+                            </span>
+
+                            {canCollectPayment && (
+                              <button
+                                type="button"
+                                className="payment-history-delete-btn"
+                                title="Delete this history record"
+                                onClick={() =>
+                                  openHistoryDeleteConfirm(record)
+                                }
+                              >
+                                <FiTrash2 />
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()
+                )}
+              </div>
+            ) : collectModalStudent.paymentProofImage ? (
               <div className="collect-payment-proof-image">
                 <img
                   src={collectModalStudent.paymentProofImage}
@@ -1890,20 +2423,170 @@ const Payments = () => {
                   onChange={(event) =>
                     setCollectAmountInput(event.target.value)
                   }
-                  disabled={isCollectingPayment}
+                  disabled={isCollectingPayment || isRefreshingCollectModal}
                 />
 
                 <button
                   type="button"
                   className="collect-payment-btn"
                   onClick={handleCollectPayment}
-                  disabled={isCollectingPayment}
+                  disabled={isCollectingPayment || isRefreshingCollectModal}
                 >
                   <FiCheck />
-                  {isCollectingPayment ? "Collecting..." : "Collect"}
+                  {isCollectingPayment
+                    ? "Collecting..."
+                    : isRefreshingCollectModal
+                      ? "Refreshing..."
+                      : "Collect"}
                 </button>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {generateFeeStudent && (() => {
+        const isEditingActiveFee =
+          generateFeeStudent.hasFeeCycle &&
+          generateFeeStudent.paymentStatus !== "paid";
+
+        return (
+          <div
+            className="payment-details-overlay"
+            onClick={closeGenerateFeeModal}
+          >
+            <div
+              className="generate-fee-modal"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="generate-fee-header">
+                <div>
+                  <span>
+                    {isEditingActiveFee ? "EDIT FEE" : "GENERATE FEE"}
+                  </span>
+                  <h2>{generateFeeStudent.studentName}</h2>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={closeGenerateFeeModal}
+                  aria-label="Close fee editor"
+                  title="Close"
+                  disabled={isGeneratingFee}
+                >
+                  <FiX />
+                </button>
+              </div>
+
+              <div className="generate-fee-body">
+                {generateFeeStudent.hasFeeCycle && (
+                  <div className="generate-fee-previous">
+                    <span>
+                      {isEditingActiveFee ? "Current Fee" : "Previous Fee"}
+                    </span>
+
+                    <strong>
+                      {canViewTotalFeeColumn
+                        ? `₹${formatMoney(generateFeeStudent.totalFee)}`
+                        : "—"}{" "}
+                      —{" "}
+                      {isEditingActiveFee
+                        ? generateFeeStudent.paymentStatus === "partial"
+                          ? "Partially Paid"
+                          : "Unpaid"
+                        : "Fully Paid"}
+                    </strong>
+                  </div>
+                )}
+
+                <label htmlFor="generate-fee-amount">
+                  {isEditingActiveFee
+                    ? "Updated Fee Amount"
+                    : "New Fee Amount"}
+                </label>
+
+                <input
+                  id="generate-fee-amount"
+                  type="number"
+                  min={
+                    isEditingActiveFee
+                      ? generateFeeStudent.paidAmount || 1
+                      : 1
+                  }
+                  placeholder={
+                    isEditingActiveFee
+                      ? "Enter updated fee amount"
+                      : "Enter new fee amount"
+                  }
+                  value={generateFeeAmountInput}
+                  onChange={(event) =>
+                    setGenerateFeeAmountInput(event.target.value)
+                  }
+                  disabled={isGeneratingFee}
+                />
+
+                <div className="generate-fee-actions">
+                  <button
+                    type="button"
+                    className="generate-fee-cancel-btn"
+                    onClick={closeGenerateFeeModal}
+                    disabled={isGeneratingFee}
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="button"
+                    className="generate-fee-confirm-btn"
+                    onClick={handleGenerateFee}
+                    disabled={isGeneratingFee}
+                  >
+                    {isEditingActiveFee ? <FiSave /> : <FiPlus />}
+                    {isGeneratingFee
+                      ? isEditingActiveFee
+                        ? "Updating..."
+                        : "Generating..."
+                      : isEditingActiveFee
+                        ? "Update Fee"
+                        : "Generate Fee"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {viewingHistoryRecord && (
+        <div
+          className="payment-nested-modal-overlay"
+          onClick={() => setViewingHistoryRecord(null)}
+        >
+          <div
+            className="history-image-viewer"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="history-image-viewer-header">
+              <strong>
+                ₹{formatMoney(viewingHistoryRecord.amount)}
+              </strong>
+
+              <button
+                type="button"
+                onClick={() => setViewingHistoryRecord(null)}
+                aria-label="Close screenshot"
+                title="Close"
+              >
+                <FiX />
+              </button>
+            </div>
+
+            <div className="history-image-viewer-body">
+              <img
+                src={viewingHistoryRecord.paymentProofImage}
+                alt="Payment screenshot"
+              />
+            </div>
           </div>
         </div>
       )}

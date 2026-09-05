@@ -1,0 +1,23 @@
+.no-access-card {
+  text-align: center;
+}
+
+.no-access-lock {
+  color: #ffb800;
+}
+
+.no-access-message {
+  margin: 0 0 10px;
+
+  color: #c2c4c7;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.no-access-message:last-of-type {
+  margin-bottom: 16px;
+}
+
+.no-access-logout-btn {
+  margin-bottom: 4px;
+}

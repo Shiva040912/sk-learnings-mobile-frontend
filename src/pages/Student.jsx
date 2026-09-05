@@ -43,16 +43,11 @@ const initialForm = {
   batch: "",
   schoolName: "",
   address: "",
-  totalFee: "",
 };
 
 const Students = () => {
-  const { isAdmin, hasPermission } = usePermissions();
-
-  // Upload Excel is an admin-only feature, unrelated to the configurable
-  // Trainer permission matrix (view/add/edit/delete only) — kept as a
-  // straight admin check.
-  const isAdministrator = isAdmin;
+  const { hasPermission, hasGlobalPermission } =
+    usePermissions();
 
   const canAddStudent = hasPermission(
     "students",
@@ -72,16 +67,50 @@ const Students = () => {
     "delete"
   );
 
-  const canViewTotalFeeColumn = hasPermission(
+  // Global — controls fee visibility everywhere in the app, not just the
+  // Students page (reused as-is once the Payment page reads it too).
+  const canViewFees = hasGlobalPermission("fees");
+
+  const canViewNameColumn = hasPermission(
     "students",
     "columns",
-    "totalFee"
+    "name"
   );
 
-  const canViewFeeSection = hasPermission(
+  const canViewRollNoColumn = hasPermission(
+    "students",
+    "columns",
+    "rollNo"
+  );
+
+  const canViewCourseColumn = hasPermission(
+    "students",
+    "columns",
+    "course"
+  );
+
+  const canViewPhoneColumn = hasPermission(
+    "students",
+    "columns",
+    "phone"
+  );
+
+  const canViewAddressDetail = hasPermission(
     "students",
     "sections",
-    "feeInfo"
+    "address"
+  );
+
+  const canViewPhoneNumberDetail = hasPermission(
+    "students",
+    "sections",
+    "phoneNumber"
+  );
+
+  const canViewAadharDetail = hasPermission(
+    "students",
+    "sections",
+    "aadhar"
   );
 
   const [students, setStudents] = useState([]);
@@ -305,8 +334,6 @@ const Students = () => {
       schoolName:
         student.schoolName || "",
       address: student.address || "",
-      totalFee:
-        student.totalFee ?? "",
     });
 
     setFormErrors({});
@@ -462,14 +489,6 @@ const Students = () => {
         "Enter Aadhaar as 1234 5678 9878";
     }
 
-    if (
-      formData.totalFee === "" ||
-      Number(formData.totalFee) <= 0
-    ) {
-      errors.totalFee =
-        "Enter a valid total fee";
-    }
-
     setFormErrors(errors);
 
     const firstError =
@@ -545,17 +564,6 @@ const Students = () => {
     if (text.includes("student name")) return "studentName";
     if (text.includes("course")) return "course";
 
-    if (
-      text.includes("total fee") ||
-      text.includes("fee")
-    ) {
-      return "totalFee";
-    }
-
-    if (text.includes("payment method")) {
-      return "paymentMethod";
-    }
-
     return null;
   };
 
@@ -580,7 +588,6 @@ const Students = () => {
       schoolName:
         formData.schoolName.trim() || undefined,
       address: formData.address.trim() || undefined,
-      totalFee: Number(formData.totalFee),
     };
 
     try {
@@ -1261,29 +1268,25 @@ const Students = () => {
             )}
           </div>
 
-          {(isAdministrator || canAddStudent) && (
+          {canAddStudent && (
             <div className="students-header-actions">
-              {isAdministrator && (
-                <button
-                  type="button"
-                  className="upload-excel-btn"
-                  onClick={openBulkUploadModal}
-                >
-                  <FiUploadCloud />
-                  <span>Upload Excel</span>
-                </button>
-              )}
+              <button
+                type="button"
+                className="upload-excel-btn"
+                onClick={openBulkUploadModal}
+              >
+                <FiUploadCloud />
+                <span>Upload Excel</span>
+              </button>
 
-              {canAddStudent && (
-                <button
-                  type="button"
-                  className="add-student-btn"
-                  onClick={openAddModal}
-                >
-                  <FiPlus />
-                  <span>Add Student</span>
-                </button>
-              )}
+              <button
+                type="button"
+                className="add-student-btn"
+                onClick={openAddModal}
+              >
+                <FiPlus />
+                <span>Add Student</span>
+              </button>
             </div>
           )}
         </div>
@@ -1317,19 +1320,21 @@ const Students = () => {
                 <thead>
                   <tr>
                     <th>S.No</th>
-                    <th>Student</th>
-                    <th>Roll No</th>
-                    <th>Course</th>
-                    <th>Phone</th>
-                    <th
-                      className={
-                        !canViewTotalFeeColumn
-                          ? "fee-column-hidden"
-                          : ""
-                      }
-                    >
-                      Total Fee
-                    </th>
+                    {canViewNameColumn && (
+                      <th>Student</th>
+                    )}
+                    {canViewRollNoColumn && (
+                      <th>Roll No</th>
+                    )}
+                    {canViewCourseColumn && (
+                      <th>Course</th>
+                    )}
+                    {canViewPhoneColumn && (
+                      <th>Phone</th>
+                    )}
+                    {canViewFees && (
+                      <th>Total Fee</th>
+                    )}
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -1348,62 +1353,66 @@ const Students = () => {
                           </span>
                         </td>
 
-                        <td>
-                          <div className="student-profile-cell">
-                            <div className="student-avatar">
-                              {student.studentName
-                                ?.charAt(0)
-                                ?.toUpperCase() ||
-                                "S"}
+                        {canViewNameColumn && (
+                          <td>
+                            <div className="student-profile-cell">
+                              <div className="student-avatar">
+                                {student.studentName
+                                  ?.charAt(0)
+                                  ?.toUpperCase() ||
+                                  "S"}
+                              </div>
+
+                              <div className="student-name-cell">
+                                <strong>
+                                  {
+                                    student.studentName
+                                  }
+                                </strong>
+
+                                <span>
+                                  Parent:{" "}
+                                  {
+                                    student.parentName
+                                  }
+                                </span>
+                              </div>
                             </div>
+                          </td>
+                        )}
 
-                            <div className="student-name-cell">
-                              <strong>
-                                {
-                                  student.studentName
-                                }
-                              </strong>
+                        {canViewRollNoColumn && (
+                          <td>
+                            <span className="roll-number-badge">
+                              {student.rollNo || "-"}
+                            </span>
+                          </td>
+                        )}
 
-                              <span>
-                                Parent:{" "}
-                                {
-                                  student.parentName
-                                }
-                              </span>
-                            </div>
-                          </div>
-                        </td>
+                        {canViewCourseColumn && (
+                          <td>
+                            <span className="course-badge">
+                              {
+                                student.course
+                              }
+                            </span>
+                          </td>
+                        )}
 
-                        <td>
-                          <span className="roll-number-badge">
-                            {student.rollNo || "-"}
-                          </span>
-                        </td>
+                        {canViewPhoneColumn && (
+                          <td>
+                            {student.phone}
+                          </td>
+                        )}
 
-                        <td>
-                          <span className="course-badge">
-                            {
-                              student.course
-                            }
-                          </span>
-                        </td>
-
-                        <td>
-                          {student.phone}
-                        </td>
-
-                        <td
-                          className={
-                            !canViewTotalFeeColumn
-                              ? "fee-column-hidden"
-                              : ""
-                          }
-                        >
-                          ₹
-                          {formatMoney(
-                            student.totalFee
-                          )}
-                        </td>
+                        {canViewFees && (
+                          <td>
+                            {student.totalFee !== undefined &&
+                            student.totalFee !== null
+                              ? `₹${formatMoney(student.totalFee)}`
+                              : "-"}
+                          </td>
+                        )}
 
                         <td>
                           <div className="student-actions">
@@ -1978,37 +1987,6 @@ const Students = () => {
                   />
                 </div>
 
-                <div className="student-form-group">
-                  <label>
-                    Total Fee *
-                  </label>
-
-                  <input
-                    type="number"
-                    min="1"
-                    name="totalFee"
-                    value={
-                      formData.totalFee
-                    }
-                    onChange={
-                      handleChange
-                    }
-                    placeholder="Enter total fee"
-                    required
-                    className={
-                      formErrors.totalFee
-                        ? "input-error"
-                        : ""
-                    }
-                  />
-
-                  {formErrors.totalFee && (
-                    <small className="form-error-text">
-                      {formErrors.totalFee}
-                    </small>
-                  )}
-                </div>
-
                 <div className="student-form-group full-width">
                   <label>
                     Address
@@ -2171,13 +2149,15 @@ const Students = () => {
                     }
                   />
 
-                  <IdDetail
-                    icon={<FiPhone />}
-                    label="Phone Number"
-                    value={
-                      selectedStudent.phone
-                    }
-                  />
+                  {canViewPhoneNumberDetail && (
+                    <IdDetail
+                      icon={<FiPhone />}
+                      label="Phone Number"
+                      value={
+                        selectedStudent.phone
+                      }
+                    />
+                  )}
 
                   <IdDetail
                     icon={<FiPhone />}
@@ -2208,21 +2188,23 @@ const Students = () => {
                     }
                   />
 
-                  <IdDetail
-                    icon={
-                      <FiCreditCard />
-                    }
-                    label="Aadhaar Number"
-                    value={
-                      selectedStudent.idproof ||
-                      "-"
-                    }
-                  />
+                  {canViewAadharDetail && (
+                    <IdDetail
+                      icon={
+                        <FiCreditCard />
+                      }
+                      label="Aadhaar Number"
+                      value={
+                        selectedStudent.idproof ||
+                        "-"
+                      }
+                    />
+                  )}
                 </div>
 
-                
 
-                {canViewFeeSection && (
+
+                {canViewFees && (
                   <div className="student-id-fees">
                     <div>
                       <span>
@@ -2230,10 +2212,10 @@ const Students = () => {
                       </span>
 
                       <strong>
-                        ₹
-                        {formatMoney(
-                          selectedStudent.totalFee
-                        )}
+                        {selectedStudent.totalFee !== undefined &&
+                        selectedStudent.totalFee !== null
+                          ? `₹${formatMoney(selectedStudent.totalFee)}`
+                          : "No fee generated yet"}
                       </strong>
                     </div>
                   </div>
@@ -2241,20 +2223,22 @@ const Students = () => {
 
 
 
-                <div className="student-id-address">
-                  <FiMapPin />
+                {canViewAddressDetail && (
+                  <div className="student-id-address">
+                    <FiMapPin />
 
-                  <div>
-                    <span>
-                      Residential Address
-                    </span>
+                    <div>
+                      <span>
+                        Residential Address
+                      </span>
 
-                    <p>
-                      {selectedStudent.address ||
-                        "-"}
-                    </p>
+                      <p>
+                        {selectedStudent.address ||
+                          "-"}
+                      </p>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 
 

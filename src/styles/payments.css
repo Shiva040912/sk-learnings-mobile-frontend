@@ -7247,8 +7247,31 @@
   background: #fff1cb;
 }
 
+/* Wraps the status badge + its edit/generate button so that, at any
+   column width set by any breakpoint below, the button drops to its own
+   line instead of overlapping the badge text. */
+.payment-status-cell {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  max-width: 100%;
+}
+
 .payment-status-generate-btn-inline {
-  margin-left: 6px;
+  margin-left: 0;
+}
+
+/* This column carries a badge + a small action button, not plain text —
+   every breakpoint above truncates td content with nowrap/ellipsis for
+   long text cells (name, course, etc.), which was also clipping/overlapping
+   this pair at narrow widths. Override just this column so it can wrap
+   instead. Higher specificity than the `:nth-child` width rules above, and
+   declared last, so it wins regardless of viewport width. */
+.payments-table td.payment-status-td {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
 }
 
 /* Collect modal: no-screenshot placeholder */

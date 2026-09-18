@@ -112,6 +112,12 @@ const Payments = () => {
   const [courseFilter, setCourseFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [batchFilter, setBatchFilter] = useState("all");
+  // "new" = student currently has an unprocessed payment screenshot pending
+  // Admin action — same underlying condition as the red notification dot
+  // (payment.paymentProofImage truthy). Cleared automatically once Admin
+  // collects the payment or a new fee cycle is generated (backend clears
+  // paymentProofImage at that point), so this never needs manual reset.
+  const [screenshotFilter, setScreenshotFilter] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -373,6 +379,7 @@ const Payments = () => {
     statusFilter !== "all",
     methodFilter !== "all",
     batchFilter !== "all",
+    screenshotFilter !== "all",
   ].filter(Boolean).length;
 
   const filteredPayments = useMemo(() => {
@@ -404,12 +411,21 @@ const Payments = () => {
         const matchesBatch =
           batchFilter === "all" || payment.batch === batchFilter;
 
+        // Same source of truth as the red notification dot: a non-empty
+        // paymentProofImage means the screenshot is uploaded and still
+        // unprocessed (backend clears it the moment Admin collects the
+        // payment or a new fee cycle is generated).
+        const matchesScreenshot =
+          screenshotFilter === "all" ||
+          (screenshotFilter === "new" && Boolean(payment.paymentProofImage));
+
         return (
           matchesSearch &&
           matchesCourse &&
           matchesStatus &&
           matchesMethod &&
-          matchesBatch
+          matchesBatch &&
+          matchesScreenshot
         );
       })
       .sort((firstPayment, secondPayment) =>
@@ -429,6 +445,7 @@ const Payments = () => {
     courseFilter,
     statusFilter,
     batchFilter,
+    screenshotFilter,
   ]);
 
   const summary = useMemo(() => {
@@ -1204,6 +1221,7 @@ const Payments = () => {
                           setStatusFilter("all");
                           setMethodFilter("all");
                           setBatchFilter("all");
+                          setScreenshotFilter("all");
                         }}
                       >
                         Clear
@@ -1283,6 +1301,20 @@ const Payments = () => {
                         {batch}
                       </option>
                     ))}
+                  </select>
+                </div>
+
+                <div className="payment-filter-field">
+                  <label>Screenshot</label>
+
+                  <select
+                    value={screenshotFilter}
+                    onChange={(event) =>
+                      setScreenshotFilter(event.target.value)
+                    }
+                  >
+                    <option value="all">All</option>
+                    <option value="new">New Screenshot</option>
                   </select>
                 </div>
               </div>
@@ -1560,8 +1592,17 @@ const Payments = () => {
           ) : filteredPayments.length === 0 ? (
             <div className="payment-message">
               <FiCreditCard />
-              <strong>No students found</strong>
-              <span>Try changing your search or filter</span>
+              {screenshotFilter === "new" ? (
+                <>
+                  <strong>No new payment screenshots</strong>
+                  <span>All uploaded screenshots have been processed</span>
+                </>
+              ) : (
+                <>
+                  <strong>No students found</strong>
+                  <span>Try changing your search or filter</span>
+                </>
+              )}
             </div>
           ) : (
             <div className="payment-table-wrapper">
@@ -1705,7 +1746,7 @@ const Payments = () => {
                       )}
 
                       {canViewStatusColumn && (
-                      <td>
+                      <td className="payment-status-td">
                         {!payment.hasFeeCycle ? (
                           canEditFee ? (
                             <button
@@ -1725,7 +1766,7 @@ const Payments = () => {
                             </span>
                           )
                         ) : (
-                          <>
+                          <span className="payment-status-cell">
                             <span
                               className={`payment-status-badge ${
                                 payment.paymentStatus === "paid"
@@ -1772,7 +1813,7 @@ const Payments = () => {
                                   <FiEdit2 />
                                 </button>
                               )}
-                          </>
+                          </span>
                         )}
                       </td>
                       )}
